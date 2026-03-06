@@ -1,0 +1,176 @@
+{
+  "personal": {
+    "firstName": "Gulshan",
+    "lastName": "Kumar",
+    "title": "Automation & AI Systems Engineer",
+    "subtitle": "Python · Web & Cloud · Industrial Automation",
+    "location": "Delhi, India",
+    "status": "Available for Opportunities",
+    "bio": [
+      "I build and explore <strong>intelligent automation and software systems</strong> — bridging the gap between physical hardware and digital infrastructure with equal curiosity for both worlds.",
+      "From backend automation tools, Telegram bots and Discord bots to working hands-on with <em>industrial control panels and PLC-based systems</em> — I thrive where software meets the real world.",
+      "Deeply curious about how systems work — from industrial control panels to cloud architectures — always focused on creating things that <strong>improve efficiency and functionality</strong>."
+    ],
+    "motto": "Always Learning. Always Building."
+  },
+
+  "social": {
+    "email": "joanyadams3@gmail.com",
+    "website": "https://gulshan.isroot.in",
+    "portfolio": "https://gulshankumar.isroot.in",
+    "linkedin": {
+      "url": "https://linkedin.com/in/gulshankumar-tech",
+      "handle": "/in/gulshankumar-tech"
+    },
+    "github": {
+      "url": "https://github.com/ayush0972",
+      "handle": "ayush0972"
+    }
+  },
+
+  "stats": [
+    { "value": 2,  "suffix": "+",   "label": "Internships",      "desc": "Hands-on in Automation & Electronics at real production environments in Delhi." },
+    { "value": 20, "suffix": "+",   "label": "Technical Skills", "desc": "From Python scripting and bot development to PLC systems and electrical troubleshooting." },
+    { "value": 3,  "suffix": " mo", "label": "Field Experience", "desc": "Spent solving real engineering problems in industrial environments across Delhi." }
+  ],
+
+  "skills": [
+    {
+      "icon": "code",
+      "label": "Programming",
+      "pills": ["Python", "JavaScript", "HTML5", "SQL / RDBMS", "Bash (Basic)"],
+      "hot":   ["Python", "JavaScript"]
+    },
+    {
+      "icon": "hub",
+      "label": "Web & Backend",
+      "pills": ["Full-Stack Dev", "API Integration", "Bot Development", "Telegram Bots", "Discord Bots", "REST APIs"],
+      "hot":   ["Full-Stack Dev", "API Integration", "Bot Development"]
+    },
+    {
+      "icon": "cloud",
+      "label": "Cloud & Systems",
+      "pills": ["Cloud Computing", "System Testing", "CS Fundamentals", "Microsoft Office", "Linux (Basic)"],
+      "hot":   ["Cloud Computing"]
+    },
+    {
+      "icon": "settings_suggest",
+      "label": "Industrial Automation",
+      "pills": ["Industrial Automation", "PLC Systems", "Control Systems", "Process Automation", "Electrical Panels", "HV Safety Protocols"],
+      "hot":   ["Industrial Automation", "PLC Systems", "Control Systems"]
+    },
+    {
+      "icon": "bolt",
+      "label": "Electrical Systems",
+      "pills": ["Electronics Fundamentals", "Power Distribution", "Electrical Troubleshooting", "Transformers", "Voltage Stabilizers", "Wiring & Assembly"],
+      "hot":   ["Electronics Fundamentals"]
+    },
+    {
+      "icon": "psychology",
+      "label": "Analytical Skills",
+      "pills": ["Problem Solving", "Analytical Thinking", "Strategy", "System Integration", "Workflow Optimization"],
+      "hot":   ["Problem Solving", "Analytical Thinking"]
+    }
+  ],
+
+  "experience": [
+    {
+      "num": "01",
+      "date": "May 2025 – Jun 2025",
+      "dur": "2 Months",
+      "badge": "Automation",
+      "bt": "lime",
+      "icon": "precision_manufacturing",
+      "title": "Automation Intern",
+      "co": "Losung Automation Pvt. Ltd.",
+      "loc": "Mahipalpur, New Delhi · On-site",
+      "pts": [
+        "Worked in an industrial environment with <strong>electrical control panels</strong> and <strong>PLC-based systems</strong> on live production floors.",
+        "Observed and documented <strong>system integration and testing workflows</strong> for complex automation setups.",
+        "Gained hands-on exposure to <strong>control logic fundamentals</strong> applied in real industrial processes.",
+        "Followed <strong>high-voltage safety protocols</strong> — developing awareness critical to industrial environments."
+      ],
+      "tags": ["Industrial Automation", "Control Systems", "PLC", "Electrical Panels", "Process Automation", "System Testing"]
+    },
+    {
+      "num": "02",
+      "date": "Jan 2025 – Jan 2025",
+      "dur": "1 Month",
+      "badge": "Electronics",
+      "bt": "ember",
+      "icon": "electrical_services",
+      "title": "Electronics Intern",
+      "co": "Elent Electronics Private Limited",
+      "loc": "New Delhi · On-site",
+      "pts": [
+        "Industrial training focused on <strong>transformers and voltage stabilizers</strong> — from assembly to output testing.",
+        "Observed <strong>wiring, assembly, and component testing</strong> processes in a manufacturing environment.",
+        "Applied basic <strong>electrical troubleshooting techniques</strong> to identify and resolve faults."
+      ],
+      "tags": ["Electrical Systems", "Power Distribution", "Troubleshooting", "Electronics"]
+    }
+  ],
+
+  "education": [
+    {
+      "period": "Apr 2025 – Apr 2026",
+      "deg": "Senior Secondary (Class 12)",
+      "str": "PCM + Computer Science",
+      "sch": "SBV Sarojini Nagar, Delhi",
+      "gr": "In Progress",
+      "items": [
+        "Industrial Automation Internship (May–Jun 2025) at Losung Automation Pvt. Ltd.",
+        "Electrical Systems Internship completed in Class 11",
+        "PCM with Computer Science and Electronics Technology curriculum",
+        "Real-world internship exposure through both Class 11 & 12"
+      ],
+      "pills": ["Python", "Full-Stack Dev", "Cloud Computing", "Bot Development", "Industrial Automation"]
+    },
+    {
+      "period": "Apr 2023 – Mar 2024",
+      "deg": "Secondary (SSC — Class 10)",
+      "str": "General Education",
+      "sch": "Atal Adarsh Vidyalaya Laxmi Bai Nagar, Delhi",
+      "gr": "70.8%",
+      "items": [
+        "Completed Secondary Education (Class X) successfully",
+        "Best Five Subjects Percentage: 70.8% ⭐",
+        "Foundational studies in Mathematics, Science, and Technology"
+      ],
+      "pills": ["HTML5", "JavaScript", "RDBMS", "Microsoft Office", "Problem Solving"]
+    }
+  ],
+
+  "termLines": [
+    {
+      "cmd": "whoami",
+      "out": [
+        { "c": "t-g", "v": "gulshan@isroot.in" },
+        { "c": "t-w", "v": "Automation & AI Systems Engineer" },
+        { "c": "t-m", "v": "📍 Delhi, India" }
+      ]
+    },
+    {
+      "cmd": "cat skills.txt",
+      "out": [
+        { "c": "t-g", "v": "→ Python · JavaScript · HTML5 · SQL" },
+        { "c": "t-g", "v": "→ Industrial Automation · PLC · Control Systems" },
+        { "c": "t-g", "v": "→ Bot Dev · API Integration · Cloud · Full-Stack" }
+      ]
+    },
+    {
+      "cmd": "echo $STATUS",
+      "out": [
+        { "c": "t-g", "v": "✅ OPEN TO INTERNSHIPS & COLLABORATIONS" }
+      ]
+    },
+    {
+      "cmd": "curl gulshan.isroot.in",
+      "out": [
+        { "c": "t-g", "v": "200 OK · gulshan.isroot.in" },
+        { "c": "t-m", "v": "Contact: joanyadams3@gmail.com" },
+        { "c": "t-m", "v": "GitHub:  github.com/ayush0972" }
+      ]
+    }
+  ]
+}

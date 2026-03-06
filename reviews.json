@@ -1,0 +1,63 @@
+{
+  "clients": [
+    {
+      "name": "Losung Automation",
+      "cat": "Industrial Automation",
+      "logo": "https://ui-avatars.com/api/?name=LA&background=0b1209&color=8ecf00&size=64&bold=true&font-size=0.4",
+      "url": "#"
+    },
+    {
+      "name": "Elent Electronics",
+      "cat": "Electronics Manufacturing",
+      "logo": "https://ui-avatars.com/api/?name=EE&background=0b1209&color=8ecf00&size=64&bold=true&font-size=0.4",
+      "url": "#"
+    },
+    {
+      "name": "SBV Sarojini Nagar",
+      "cat": "Education Institution",
+      "logo": "https://ui-avatars.com/api/?name=SBV&background=0b1209&color=8ecf00&size=64&bold=true&font-size=0.4",
+      "url": "#"
+    },
+    {
+      "name": "Atal Adarsh Vidyalaya",
+      "cat": "Education Institution",
+      "logo": "https://ui-avatars.com/api/?name=AAV&background=0b1209&color=8ecf00&size=64&bold=true&font-size=0.4",
+      "url": "#"
+    }
+  ],
+
+  "reviews": [
+    {
+      "name": "Rajiv Sharma",
+      "role": "Senior Engineer",
+      "co": "Losung Automation Pvt. Ltd.",
+      "av": "https://ui-avatars.com/api/?name=Rajiv+Sharma&background=111c11&color=8ecf00&size=80&bold=true",
+      "r": 5,
+      "text": "Gulshan showed exceptional curiosity and discipline during his internship. He quickly adapted to our industrial environment and asked the right questions — a rare quality in someone so early in their career."
+    },
+    {
+      "name": "Priya Nair",
+      "role": "Technical Trainer",
+      "co": "Elent Electronics Pvt. Ltd.",
+      "av": "https://ui-avatars.com/api/?name=Priya+Nair&background=111c11&color=8ecf00&size=80&bold=true",
+      "r": 5,
+      "text": "In just one month, Gulshan demonstrated a strong grasp of transformer assembly and electrical troubleshooting. He was methodical, safety-conscious, and always willing to understand the why behind each process."
+    },
+    {
+      "name": "Amit Verma",
+      "role": "Collaboration Partner",
+      "co": "Freelance Developer",
+      "av": "https://ui-avatars.com/api/?name=Amit+Verma&background=111c11&color=8ecf00&size=80&bold=true",
+      "r": 5,
+      "text": "Worked with Gulshan on a Python automation project. His bot development skills and API integration knowledge are solid. He delivers clean, readable code and communicates very clearly throughout."
+    },
+    {
+      "name": "Sneha Kapoor",
+      "role": "CS Teacher",
+      "co": "SBV Sarojini Nagar",
+      "av": "https://ui-avatars.com/api/?name=Sneha+Kapoor&background=111c11&color=8ecf00&size=80&bold=true",
+      "r": 5,
+      "text": "Gulshan is one of the most self-driven students I've worked with. He brings real-world internship experience into classroom discussions — his combination of hardware and software skills is genuinely rare."
+    }
+  ]
+}
