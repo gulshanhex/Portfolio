@@ -9,7 +9,7 @@
 [![Live Site](https://img.shields.io/badge/Live-gulshan.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshan.isroot.in)&nbsp;
 [![Portfolio](https://img.shields.io/badge/Portfolio-gulshankumar.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshankumar.isroot.in)&nbsp;
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshankumar--tech-0A66C2?style=flat-square&labelColor=060908&logo=linkedin&logoColor=0A66C2)](https://linkedin.com/in/gulshankumar-tech)&nbsp;
-[![GitHub](https://img.shields.io/badge/GitHub-ayush0972-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/gulshanhex)&nbsp;
+[![GitHub](https://img.shields.io/badge/GitHub-gulshanhex-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/gulshanhex)&nbsp;
 [![License](https://img.shields.io/badge/License-MIT-8ecf00?style=flat-square&labelColor=060908)](LICENSE)
 
 </div>
