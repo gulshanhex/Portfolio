@@ -1,60 +1,67 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/-%20GULSHAN%20KUMAR-060908?style=for-the-badge&logoColor=8ecf00" height="42"/>
+<img src="https://capsule-render.vercel.app/api?type=venom&height=220&text=GULSHAN%20KUMAR&fontSize=72&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=2&animation=fadeIn" width="100%"/>
 
-### Automation & AI Systems Engineer · Python · Web · Cloud
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=18&duration=3000&pause=1000&color=8ECF00&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=Automation+%26+AI+Systems+Engineer;Python+%C2%B7+Web+%C2%B7+Cloud+%C2%B7+Delhi%2C+India" alt="Typing SVG"/>
 
-[![Live Site](https://img.shields.io/badge/▸%20Live%20Site-gulshan.isroot.in-8ecf00?style=flat-square&labelColor=060908&logoColor=8ecf00)](https://gulshan.isroot.in)
-[![Portfolio](https://img.shields.io/badge/▸%20Portfolio-gulshankumar.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshankumar.isroot.in)
+<br/>
+
+[![Live Site](https://img.shields.io/badge/Live-gulshan.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshan.isroot.in)&nbsp;
+[![Portfolio](https://img.shields.io/badge/Portfolio-gulshankumar.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshankumar.isroot.in)&nbsp;
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshankumar--tech-0A66C2?style=flat-square&labelColor=060908&logo=linkedin&logoColor=0A66C2)](https://linkedin.com/in/gulshankumar-tech)&nbsp;
+[![GitHub](https://img.shields.io/badge/GitHub-ayush0972-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/ayush0972)&nbsp;
 [![License](https://img.shields.io/badge/License-MIT-8ecf00?style=flat-square&labelColor=060908)](LICENSE)
-[![Location](https://img.shields.io/badge/📍-Delhi,%20India-060908?style=flat-square&labelColor=1a1a1a&color=8ecf00)](https://gulshan.isroot.in)
 
 </div>
 
----
+<br/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/folder_open/v1/24px.svg" width="20" valign="middle"/> &nbsp;Repository Structure
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+
+## Repository Structure
 
 ```
 gulshan-portfolio/
 │
-├── README.md                   ← You are here
+├── README.md                    ← You are here
 ├── .gitignore
 ├── LICENSE
 │
-├── dist/                       ⭐  DEPLOY THIS — single self-contained file
-│   └── index.html              ←  All CSS + JS + data merged into one file
+├── dist/                        ★  DEPLOY THIS — single self-contained file
+│   └── index.html               ←  CSS + JS + all data merged into one file
 │
-└── src/                        ✏️  EDIT THIS — clean modular source
-    ├── index.html              ←  HTML structure only
-    ├── style.css               ←  All styles
-    ├── script.js               ←  All JavaScript
-    ├── config.json             ←  Personal info · skills · experience · education
-    ├── projects.json           ←  Projects data
-    └── reviews.json            ←  Client testimonials
+└── src/                         ✎  EDIT THIS — clean modular source
+    ├── index.html               ←  HTML structure only
+    ├── style.css                ←  All styles
+    ├── script.js                ←  All JavaScript
+    ├── config.json              ←  Personal info · skills · experience · education
+    ├── projects.json            ←  Projects data
+    └── reviews.json             ←  Client testimonials
 ```
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/rocket_launch/v1/24px.svg" width="20" valign="middle"/> &nbsp;Which File Should You Use?
+## Which File To Use
 
-### <img src="https://fonts.gstatic.com/s/i/materialiconsround/cloud_upload/v1/24px.svg" width="18" valign="middle"/> &nbsp;Hosting / Deployment → `dist/index.html`
+### ![deploy](https://img.shields.io/badge/-DEPLOY-8ecf00?style=flat-square&labelColor=060908) &nbsp;`dist/index.html` — Upload this to your host
 
 ```
-dist/index.html  ←  UPLOAD ONLY THIS ONE FILE
+dist/index.html   ←   UPLOAD ONLY THIS ONE FILE
 ```
 
 | Property | Detail |
-|----------|--------|
-| **Zero Dependencies** | No external files required |
+|---|---|
+| **Zero Dependencies** | No external files required whatsoever |
 | **Universal Hosting** | Works on cPanel · Hostinger · unaux and all shared hosts |
-| **Works Offline Too** | Opens directly via `file://` — no server needed |
-| **Self-Contained** | CSS + JS + all data packed into one file |
+| **Works Offline** | Opens directly via `file://` — no server needed |
+| **Self-Contained** | CSS + JS + all data packed into a single file |
 
-### <img src="https://fonts.gstatic.com/s/i/materialiconsround/edit/v1/24px.svg" width="18" valign="middle"/> &nbsp;Code Editing → `src/` folder
+<br/>
+
+### ![edit](https://img.shields.io/badge/-EDIT-8ecf00?style=flat-square&labelColor=060908) &nbsp;`src/` — Make changes here
 
 | File | Purpose |
-|------|---------|
+|---|---|
 | `src/index.html` | HTML structure |
 | `src/style.css` | All visual styles |
 | `src/script.js` | JavaScript logic |
@@ -62,14 +69,14 @@ dist/index.html  ←  UPLOAD ONLY THIS ONE FILE
 | `src/projects.json` | Projects — add or update entries |
 | `src/reviews.json` | Client logos and testimonials |
 
-> **⚠️ Warning:** Never deploy the `src/` folder directly to hosting. JSON files load via `fetch()`, which gets blocked by CORS on shared hosting. Always merge changes back into `dist/index.html` before deploying.
+> **Warning:** Never deploy `src/` directly to hosting. JSON files load via `fetch()`, which gets blocked by CORS on shared hosting. Always merge changes back into `dist/index.html` before deploying.
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/auto_awesome/v1/24px.svg" width="20" valign="middle"/> &nbsp;Features
+## Features
 
-| Category | Feature |
-|----------|---------|
+| Category | Detail |
+|---|---|
 | **Theme** | Forest-Noir dark — `#060908` background · `#8ecf00` lime accent |
 | **Cursor** | Custom sharp lime arrow with animated glow trail |
 | **Particles** | Canvas particle network — 80 animated nodes with collision lines |
@@ -80,31 +87,72 @@ dist/index.html  ←  UPLOAD ONLY THIS ONE FILE
 | **Buttons** | Magnetic hover pull effect |
 | **Icons** | Google Material Icons Round throughout |
 | **Layout** | Fully responsive — mobile hamburger · adaptive grids |
-| **Sections** | Hero · About · Skills · Experience · Education · Projects · Reviews · Contact |
 
----
+<br/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/tune/v1/24px.svg" width="20" valign="middle"/> &nbsp;How to Update Content
+**Sections** — Hero &nbsp;·&nbsp; About &nbsp;·&nbsp; Skills &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Education &nbsp;·&nbsp; Projects &nbsp;·&nbsp; Reviews &nbsp;·&nbsp; Contact
 
-### Option A — Edit `src/` *(Recommended for developers)*
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-**Personal info · skills · experience · education · terminal commands:**
+## Tech Stack
+
+<div align="center">
+
+<img src="https://img.shields.io/badge/HTML5-060908?style=for-the-badge&logo=html5&logoColor=E34F26"/>
+<img src="https://img.shields.io/badge/CSS3-060908?style=for-the-badge&logo=css3&logoColor=1572B6"/>
+<img src="https://img.shields.io/badge/JavaScript-060908?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/>
+<img src="https://img.shields.io/badge/JSON-060908?style=for-the-badge&logo=json&logoColor=8ecf00"/>
+<img src="https://img.shields.io/badge/Google_Fonts-060908?style=for-the-badge&logo=google-fonts&logoColor=4285F4"/>
+<img src="https://img.shields.io/badge/Material_Icons-060908?style=for-the-badge&logo=google&logoColor=8ecf00"/>
+
+</div>
+
+<br/>
+
+| Layer | Technology |
+|---|---|
+| **Markup** | HTML5 |
+| **Styling** | CSS3 — custom properties · grid · clip-path · keyframe animations |
+| **Logic** | Vanilla JavaScript ES6+ |
+| **Data** | JSON (`src/` only) |
+| **Fonts** | Google Fonts — Bebas Neue · JetBrains Mono · Fraunces |
+| **Icons** | Google Material Icons Round |
+
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+
+## Theme Colors
+
+| Variable | Swatch | Value | Usage |
+|---|---|---|---|
+| `--bg` | ![bg](https://img.shields.io/badge/-%20%20%20%20-060908?style=flat-square) | `#060908` | Main background |
+| `--lime` | ![lime](https://img.shields.io/badge/-%20%20%20%20-8ecf00?style=flat-square) | `#8ecf00` | Primary accent |
+| `--ember` | ![ember](https://img.shields.io/badge/-%20%20%20%20-cc4500?style=flat-square) | `#cc4500` | Badge accent |
+| `--text` | ![text](https://img.shields.io/badge/-%20%20%20%20-c2d4ae?style=flat-square) | `#c2d4ae` | Body text |
+| `--heading` | ![heading](https://img.shields.io/badge/-%20%20%20%20-d8e8c4?style=flat-square) | `#d8e8c4` | Headings |
+
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+
+## Updating Content
+
+### Option A &nbsp;—&nbsp; Edit `src/` &nbsp;*(Recommended for developers)*
+
+**Personal info · skills · experience · education · terminal commands**
 → Edit `src/config.json`
 
-**Add or update projects:**
+**Add or update projects**
 → Add a new object to the array in `src/projects.json`
 
-**Testimonials and client logos:**
+**Testimonials and client logos**
 → Edit `src/reviews.json`
 
-**Visual styles:**
-→ Edit `src/style.css` — CSS variables are defined at the top inside `:root {}`
+**Visual styles**
+→ Edit `src/style.css` — CSS variables are at the top inside `:root {}`
 
----
+<br/>
 
-### Option B — Edit `dist/index.html` Directly
+### Option B &nbsp;—&nbsp; Edit `dist/index.html` directly
 
-Open the file and locate the clearly labeled constants inside the `<script>` tag:
+Open the file and find these clearly labeled constants inside the `<script>` tag:
 
 ```javascript
 const SKILLS     = [ ... ]   // Line ~380
@@ -116,58 +164,33 @@ const REVIEWS    = [ ... ]   // Line ~455
 const TERM_LINES = [ ... ]   // Line ~465
 ```
 
-Edit → Save → Upload. Done.
+Edit &nbsp;→&nbsp; Save &nbsp;→&nbsp; Upload. Done.
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/palette/v1/24px.svg" width="20" valign="middle"/> &nbsp;Theme Colors
-
-| Variable | Value | Usage |
-|----------|-------|-------|
-| `--bg` | ![#060908](https://img.shields.io/badge/-%23060908-060908?style=flat-square) `#060908` | Main background |
-| `--lime` | ![#8ecf00](https://img.shields.io/badge/-%238ecf00-8ecf00?style=flat-square) `#8ecf00` | Primary accent |
-| `--ember` | ![#cc4500](https://img.shields.io/badge/-%23cc4500-cc4500?style=flat-square) `#cc4500` | Badge accent |
-| `--text` | ![#c2d4ae](https://img.shields.io/badge/-%23c2d4ae-c2d4ae?style=flat-square) `#c2d4ae` | Body text |
-| `--heading` | ![#d8e8c4](https://img.shields.io/badge/-%23d8e8c4-d8e8c4?style=flat-square) `#d8e8c4` | Headings |
-
----
-
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/build/v1/24px.svg" width="20" valign="middle"/> &nbsp;Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Markup** | HTML5 |
-| **Styling** | CSS3 — custom properties · grid · clip-path · keyframe animations |
-| **Logic** | Vanilla JavaScript ES6+ |
-| **Data** | JSON (`src/` only) |
-| **Fonts** | Google Fonts — Bebas Neue · JetBrains Mono · Fraunces |
-| **Icons** | Google Material Icons Round |
-
----
-
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/publish/v1/24px.svg" width="20" valign="middle"/> &nbsp;Deployment — 3 Steps
+## Deployment
 
 ```
-1.  Open the dist/ folder
-2.  Copy index.html
-3.  Upload it to your hosting root (public_html/ or equivalent)
+Step 1 — Open the dist/ folder
+Step 2 — Copy index.html
+Step 3 — Upload to your hosting root ( public_html/ or equivalent )
 ```
 
-| Platform | Status |
-|----------|--------|
-| cPanel / Hostinger / unaux | ✅ Supported |
-| Netlify | ✅ Supported |
-| GitHub Pages | ✅ Supported |
-| Vercel | ✅ Supported |
-| Local (double-click) | ✅ Supported |
-| `src/` deployed directly | ❌ Not supported — CORS issues |
+| Platform | Support |
+|---|---|
+| cPanel / Hostinger / unaux | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
+| Netlify | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
+| GitHub Pages | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
+| Vercel | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
+| Local — double-click | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
+| `src/` deployed directly | ![no](https://img.shields.io/badge/-Not%20Supported-cc4500?style=flat-square&labelColor=060908) |
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/view_quilt/v1/24px.svg" width="20" valign="middle"/> &nbsp;Sections Overview
+## Sections Overview
 
 | # | Section | Description |
-|---|---------|-------------|
+|---|---|---|
 | — | **Hero** | Animated name · system info panel · particle canvas |
 | 01 | **About** | Bio · personal motto · animated stat counters |
 | 02 | **Skills** | 6 tech category cards with highlighted hot skills |
@@ -177,20 +200,16 @@ Edit → Save → Upload. Done.
 | 06 | **Reviews** | Client logos + star-rated testimonials |
 | 07 | **Contact** | Link cards + live terminal typewriter |
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
 
-## <img src="https://fonts.gstatic.com/s/i/materialiconsround/gavel/v1/24px.svg" width="20" valign="middle"/> &nbsp;License
+## License
 
 [MIT](LICENSE) — Free to use, fork, and modify.
 
----
+<br/>
 
 <div align="center">
 
-**Gulshan Kumar** &nbsp;·&nbsp; Delhi, India &nbsp;·&nbsp; 2025–2026
-
-[![Website](https://img.shields.io/badge/Website-gulshan.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshan.isroot.in)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshankumar--tech-0077B5?style=flat-square&labelColor=060908)](https://linkedin.com/in/gulshankumar-tech)
-[![GitHub](https://img.shields.io/badge/GitHub-ayush0972-8ecf00?style=flat-square&labelColor=060908)](https://github.com/ayush0972)
+<img src="https://capsule-render.vercel.app/api?type=venom&height=120&text=Delhi%2C%20India%20%C2%B7%202025%E2%80%932026&fontSize=22&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=1&animation=fadeIn" width="100%"/>
 
 </div>
