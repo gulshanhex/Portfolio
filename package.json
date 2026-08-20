@@ -1,0 +1,20 @@
+{
+  "name": "gk-portfolio-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server-rendered Cloudflare Worker portfolio with D1-backed admin content management.",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node --check build.js && node --check worker.js && node --check bundled_worker.js",
+    "dev": "npx wrangler dev --env dev",
+    "dev:staging": "npx wrangler dev --env staging",
+    "deploy:staging": "npm run build && npx wrangler deploy --env staging",
+    "deploy:production": "npm run build && npx wrangler deploy --env production",
+    "db:migrations:list:local": "npx wrangler d1 migrations list gk-portfolio-db-dev --local --env dev",
+    "db:migrations:apply:local": "npx wrangler d1 migrations apply gk-portfolio-db-dev --local --env dev",
+    "db:migrations:apply:staging": "npx wrangler d1 migrations apply gk-portfolio-db-staging --remote --env staging",
+    "db:migrations:apply:production": "npx wrangler d1 migrations apply gk-portfolio-db-production --remote --env production",
+    "db:seed:local": "npx wrangler d1 execute gk-portfolio-db-dev --local --file scripts/seed.sql --env dev",
+    "db:seed:staging": "npx wrangler d1 execute gk-portfolio-db-staging --remote --file scripts/seed.sql --env staging"
+  }
+}

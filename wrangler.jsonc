@@ -1,0 +1,82 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gk-portfolio",
+  "main": "bundled_worker.js",
+  "compatibility_date": "2026-08-20",
+  "build": {
+    "command": "node build.js",
+    "watch_dir": ["worker.js", "src", "build.js"]
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "env": {
+    "dev": {
+      "name": "gk-portfolio-dev",
+      "workers_dev": true,
+      "preview_urls": true,
+      "vars": {
+        "ENVIRONMENT": "development",
+        "PUBLIC_ORIGIN": "http://localhost:8787"
+      },
+      "secrets": {
+        "required": ["ADMIN_SETUP_TOKEN"]
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "gk-portfolio-db-dev",
+          "database_id": "REPLACE_WITH_DEV_D1_DATABASE_ID",
+          "migrations_dir": "migrations"
+        }
+      ]
+    },
+    "staging": {
+      "name": "gk-portfolio-staging",
+      "workers_dev": true,
+      "preview_urls": true,
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "PUBLIC_ORIGIN": "https://portfolio-staging.gulshan-kumar.me"
+      },
+      "secrets": {
+        "required": ["ADMIN_SETUP_TOKEN"]
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "gk-portfolio-db-staging",
+          "database_id": "REPLACE_WITH_STAGING_D1_DATABASE_ID",
+          "migrations_dir": "migrations"
+        }
+      ]
+    },
+    "production": {
+      "name": "gk-portfolio-production",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [
+        {
+          "pattern": "portfolio.gulshan-kumar.me",
+          "custom_domain": true
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "PUBLIC_ORIGIN": "https://portfolio.gulshan-kumar.me"
+      },
+      "secrets": {
+        "required": ["ADMIN_SETUP_TOKEN"]
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "gk-portfolio-db-production",
+          "database_id": "REPLACE_WITH_PRODUCTION_D1_DATABASE_ID",
+          "migrations_dir": "migrations"
+        }
+      ]
+    }
+  }
+}

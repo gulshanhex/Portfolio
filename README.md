@@ -1,215 +1,144 @@
-<div align="center">
+# GK Portfolio Worker
 
-<img src="https://capsule-render.vercel.app/api?type=venom&height=220&text=GULSHAN%20KUMAR&fontSize=72&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=2&animation=fadeIn" width="100%"/>
+A server-rendered personal portfolio and D1-backed admin panel for [portfolio.gulshan-kumar.me](https://portfolio.gulshan-kumar.me). The application runs on Cloudflare Workers and Cloudflare D1 without runtime npm dependencies.
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=18&duration=3000&pause=1000&color=8ECF00&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=Automation+%26+AI+Systems+Engineer;Python+%C2%B7+Web+%C2%B7+Cloud+%C2%B7+Delhi%2C+India" alt="Typing SVG"/>
+> **Deployment rule:** edit `src/` and `worker.js`; run `npm run build`; deploy the generated `bundled_worker.js` through Wrangler. Do not deploy `worker.js` directly because it contains source-only renderer stubs.
 
-<br/>
+## Current live system
 
-[![Live Site](https://img.shields.io/badge/Live-gulshan.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshan.isroot.in)&nbsp;
-[![Portfolio](https://img.shields.io/badge/Portfolio-gulshankumar.isroot.in-8ecf00?style=flat-square&labelColor=060908)](https://gulshankumar.isroot.in)&nbsp;
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshankumar--tech-0A66C2?style=flat-square&labelColor=060908&logo=linkedin&logoColor=0A66C2)](https://linkedin.com/in/gulshankumar-tech)&nbsp;
-[![GitHub](https://img.shields.io/badge/GitHub-gulshanhex-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/gulshanhex)&nbsp;
-[![License](https://img.shields.io/badge/License-MIT-8ecf00?style=flat-square&labelColor=060908)](LICENSE)
+The ZIP corresponds to a live deployment at `https://portfolio.gulshan-kumar.me`. A read-only live audit confirmed that the homepage, theme toggle, health endpoint, unauthenticated admin page, setup lock, robots policy, and sitemap are functioning. The live D1 content has been edited after the original seed data was created, so production content must be treated as data rather than regenerated from `seed.sql`.
 
-</div>
+The live system is currently a working bundled Worker with a D1 binding named `DB`. The hardened source in this repository adds a safer release workflow but does not automatically deploy or change the live site.
 
-<br/>
+## Architecture
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+| Area | Implementation |
+|---|---|
+| Runtime | Cloudflare Workers module Worker |
+| Persistence | Cloudflare D1, SQLite-compatible |
+| Rendering | Server-side HTML for public, admin, and docs pages |
+| Authentication | PBKDF2-SHA-256 password hashes and server-side D1 sessions |
+| Public route | `GET /` |
+| Admin route | `GET /admin`, protected by the session cookie |
+| Admin API | `/api/admin/*`, session-protected CRUD and backup operations |
+| Public actions | `POST /api/contact`, plus `/health`, `/robots.txt`, and `/sitemap.xml` |
+| Build | Dependency-free `node build.js` bundler |
+| Environments | `dev`, `staging`, and `production` in `wrangler.jsonc` |
 
-## Repository Structure
+## Repository layout
 
-```
-gulshan-portfolio/
-│
-├── README.md                    ← You are here
-├── .gitignore
-├── LICENSE
-│
-├── dist/                        ★  DEPLOY THIS — single self-contained file
-│   └── index.html               ←  CSS + JS + all data merged into one file
-│
-└── src/                         ✎  EDIT THIS — clean modular source
-    ├── index.html               ←  HTML structure only
-    ├── style.css                ←  All styles
-    ├── script.js                ←  All JavaScript
-    ├── config.json              ←  Personal info · skills · experience · education
-    ├── projects.json            ←  Projects data
-    └── reviews.json             ←  Client testimonials
-```
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Which File To Use
-
-### ![deploy](https://img.shields.io/badge/-DEPLOY-8ecf00?style=flat-square&labelColor=060908) &nbsp;`dist/index.html` — Upload this to your host
-
-```
-dist/index.html   ←   UPLOAD ONLY THIS ONE FILE
+```text
+worker.js                 Source entrypoint and route dispatcher.
+build.js                  Deterministic source-to-single-file bundler.
+bundled_worker.js         Generated deployable Worker artifact.
+wrangler.jsonc            Authoritative multi-environment Wrangler configuration.
+package.json              Build, deploy, migration, and seed scripts.
+schema.sql                Initial schema reference.
+seed.sql                  Original seed reference retained for compatibility.
+migrations/0001_initial.sql  Versioned D1 initial migration.
+scripts/seed.sql          Optional local/disposable-staging seed data.
+src/lib/                  Modular reference helpers and sanitization utilities.
+src/templates/            Public, admin, docs, and CSS source templates.
+src/api/                  Modular API reference implementations.
+verification/              Live and static verification evidence.
+AUDIT_REPORT.md            Full audit report and evidence-backed findings.
 ```
 
-| Property | Detail |
-|---|---|
-| **Zero Dependencies** | No external files required whatsoever |
-| **Universal Hosting** | Works on cPanel · Hostinger · unaux and all shared hosts |
-| **Works Offline** | Opens directly via `file://` — no server needed |
-| **Self-Contained** | CSS + JS + all data packed into a single file |
+## Local setup
 
-<br/>
+Use Node.js 18 or newer. Install Wrangler locally or invoke it through `npx`; no runtime package installation is required for the Worker itself.
 
-### ![edit](https://img.shields.io/badge/-EDIT-8ecf00?style=flat-square&labelColor=060908) &nbsp;`src/` — Make changes here
+```bash
+cp .dev.vars.example .dev.vars.dev
+# Replace ADMIN_SETUP_TOKEN with a development-only random value.
+npm run build
+npm run check
+npm run dev
+```
 
-| File | Purpose |
-|---|---|
-| `src/index.html` | HTML structure |
-| `src/style.css` | All visual styles |
-| `src/script.js` | JavaScript logic |
-| `src/config.json` | Personal info · skills · experience · education |
-| `src/projects.json` | Projects — add or update entries |
-| `src/reviews.json` | Client logos and testimonials |
+The local Worker is available at `http://localhost:8787`. For a fresh local D1 database, apply the migration and optional seed data:
 
-> **Warning:** Never deploy `src/` directly to hosting. JSON files load via `fetch()`, which gets blocked by CORS on shared hosting. Always merge changes back into `dist/index.html` before deploying.
+```bash
+npm run db:migrations:apply:local
+npm run db:seed:local
+```
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+The local setup route can then be used to create the first development admin account. Never point local Wrangler commands at the production database.
 
-## Features
+## Environment model
 
-| Category | Detail |
-|---|---|
-| **Theme** | Forest-Noir dark — `#060908` background · `#8ecf00` lime accent |
-| **Cursor** | Custom sharp lime arrow with animated glow trail |
-| **Particles** | Canvas particle network — 80 animated nodes with collision lines |
-| **Animations** | Scroll-reveal with staggered entrance effects |
-| **Terminal** | Interactive typewriter cycling through 4 live commands |
-| **Projects** | Filterable grid — Bots · Web · Cloud · Industrial · Backend |
-| **Numbers** | Animated stat count-up triggered on scroll |
-| **Buttons** | Magnetic hover pull effect |
-| **Icons** | Google Material Icons Round throughout |
-| **Layout** | Fully responsive — mobile hamburger · adaptive grids |
+`wrangler.jsonc` defines three separate deployment environments. Cloudflare bindings and variables are environment-specific, so each environment must receive its own D1 database and secret configuration [1]. Replace the placeholder D1 IDs only with the IDs for the corresponding environment.
 
-<br/>
-
-**Sections** — Hero &nbsp;·&nbsp; About &nbsp;·&nbsp; Skills &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Education &nbsp;·&nbsp; Projects &nbsp;·&nbsp; Reviews &nbsp;·&nbsp; Contact
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Tech Stack
-
-<div align="center">
-
-<img src="https://img.shields.io/badge/HTML5-060908?style=for-the-badge&logo=html5&logoColor=E34F26"/>
-<img src="https://img.shields.io/badge/CSS3-060908?style=for-the-badge&logo=css3&logoColor=1572B6"/>
-<img src="https://img.shields.io/badge/JavaScript-060908?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/>
-<img src="https://img.shields.io/badge/JSON-060908?style=for-the-badge&logo=json&logoColor=8ecf00"/>
-<img src="https://img.shields.io/badge/Google_Fonts-060908?style=for-the-badge&logo=google-fonts&logoColor=4285F4"/>
-<img src="https://img.shields.io/badge/Material_Icons-060908?style=for-the-badge&logo=google&logoColor=8ecf00"/>
-
-</div>
-
-<br/>
-
-| Layer | Technology |
-|---|---|
-| **Markup** | HTML5 |
-| **Styling** | CSS3 — custom properties · grid · clip-path · keyframe animations |
-| **Logic** | Vanilla JavaScript ES6+ |
-| **Data** | JSON (`src/` only) |
-| **Fonts** | Google Fonts — Bebas Neue · JetBrains Mono · Fraunces |
-| **Icons** | Google Material Icons Round |
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Theme Colors
-
-| Variable | Swatch | Value | Usage |
+| Environment | Worker name | Database | Intended use |
 |---|---|---|---|
-| `--bg` | ![bg](https://img.shields.io/badge/-%20%20%20%20-060908?style=flat-square) | `#060908` | Main background |
-| `--lime` | ![lime](https://img.shields.io/badge/-%20%20%20%20-8ecf00?style=flat-square) | `#8ecf00` | Primary accent |
-| `--ember` | ![ember](https://img.shields.io/badge/-%20%20%20%20-cc4500?style=flat-square) | `#cc4500` | Badge accent |
-| `--text` | ![text](https://img.shields.io/badge/-%20%20%20%20-c2d4ae?style=flat-square) | `#c2d4ae` | Body text |
-| `--heading` | ![heading](https://img.shields.io/badge/-%20%20%20%20-d8e8c4?style=flat-square) | `#d8e8c4` | Headings |
+| `dev` | `gk-portfolio-dev` | `gk-portfolio-db-dev` | Local development and disposable test data |
+| `staging` | `gk-portfolio-staging` | `gk-portfolio-db-staging` | Pre-production QA and authenticated testing |
+| `production` | `gk-portfolio-production` | `gk-portfolio-db-production` | `portfolio.gulshan-kumar.me` |
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+Each environment requires `ADMIN_SETUP_TOKEN` as a Cloudflare secret. There is intentionally no `SESSION_SECRET`: sessions are random server-side D1 records, and the cookie carries only the session identifier. Secret values must not be placed in `vars`, committed to Git, or included in `.env` files that are tracked [4].
 
-## Updating Content
+## Build and deploy
 
-### Option A &nbsp;—&nbsp; Edit `src/` &nbsp;*(Recommended for developers)*
+The generated bundle is deterministic unless `SOURCE_DATE_EPOCH` is explicitly supplied. Wrangler runs the build hook before deployment, which reduces the chance of deploying stale source.
 
-**Personal info · skills · experience · education · terminal commands**
-→ Edit `src/config.json`
+```bash
+npm run build
+npm run check
 
-**Add or update projects**
-→ Add a new object to the array in `src/projects.json`
+# Staging release
+npm run db:migrations:apply:staging
+npm run deploy:staging
 
-**Testimonials and client logos**
-→ Edit `src/reviews.json`
-
-**Visual styles**
-→ Edit `src/style.css` — CSS variables are at the top inside `:root {}`
-
-<br/>
-
-### Option B &nbsp;—&nbsp; Edit `dist/index.html` directly
-
-Open the file and find these clearly labeled constants inside the `<script>` tag:
-
-```javascript
-const SKILLS     = [ ... ]   // Line ~380
-const EXPERIENCE = [ ... ]   // Line ~390
-const EDUCATION  = [ ... ]   // Line ~405
-const PROJECTS   = [ ... ]   // Line ~420
-const CLIENTS    = [ ... ]   // Line ~445
-const REVIEWS    = [ ... ]   // Line ~455
-const TERM_LINES = [ ... ]   // Line ~465
+# Production release, only after staging verification
+npm run db:migrations:apply:production
+npm run deploy:production
 ```
 
-Edit &nbsp;→&nbsp; Save &nbsp;→&nbsp; Upload. Done.
+For the live custom domain, production configuration uses the custom-domain route `portfolio.gulshan-kumar.me`. Dashboard paste deployment remains an emergency fallback: paste the generated `bundled_worker.js`, bind the correct production D1 database as `DB`, set the production `ADMIN_SETUP_TOKEN`, and verify `/health` before opening traffic.
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+## Database migrations and seeds
 
-## Deployment
+Schema evolution must use numbered SQL migration files in `migrations/`. Cloudflare records applied migrations and rolls back a failed migration while preserving the last successful migration [2]. Use the database name or binding intentionally and confirm the selected environment before applying a remote migration.
 
+```bash
+npx wrangler d1 migrations list gk-portfolio-db-staging --remote --env staging
+npx wrangler d1 migrations apply gk-portfolio-db-staging --remote --env staging
+npx wrangler d1 migrations list gk-portfolio-db-production --remote --env production
+npx wrangler d1 migrations apply gk-portfolio-db-production --remote --env production
 ```
-Step 1 — Open the dist/ folder
-Step 2 — Copy index.html
-Step 3 — Upload to your hosting root ( public_html/ or equivalent )
-```
 
-| Platform | Support |
+`seed.sql` and `scripts/seed.sql` are not production migration mechanisms. They contain default content and should be used only for new local databases or disposable staging environments. Never re-seed the live production D1 database merely because source content changed.
+
+## Security and reliability changes in this audited version
+
+The audit hardens the original code in several important areas. Password hashing now rejects oversized inputs and validates stored PBKDF2 records before spending CPU. Login attempts are recorded per IP and username, with a bounded ten-minute window. Contact submissions are limited to five per IP per ten minutes when a client IP is available. Admin-managed URLs are restricted to HTTP(S), same-site fragments, or safe paths before being rendered into links and image sources. Navigation IDs are allowlisted, proof item types and ratings are constrained, and the sitemap canonical URL is validated and XML-escaped.
+
+The setup schema now executes as an atomic D1 batch rather than swallowing individual statement failures. Backup restore validates the payload and uses a single D1 batch so a failed statement does not leave the content tables half-restored. JSON responses support endpoint-specific headers such as `Retry-After`, and local HTTP development no longer receives a cookie that is impossible to send because of an unconditional `Secure` attribute.
+
+These changes are source-verified and bundle-verified. Authenticated live testing still requires a controlled staging environment because production login, contact, CRUD, and restore operations mutate data.
+
+## Live audit evidence
+
+The evidence package is stored under `verification/`. The primary report is [`AUDIT_REPORT.md`](./AUDIT_REPORT.md), which separates live-verified behavior from source-only findings and records the limitations of a read-only production audit.
+
+| Evidence file | Scope |
 |---|---|
-| cPanel / Hostinger / unaux | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Netlify | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| GitHub Pages | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Vercel | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Local — double-click | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| `src/` deployed directly | ![no](https://img.shields.io/badge/-Not%20Supported-cc4500?style=flat-square&labelColor=060908) |
+| `verification/live-homepage-findings.md` | Public SSR and initial console result |
+| `verification/live-health-docs-findings.md` | D1 health and live documentation drift |
+| `verification/live-admin-setup-findings.md` | Unauthenticated admin and setup lock |
+| `verification/live-robots-sitemap-findings.md` | Crawler policy and sitemap |
+| `verification/live-theme-findings.md` | Read-only theme toggle interaction |
+| `verification/live-header-findings.md` | Cache and security response headers |
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+## Known limitations and next QA gate
 
-## Sections Overview
+The live audit did not submit credentials, contact data, backup files, or destructive requests. Consequently, authenticated admin workflows, contact persistence, CRUD mutations, password change, backup export/import, session expiry, and production rollback remain live-unverified. Desktop behavior was visually inspected; mobile and cross-browser screenshots must be added to the staging QA gate.
 
-| # | Section | Description |
-|---|---|---|
-| — | **Hero** | Animated name · system info panel · particle canvas |
-| 01 | **About** | Bio · personal motto · animated stat counters |
-| 02 | **Skills** | 6 tech category cards with highlighted hot skills |
-| 03 | **Experience** | Editorial layout — Losung Automation · Elent Electronics |
-| 04 | **Education** | Class 12 (In Progress) · Class 10 (70.8%) |
-| 05 | **Projects** | Filterable grid with hover overlay and CTAs |
-| 06 | **Reviews** | Client logos + star-rated testimonials |
-| 07 | **Contact** | Link cards + live terminal typewriter |
+Before deploying this hardened version to production, create or refresh the staging D1 database, apply migrations, seed disposable data, run the complete authenticated flow, test backup restore failure behavior, verify rate-limit responses, test the public page at 375 px and 414 px widths, and record separate `sandbox_verified`, `staging_verified`, and `prod_verified` results.
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+## References
 
-## License
-
-[MIT](LICENSE) — Free to use, fork, and modify.
-
-<br/>
-
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=venom&height=120&text=Delhi%2C%20India%20%C2%B7%202025%E2%80%932026&fontSize=22&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=1&animation=fadeIn" width="100%"/>
-
-</div>
+[1]: https://developers.cloudflare.com/workers/wrangler/environments/ "Cloudflare Workers — Environments"
+[2]: https://developers.cloudflare.com/d1/reference/migrations/ "Cloudflare D1 — Migrations"
+[3]: https://developers.cloudflare.com/d1/worker-api/d1-database/ "Cloudflare D1 — Worker API: D1 Database"
+[4]: https://developers.cloudflare.com/workers/configuration/secrets/ "Cloudflare Workers — Secrets"
