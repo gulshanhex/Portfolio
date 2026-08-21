@@ -6,8 +6,8 @@
 
 <br/>
 
-[![Live Site](https://img.shields.io/website?url=https%3A%2F%2Fgulshan-kumar.me&label=Live%20Site&up_message=gulshan-kumar.me&down_message=offline&style=flat-square&labelColor=060908&color=8ecf00)](https://gulshan-kumar.me)&nbsp;
-[![Portfolio](https://img.shields.io/website?url=https%3A%2F%2Fportfolio.gulshan-kumar.me&label=Portfolio&up_message=online&down_message=offline&style=flat-square&labelColor=060908&color=8ecf00)](https://portfolio.gulshan-kumar.me)&nbsp;
+[![Live Site](https://img.shields.io/website?url=https%3A%2F%2Fgulshan-kumar.me&label=Live%20Site&up_message=𝗢𝗡𝗟𝗜𝗡𝗘:gulshan-kumar.me&down_message=𝗢𝗙𝗙𝗟𝗜𝗡𝗘&style=flat-square&labelColor=060908&color=8ecf00)](https://gulshan-kumar.me)&nbsp;
+[![Portfolio](https://img.shields.io/website?url=https%3A%2F%2Fportfolio.gulshan-kumar.me&label=Portfolio&up_message=𝗢𝗡𝗟𝗜𝗡𝗘:portfolio.gulshan-kumar.me&down_message=𝗢𝗙𝗙𝗟𝗜𝗡𝗘&style=flat-square&labelColor=060908&color=8ecf00)](https://portfolio.gulshan-kumar.me)&nbsp;
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshanhex-0A66C2?style=flat-square&labelColor=060908&logo=linkedin&logoColor=0A66C2)](https://www.linkedin.com/in/gulshanhex)&nbsp;
 [![GitHub](https://img.shields.io/badge/GitHub-gulshanhex-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/gulshanhex)&nbsp;
 [![License](https://img.shields.io/badge/License-MIT-8ecf00?style=flat-square&labelColor=060908)](LICENSE)
