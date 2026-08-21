@@ -29,7 +29,7 @@ The most important engineering weakness was not a current homepage outage but **
 | F-11 | Medium | Proof-item type and rating were not constrained; admin data could break the expected UI path. | Original `/api/admin/proof` handlers | Fixed with allowlist and rating validation |
 | F-12 | Medium | Password input was not bounded before PBKDF2 work, creating avoidable CPU/memory abuse potential. | Original `hashPassword`/login path | Fixed with a 256-character maximum and hash-format validation |
 | F-13 | Medium | Cookie helper always emitted `Secure`, which complicates local HTTP development. | Original `setSessionCookie()`/`clearCookie()` | Fixed to emit `Secure` based on request protocol |
-| F-14 | Medium | Live `/docs` claimed `SESSION_SECRET` was required and described a nonexistent general `/api/public/*` surface. | Live `/docs`, saved under `verification/live-health-docs-findings.md` | Fixed in source docs |
+| F-14 | Medium | Live `/docs` claimed `SESSION_SECRET` was required and described a nonexistent general `/api/public/*` surface. | Live `/docs`, saved under `docs/live-verification/live-health-docs-findings.md` | Fixed in source docs |
 | F-15 | Low | No CSP or Worker-level HSTS header was observed in live probes. | Live header probe | Not changed automatically; CSP needs nonce architecture and HSTS should be confirmed at zone level |
 | F-16 | Low | The public `/health` endpoint reveals that D1 is connected and includes a timestamp. | Live `/health` | Accepted as an operational endpoint; restrict or authenticate it if threat model requires |
 | F-17 | Low | Source contains modular `src/api/*` and `src/lib/*` files that are not the actual bundle inputs for all runtime paths, so they can drift from `worker.js`. | Repository structure and build script | Documented as a maintainability risk; future refactor should establish one authoritative module graph |
@@ -44,15 +44,15 @@ The deployment surface now includes `wrangler.jsonc` with separate `dev`, `stagi
 
 | Flow | Result | Evidence |
 |---|---|---|
-| Public homepage | Passed; HTTP 200 and full SSR content observed | `verification/live-homepage-findings.md` |
-| Browser console on initial load | No console output/errors observed | `verification/live-homepage-findings.md` |
-| Theme toggle | Passed; light-to-dark state changed without a network write | `verification/live-theme-findings.md` |
-| `/health` | Passed; `status: ok`, `db: connected` | `verification/live-health-docs-findings.md` |
-| `/admin` without session | Passed; login page only, no dashboard | `verification/live-admin-setup-findings.md` |
-| `/setup` without token | Passed; unauthorized, no setup form exposed | `verification/live-admin-setup-findings.md` |
-| `/robots.txt` | Passed; admin/API/setup disallowed and sitemap declared | `verification/live-robots-sitemap-findings.md` |
-| `/sitemap.xml` | Passed; homepage and docs entries returned | `verification/live-robots-sitemap-findings.md` |
-| Live response headers | Baseline security and cache headers present; no CSP/HSTS observed | `verification/live-header-findings.md` |
+| Public homepage | Passed; HTTP 200 and full SSR content observed | `docs/live-verification/live-homepage-findings.md` |
+| Browser console on initial load | No console output/errors observed | `docs/live-verification/live-homepage-findings.md` |
+| Theme toggle | Passed; light-to-dark state changed without a network write | `docs/live-verification/live-theme-findings.md` |
+| `/health` | Passed; `status: ok`, `db: connected` | `docs/live-verification/live-health-docs-findings.md` |
+| `/admin` without session | Passed; login page only, no dashboard | `docs/live-verification/live-admin-setup-findings.md` |
+| `/setup` without token | Passed; unauthorized, no setup form exposed | `docs/live-verification/live-admin-setup-findings.md` |
+| `/robots.txt` | Passed; admin/API/setup disallowed and sitemap declared | `docs/live-verification/live-robots-sitemap-findings.md` |
+| `/sitemap.xml` | Passed; homepage and docs entries returned | `docs/live-verification/live-robots-sitemap-findings.md` |
+| Live response headers | Baseline security and cache headers present; no CSP/HSTS observed | `docs/live-verification/live-header-findings.md` |
 
 The live deployment’s D1 data differs from the ZIP seed content in legitimate ways, such as the public contact email and education label. This confirms that the live D1 database is the current content source and must never be overwritten by blindly re-running seed data in production.
 
