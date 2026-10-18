@@ -40,7 +40,6 @@ self.addEventListener('install', (event) => {
               await cache.put(url, cleanRes);
             }
           } catch (err) {
-            console.warn(`[SW] Precache skipped for ${url}:`, err);
           }
         })
       );

@@ -372,3 +372,102 @@ const { userToggleEnabled = true } = Astro.props;
   }
   })();
 </script>
+
+<style is:global>
+  .pwa-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 10000;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-btn);
+    box-shadow: var(--shadow-lg);
+    padding: 12px 18px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--text);
+  }
+  .pwa-toast-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pwa-toast-btn {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .pwa-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 440px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-lg);
+    padding: 14px 18px;
+    z-index: 9999;
+    font-family: var(--ff-sans);
+  }
+  .pwa-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pwa-banner-text strong {
+    display: block;
+    color: var(--heading);
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+  }
+  .pwa-banner-text p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+  .pwa-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pwa-action-btn {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 7px 14px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .pwa-dismiss-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 4px;
+    cursor: pointer;
+  }
+  .pwa-dismiss-btn:hover {
+    color: var(--text);
+  }
+  @media (display-mode: standalone) {
+    #pwa-install-banner,
+    #pwa-desktop-install,
+    #pwa-ios-hint {
+      display: none !important;
+    }
+  }
+</style>

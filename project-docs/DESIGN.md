@@ -1,77 +1,68 @@
 # Design System Specification & Token Architecture
 
 **Project:** `gk-portfolio-astro` (`portfolio.gulshan-kumar.me`)  
-**Design Version:** 3.0 (Autonomous Redesign)  
+**Design Version:** 3.0  
 **Author:** Gulshan Kumar  
-**Audited Date:** October 18, 2026  
 
 ---
 
 ## 1. Design Philosophy
 
-The portfolio design system balances technical rigor, engineering precision, and approachable warmth. It avoids corporate buzzwords, excessive neon glow, noisy scanlines, and fragile clip-path polygon cuts in favor of:
-- **Clean Elevation & Depth**: Subtle 1px borders, refined card surfaces, and tasteful translucent blurs.
-- **Accessible Typography**: High legibility powered by a self-hosted single variable Inter font with optimal vertical rhythm.
-- **Resilient Contrast**: Every accent and text combination strictly exceeds WCAG AA (4.5:1 floor).
-- **Progressive Enhancement**: Full visibility when JavaScript is disabled (`.rv` reveal styles gracefully fallback to 100% opacity).
+The portfolio design system balances technical clarity and readability:
+- **Clean Elevation & Depth**: Subtle 1px borders, card surfaces, and translucent header blurs.
+- **Accessible Typography**: Self-hosted variable Inter for prose/headings, monospace for code/metadata, and Material Icons Round ligatures.
+- **Resilient Contrast**: Every foreground/background and button/pill/badge combination on `--accent` exceeds WCAG AA (4.5:1 floor).
+- **Progressive Enhancement**: Full content visibility when JavaScript is disabled (`.rv` hiding is gated behind `html.js`).
 
 ---
 
 ## 2. Core Palette & Semantic Tokens
 
-All tokens are defined in `src/styles/tokens.css` with zero reliance on external CDNs.
+All tokens are defined in `src/styles/tokens.css`.
 
 ### Base Palettes (Dark & Light)
 
-| Semantic Token | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage Rationale |
+| Semantic Token | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
 |:---|:---:|:---:|:---|
-| `--bg` | `#0A0C0B` | `#F6F7F4` | Primary page canvas; deep graphite charcoal in dark mode, clean warm paper in light mode. |
-| `--surface` | `#111412` | `#FFFFFF` | Secondary elevation, headers, sticky navigation containers. |
-| `--card` | `#151A17` | `#FFFFFF` | Interactive cards, project items, service boxes. |
-| `--card-hover` | `#1B221E` | `#FAFAFA` | Elevated state on card hover. |
-| `--border` | `#222B25` | `#E3E5E0` | Structural boundaries and dividing rules. |
-| `--border-subtle` | `#1A201C` | `#ECEEE9` | Minor dividers and table separators. |
-| `--text` | `#F4F1E8` | `#0B0F0D` | Primary readable prose; warm off-white in dark mode, near-black in light mode. |
-| `--heading` | `#FFFFFF` | `#040705` | Section titles, headlines, hero display text. |
-| `--muted` | `#8E9992` | `#5A655F` | Subtitles, timestamps, metadata labels, footnotes. |
+| `--bg` | `#0A0C0B` | `#F6F7F4` | Primary page canvas |
+| `--surface` | `#111513` | `#FFFFFF` | Secondary elevation, sticky navigation |
+| `--card` | `#111513` | `#FFFFFF` | Cards, project items, service boxes |
+| `--card-hover` | `#161C19` | `#F8F9F7` | Elevated state on card hover |
+| `--border` | `#1E2521` | `#E3E6E0` | Structural boundaries and dividing rules |
+| `--text` | `#F4F1E8` | `#0B0F0D` | Primary body prose |
+| `--heading` | `#F4F1E8` | `#0B0F0D` | Section titles, headlines |
+| `--muted` | `#9AA39E` | `#5B645F` | Subtitles, timestamps, metadata labels |
 
 ---
 
 ## 3. Accent Colour Presets & WCAG AA Contrast Audit
 
-Four curated accent presets provide customizable identity while maintaining strict accessibility compliance.
+All buttons, pills, and badges that sit on `var(--accent)` (or its alias `var(--lime)`) use `color: var(--text-on-accent)`.
 
-### Contrast Verification Table
-
-| Preset Name | Theme | Accent Hex | Foreground on Accent | Background Canvas | Text Contrast | Button Contrast | WCAG AA Status |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Emerald (Default)** | Dark | `#2FBF71` | `#04130B` | `#0A0C0B` | **8.8:1** | **8.7:1** | PASS (AAA) |
-| **Emerald (Default)** | Light | `#17804A` | `#FFFFFF` | `#F6F7F4` | **4.9:1** | **4.6:1** | PASS (AA) |
-| **Teal** | Dark | `#2DD4BF` | `#042F2E` | `#0A0C0B` | **9.4:1** | **11.2:1** | PASS (AAA) |
-| **Teal** | Light | `#0F766E` | `#FFFFFF` | `#F6F7F4` | **5.2:1** | **4.9:1** | PASS (AA) |
-| **Blue (Audited & Fixed)** | Dark | `#38BDF8` | `#082F49` | `#0A0C0B` | **8.6:1** | **9.6:1** | PASS (AAA) |
-| **Blue (Audited & Fixed)** | Light | `#0369A1` | `#FFFFFF` | `#F6F7F4` | **5.97:1** | **5.57:1** | PASS (AA) |
-| **Indigo** | Dark | `#818CF8` | `#1E1B4B` | `#0A0C0B` | **7.8:1** | **6.8:1** | PASS (AA) |
-| **Indigo** | Light | `#4338CA` | `#FFFFFF` | `#F6F7F4` | **6.5:1** | **6.1:1** | PASS (AA) |
-
-*Note: The light theme Blue preset was calibrated from `#0284C7` (4.1:1) to `#0369A1` (5.97:1) to guarantee universal WCAG AA compliance.*
+| Preset Name | Theme | `--accent` | `--accent-hover` | `--text-on-accent` | `--text-on-accent` on `--accent` | `--text-on-accent` on `--accent-hover` | `--accent` on `--bg` | WCAG AA Status |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Emerald (Default)** | Dark | `#2FBF71` | `#3DD683` | `#04130B` | **7.99:1** | **10.10:1** | **8.75:1** | PASS |
+| **Emerald (Default)** | Light | `#17804A` | `#136C3E` | `#FFFFFF` | **4.97:1** | **6.48:1** | **4.62:1** | PASS |
+| **Teal** | Dark | `#2DD4BF` | `#5EEAD4` | `#042F2E` | **7.77:1** | **9.78:1** | **10.97:1** | PASS |
+| **Teal** | Light | `#0F766E` | `#115E59` | `#FFFFFF` | **5.47:1** | **7.58:1** | **5.09:1** | PASS |
+| **Blue** | Dark | `#38BDF8` | `#7DD3FC` | `#082F49` | **6.48:1** | **8.32:1** | **9.39:1** | PASS |
+| **Blue** | Light | `#0369A1` | `#075985` | `#FFFFFF` | **5.93:1** | **7.56:1** | **5.51:1** | PASS |
+| **Indigo** | Dark | `#818CF8` | `#A5B4FC` | `#1E1B4B` | **5.36:1** | **8.02:1** | **6.65:1** | PASS |
+| **Indigo** | Light | `#4338CA` | `#3730A3` | `#FFFFFF` | **7.90:1** | **9.93:1** | **7.35:1** | PASS |
 
 ---
 
 ## 4. Typography & Font Hosting
 
 1. **Body Font (`--ff-sans`)**:
-   - Primary: `Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
-   - Self-hosted variable font: `/fonts/inter-variable.woff2` (108 KB with OpenType `fvar` weight variation from 100 to 900).
-   - Replaced four fragmented static font files with a single resource-efficient variable asset.
+   - `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
+   - Self-hosted variable font at `/fonts/inter-variable.woff2` (`font-weight: 100 900`).
 2. **Monospace Font (`--ff-mono`)**:
-   - Primary: `JetBrains Mono, ui-monospace, SFMono-Regular, monospace`
-   - Self-hosted: `/fonts/mono-regular.woff2`
-   - Used for code snippets, telemetry chips, category eyebrows, and technical metadata.
-3. **Icons (`.material-icons-round`)**:
-   - Self-hosted: `/fonts/material-icons-round.woff2`
-   - Compiled OpenType GSUB `liga` lookup covering 75+ ligatures (e.g., `cloud`, `cloud_sync`, `smart_toy`, `memory`, `electrical_services`, `integration_instructions`, `build`, `work`, `school`, `quiz`).
-   - SVG components in `Icon.astro` act as progressive visual enhancements with zero layout shifts.
+   - `JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`
+   - Self-hosted at `/fonts/mono-regular.woff2`.
+3. **Icons (`.material-icons-round`, `.mi`)**:
+   - Self-hosted at `/fonts/material-icons-round.woff2` with `font-feature-settings: 'liga'`.
+   - `Icon.astro` inline SVGs provide progressive enhancement on public components.
 
 ---
 
@@ -86,8 +77,7 @@ Four curated accent presets provide customizable identity while maintaining stri
 - `--sp-7`: `48px`
 - `--sp-8`: `64px`
 - `--sp-9`: `96px`
-- `--max-w-content`: `1180px`
-- `--max-w-hero`: `1240px`
-- `--radius-btn`: `8px`
-- `--radius-card`: `14px`
+- `--max-w-content`: `1240px`
+- `--radius-btn`: `10px`
+- `--radius-card`: `12px`
 - `--radius-pill`: `9999px`

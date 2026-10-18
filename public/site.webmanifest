@@ -1,8 +1,9 @@
 {
-  "name": "Gulshan Kumar \u2014 Portfolio",
+  "id": "/",
+  "name": "Gulshan Kumar — Portfolio",
   "short_name": "GK Portfolio",
-  "description": "Portfolio of Gulshan Kumar \u2014 Automation & AI Systems Engineer in Delhi, India.",
-  "start_url": "/",
+  "description": "Portfolio of Gulshan Kumar — Automation & AI Systems Engineer in Delhi, India.",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0A0C0B",
@@ -83,6 +84,5 @@
         }
       ]
     }
-  ],
-  "id": "/?source=pwa"
+  ]
 }

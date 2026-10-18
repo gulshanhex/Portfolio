@@ -220,7 +220,7 @@ button {
 #ubadge {
   margin-left: auto;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   font-size: 0.58rem;
   font-weight: 700;
   padding: 0.1rem 0.38rem;
@@ -452,7 +452,7 @@ button {
 /* Buttons */
 .btn-s {
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   border: none;
   font-size: 0.7rem;
   letter-spacing: 0.16em;
@@ -527,7 +527,7 @@ button {
   right: 1.4rem;
   z-index: 9999;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   font-size: 0.76rem;
   letter-spacing: 0.1em;
   padding: 0.65rem 1.3rem;
@@ -625,7 +625,7 @@ button {
 }
 .badge.ok {
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
 }
 .badge.off {
   background: rgba(255, 255, 255, 0.05);

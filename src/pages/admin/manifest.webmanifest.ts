@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async () => {
   const manifest = {
-    id: '/admin/?source=pwa',
+    id: '/admin/',
     name: 'GK Admin · Portfolio Control Plane',
     short_name: 'GK Admin',
     description: 'Autonomous administration and content management for Gulshan Kumar portfolio.',

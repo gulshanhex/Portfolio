@@ -63,7 +63,7 @@ ul {
   left: 1rem;
   z-index: 9999;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   font-weight: 700;
   font-size: 0.78rem;
   letter-spacing: 0.12em;
@@ -160,7 +160,7 @@ ul {
   font-size: 0.68rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #060908;
+  color: var(--text-on-accent);
   font-weight: 700;
   text-align: center;
   line-height: 1.35;
@@ -169,12 +169,12 @@ ul {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #060908;
+  background: var(--text-on-accent);
   flex-shrink: 0;
   animation: pulse 2s infinite;
 }
 #avail-bar a {
-  color: #060908;
+  color: var(--text-on-accent);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -258,12 +258,9 @@ ul {
   text-transform: uppercase;
   font-weight: 700;
   background: var(--lime);
-  color: #060908 !important;
+  color: var(--text-on-accent) !important;
   padding: 0.45rem 1.2rem;
   transition: box-shadow var(--tr) !important;
-}
-.nav-cta-link:hover {
-  
 }
 .nav-cta-link::after {
   display: none !important;
@@ -417,7 +414,7 @@ ul {
   text-transform: uppercase;
   font-weight: 700;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   padding: 0.85rem 2rem;
   transition: box-shadow var(--tr), transform var(--tr);
   display: inline-flex;
@@ -643,7 +640,7 @@ ul {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   font-weight: 700;
   padding: 0.2rem 0.6rem;
 }
@@ -974,7 +971,7 @@ ul {
 }
 .xp-badge.lime {
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
 }
 .xp-badge.ember {
   background: var(--ember);
@@ -1253,12 +1250,9 @@ ul {
   text-transform: uppercase;
   font-weight: 700;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   padding: 0.55rem 1.1rem;
   transition: box-shadow var(--tr);
-}
-.proj-cta-btn:hover {
-  
 }
 .proj-cta-btn.outline {
   background: transparent;
@@ -1277,7 +1271,7 @@ ul {
   text-transform: uppercase;
   font-weight: 700;
   background: var(--lime);
-  color: #060908;
+  color: var(--text-on-accent);
   padding: 0.2rem 0.6rem;
   display: inline-flex;
   align-items: center;

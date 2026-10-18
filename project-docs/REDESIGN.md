@@ -3,13 +3,12 @@
 **Project:** `gk-portfolio-astro` (`portfolio.gulshan-kumar.me`)  
 **Deployment Target:** Cloudflare Pages / Cloudflare Workers + Cloudflare D1 SQL  
 **Framework:** Astro 5 SSR (Standalone Edge Output)  
-**Date:** October 18, 2026  
 
 ---
 
 ## 1. System Architecture
 
-The v3.0 redesign transforms the portfolio into a high-performance, edge-rendered web application with zero external client dependencies:
+The v3.0 redesign structures the portfolio as an edge-rendered Astro 5 application backed by Cloudflare D1:
 
 ```
 [ User Request ]
@@ -43,26 +42,24 @@ The v3.0 redesign transforms the portfolio into a high-performance, edge-rendere
 
 ## 2. Multi-Route SSR & Detail Architecture
 
-In earlier versions, all portfolio details lived on a single landing page. Version 3 introduces scalable dynamic detail routes:
-- **`/work/index.astro`**: Full project catalog with client-side category filtering (All, Bot Development, Web Application, Cloud & Backend, Industrial Automation).
-- **`/work/[slug].astro`**: Deep-dive engineering case studies structured into:
+- **`/work/index.astro`**: Full project catalog with client-side category filtering.
+- **`/work/[slug].astro`**: Structured case study pages broken down into:
   1. *01. The Problem / Operational Challenge*
   2. *02. Technical Architecture & Implementation*
   3. *03. Measurable Results & Impact*
-- **`/services/[slug].astro`**: Dedicated service landing pages with capability checklists, technical architectures, and direct inquiry cards.
-- **Dynamic Sitemap & Answer Engine Optimization**:
-  - `sitemap.xml`: Automatically crawls active services and case studies for Google/Bing indexing.
-  - `llms.txt` and `llms-full.txt`: Markdown-formatted data compliant with the llmstxt.org standard for LLM crawlers (Perplexity, ChatGPT, Claude, Gemini).
+- **`/services/[slug].astro`**: Dedicated service detail pages with capability checklists and inquiry CTAs.
+- **Dynamic Sitemap & LLM Endpoints**:
+  - `sitemap.xml`: Dynamically includes `/`, `/work`, active `/services/[slug]`, and active `/work/[slug]` (excluding `/docs`).
+  - `llms.txt` and `llms-full.txt`: Markdown-formatted context for AI answer engines.
 
 ---
 
 ## 3. Database Safety & Additive Migrations
 
-### Zero Data Loss Guarantee
 Every migration in v3 is strictly **additive**:
-- Tables are defined with `CREATE TABLE IF NOT EXISTS`.
+- Tables use `CREATE TABLE IF NOT EXISTS`.
 - Columns are appended using `ALTER TABLE ... ADD COLUMN`.
-- Drop operations (`DROP TABLE`, `DROP COLUMN`) are strictly forbidden.
+- No `DROP TABLE` or `DROP COLUMN` statements are used.
 
 ### Applied Schema Extensions (`migrations/0001_phase4_slugs_and_details.sql`):
 ```sql
@@ -80,44 +77,33 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug) WHERE slug
 ```
 
 ### Automatic Backfill & Fallback
-`ensureDatabaseSchema` in `src/lib/schema-sql.ts` and `getServiceBySlug` / `getProjectBySlug` in `src/lib/db.ts` automatically backfill any missing slugs from record titles using `slugify()`. Even if migrations have not yet been run on remote D1, URL requests still resolve correctly via title-slug fallback matching.
+`ensureDatabaseSchema` in `src/lib/schema-sql.ts` and `getServiceBySlug` / `getProjectBySlug` in `src/lib/db.ts` backfill missing slugs from record titles using `slugify()`.
 
 ---
 
-## 4. Setup, Deployment & Remote Migration Steps
+## 4. Security & Progressive Enhancement
 
-### A. Pre-Deployment Backup
-Before pushing updates to production, log in to your existing admin dashboard (`/admin`) and click **Export Backup (JSON)** to download a full snapshot of your current database content.
-
-### B. Applying Remote D1 Migrations
-Run the dedicated migration script to apply the additive Phase 4 columns to your remote Cloudflare database:
-```bash
-npm run db:migrate:remote
-```
-*(Executes: `wrangler d1 execute portfolio-cms-db --remote --file=./migrations/0001_phase4_slugs_and_details.sql`)*
-
-### C. Building & Deploying
-```bash
-# 1. Install dependencies
-npm ci
-
-# 2. Compile Astro build & validate SSR syntax
-npm run build
-
-# 3. Deploy to Cloudflare Pages / Workers
-npm run deploy
-```
-
----
-
-## 5. Security & Progressive Enhancement
-
-1. **Autonomous TOTP 2FA**:
-   - Optional 2FA with standard authenticator apps (Google Authenticator, Bitwarden, 1Password) supported in `/admin`.
-2. **Honeypot & Timing Defense**:
-   - Contact form uses hidden field `_hp` and a client-side millisecond timer (`_elapsed >= 2000ms`) via `performance.now()`.
-   - Replaced fragile server-client clock comparisons with relative client elapsed duration.
+1. **Autonomous TOTP 2FA**: Optional 2FA with standard authenticator apps supported in `/admin`.
+2. **Honeypot & Timing Defense**: Contact form uses hidden field `_hp` and client-side elapsed time (`_elapsed >= 2000ms`) via `performance.now()`.
 3. **PWA & Offline Resilience**:
-   - Hand-crafted `sw.js` pre-caches fonts, icons, and `offline.html`.
-   - Network-first navigation ensures visitors always get fresh portfolio content when online, with graceful offline fallback when disconnected.
-   - Admin routes (`/admin*`, `/api/*`) completely bypass the Service Worker cache.
+   - `public/sw.js` pre-caches core assets via `Promise.allSettled` and serves an unredirected `/offline.html` fallback when navigation fails offline.
+   - Admin routes (`/admin*`, `/api/*`, `/setup*`, `/health`) bypass the Service Worker cache.
+
+---
+
+## 5. Verification Status (Run vs. Not Run in Sandbox)
+
+Because the development sandbox environment has no outbound network access and no pre-installed `node_modules` for Astro or Wrangler:
+
+### Checks Actually Run in Sandbox
+- **PostCSS Syntax Parsing**: Parsed `src/styles/tokens.css`, `src/styles/global.css`, `src/styles/admin.css`, and `src/styles/docs.css` using `/usr/share/nodejs/postcss` (0 syntax errors).
+- **Asset Guard (`scripts/check-assets.mjs`)**: Verified disk existence, PNG headers, WOFF2 `"wOF2"` magic bytes, and minimum file size thresholds (`inter-variable.woff2 >= 30KB`, `material-icons-round.woff2 >= 100KB`, `mono-regular.woff2 >= 20KB`).
+- **Wrangler Config Preparation (`scripts/prepare-wrangler.mjs`)**: Executed via Node.js.
+- **WCAG 2.1 Contrast Calculations**: Recomputed contrast ratios for all text, background, button, pill, and badge pairs across all 4 accent presets in dark and light modes.
+- **SQLite Schema & Query Simulation**: Verified `schema.sql`, `seed.sql`, and `migrations/0001_phase4_slugs_and_details.sql` syntax and column definitions against Python `sqlite3`.
+
+### Checks Not Run in Sandbox (To Be Run Locally)
+- **`npm install` / `npm ci`**: **not run** (no network connectivity in sandbox to reach `registry.npmjs.org`).
+- **`npm run build` (`astro build`)**: **not run** (`astro` and `@astrojs/cloudflare` packages require `npm install`).
+- **`wrangler dev` & Live D1 HTTP Integration Tests**: **not run** (`wrangler` package requires `npm install`).
+- **Playwright / Lighthouse**: **not run** (Playwright and Lighthouse are not installed in the sandbox, and sandbox Chromium blocks localhost HTTP navigation).
