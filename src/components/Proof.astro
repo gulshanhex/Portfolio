@@ -1,0 +1,273 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import Card from './ui/Card.astro';
+import Icon from './ui/Icon.astro';
+
+interface ProofItem {
+  id: number;
+  type: string;
+  name: string;
+  subtitle: string;
+  logo_url?: string | null;
+  url?: string | null;
+  testimonial_text?: string | null;
+  testimonial_rating?: number;
+}
+
+interface Props {
+  proofCfg?: Record<string, any>;
+  proof?: ProofItem[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { proofCfg = {}, proof = [], copy = {} } = Astro.props;
+
+const showOrgs = proofCfg.show_orgs !== false;
+const showTestimonials = proofCfg.show_testimonials !== false;
+
+const orgs = showOrgs ? proof.filter((p) => p.type === 'org') : [];
+const testimonials = showTestimonials ? proof.filter((p) => p.type === 'testimonial' && p.testimonial_text) : [];
+
+const eyebrow = copy.proof_eyebrow || '// PROOF & CONTEXT';
+const title = proofCfg.orgs_title || "Organizations and validation.";
+const subtitle = proofCfg.orgs_subtitle || 'Real production environments, industrial facilities, and engineering collaborators.';
+---
+
+{
+  (orgs.length > 0 || testimonials.length > 0) && (
+    <section id="proof" class="proof-section" aria-labelledby="proof-title">
+      <div class="proof-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        {orgs.length > 0 && (
+          <div class="orgs-grid">
+            {orgs.map((o) => {
+              const isLink = Boolean(o.url && o.url !== '#');
+              return (
+                <Card as={isLink ? 'a' : 'div'} href={isLink ? o.url! : undefined} class="org-card rv" interactive={isLink}>
+                  <div class="org-card-inner">
+                    <div class="org-icon-badge" aria-hidden="true">
+                      {o.logo_url ? (
+                        <img src={o.logo_url} alt={o.name} class="org-logo" loading="lazy" width="40" height="40" />
+                      ) : (
+                        <Icon name="work" size={20} />
+                      )}
+                    </div>
+                    <div class="org-info">
+                      <h3 class="org-name">{o.name}</h3>
+                      <p class="org-sub">{o.subtitle}</p>
+                    </div>
+                    {isLink && <span class="org-ext-arrow" aria-hidden="true">↗</span>}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {testimonials.length > 0 && (
+          <div class="testimonials-block">
+            <h3 class="testimonials-heading">Direct Feedback</h3>
+            <div class="testimonials-grid">
+              {testimonials.map((t) => (
+                <Card class="testimonial-card rv">
+                  <div class="testimonial-quote-icon" aria-hidden="true">“</div>
+                  <p class="testimonial-body">{t.testimonial_text}</p>
+                  <div class="testimonial-author">
+                    <div class="author-info">
+                      <span class="author-name">{t.name}</span>
+                      <span class="author-role">{t.subtitle}</span>
+                    </div>
+                    {t.testimonial_rating && t.testimonial_rating > 0 && t.testimonial_rating !== 5 && (
+                      <div class="rating-stars" aria-label={`Rating: ${t.testimonial_rating} out of 5 stars`}>
+                        {Array.from({ length: t.testimonial_rating }).map(() => (
+                          <span class="star-icon">★</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .proof-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .proof-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .orgs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-8);
+  }
+
+  .org-card {
+    padding: var(--sp-4) var(--sp-5);
+    text-decoration: none;
+  }
+
+  .org-card-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .org-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-btn);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .org-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .org-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .org-name {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .org-sub {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .org-ext-arrow {
+    font-family: var(--ff-sans);
+    color: var(--muted);
+    font-size: 1rem;
+    transition: color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .org-card:hover .org-ext-arrow {
+    color: var(--accent);
+    transform: translate(2px, -2px);
+  }
+
+  /* Testimonials */
+  .testimonials-block {
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-6);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .testimonials-heading {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-5);
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  .testimonial-card {
+    position: relative;
+    padding: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .testimonial-quote-icon {
+    font-family: var(--ff-sans);
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.6;
+    margin-bottom: -10px;
+  }
+
+  .testimonial-body {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: var(--sp-5);
+    flex-grow: 1;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--sp-3);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .author-name {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .author-role {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .rating-stars {
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+  }
+
+  @media (min-width: 640px) {
+    .orgs-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .testimonials-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .proof-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+  }
+</style>

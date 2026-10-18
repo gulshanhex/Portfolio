@@ -1,0 +1,30 @@
+---
+import TopNav from './ui/TopNav.astro';
+
+interface Props {
+  name: string;
+  contact: Record<string, any>;
+  nav: Record<string, any>;
+  theme: Record<string, any>;
+  sections: Array<{ id: string; label: string; order_idx: number; visible: number }>;
+  hasProjects?: boolean;
+}
+
+const {
+  name,
+  contact = {},
+  nav = {},
+  theme = {},
+  sections = [],
+  hasProjects = true,
+} = Astro.props;
+---
+
+<TopNav
+  name={name}
+  contact={contact}
+  nav={nav}
+  theme={theme}
+  sections={sections}
+  hasProjects={hasProjects}
+/>

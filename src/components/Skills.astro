@@ -1,0 +1,85 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import SkillGroup from './ui/SkillGroup.astro';
+
+interface SkillPill {
+  id?: number | string;
+  label: string;
+  is_hot?: boolean | number;
+}
+
+interface SkillItem {
+  id: number;
+  label: string;
+  icon: string;
+  pills: SkillPill[];
+}
+
+interface Props {
+  skills: SkillItem[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { skills = [], copy = {} } = Astro.props;
+
+const eyebrow = copy.skills_eyebrow || '// TECH ARSENAL';
+const title = copy.skills_title || 'What I work with.';
+const subtitle = copy.skills_subtitle || 'A curated set of tools, languages, and systems built through production environments and hands-on engineering.';
+---
+
+{
+  skills.length > 0 && (
+    <section id="skills" class="skills-section" aria-labelledby="skills-title">
+      <div class="skills-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <div class="skills-grid">
+          {skills.map((sk, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.08}s`}>
+              <SkillGroup
+                icon={sk.icon}
+                label={sk.label}
+                pills={sk.pills || []}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .skills-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .skills-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  @media (min-width: 640px) {
+    .skills-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .skills-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .skills-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+  }
+</style>

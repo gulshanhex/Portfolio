@@ -1,215 +1,59 @@
-<div align="center">
+# GK Portfolio — Modular Astro 5 SSR + Cloudflare Workers & D1 Stack
 
-<img src="https://capsule-render.vercel.app/api?type=venom&height=220&text=GULSHAN%20KUMAR&fontSize=72&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=2&animation=fadeIn" width="100%"/>
+Personal portfolio and edge CMS for **Gulshan Kumar** ([portfolio.gulshan-kumar.me](https://portfolio.gulshan-kumar.me)), built on **Astro 5 SSR + `@astrojs/cloudflare` + Cloudflare D1**.
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=18&duration=3000&pause=1000&color=8ECF00&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=Automation+%26+AI+Systems+Engineer;Python+%C2%B7+Web+%C2%B7+Cloud+%C2%B7+Delhi%2C+India" alt="Typing SVG"/>
+> **Public GitHub Repo Safe:** No secrets or `[vars]` are stored in `wrangler.jsonc`. It has `keep_vars = true` enabled so all Secrets configured in your Cloudflare Worker Dashboard (`Settings → Variables and Secrets → Type: Secret`) are preserved across every GitHub auto-deployment.
 
-<br/>
+---
 
-[![Live Site](https://img.shields.io/website?url=https%3A%2F%2Fgulshan-kumar.me&label=Live%20Site&up_message=𝗢𝗡𝗟𝗜𝗡𝗘:gulshan-kumar.me&down_message=𝗢𝗙𝗙𝗟𝗜𝗡𝗘&style=flat-square&labelColor=060908&color=8ecf00)](https://gulshan-kumar.me)&nbsp;
-[![Portfolio](https://img.shields.io/website?url=https%3A%2F%2Fportfolio.gulshan-kumar.me&label=Portfolio&up_message=𝗢𝗡𝗟𝗜𝗡𝗘:portfolio.gulshan-kumar.me&down_message=𝗢𝗙𝗙𝗟𝗜𝗡𝗘&style=flat-square&labelColor=060908&color=8ecf00)](https://portfolio.gulshan-kumar.me)&nbsp;
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-gulshanhex-0A66C2?style=flat-square&labelColor=060908&logo=linkedin&logoColor=0A66C2)](https://www.linkedin.com/in/gulshanhex)&nbsp;
-[![GitHub](https://img.shields.io/badge/GitHub-gulshanhex-ffffff?style=flat-square&labelColor=060908&logo=github&logoColor=white)](https://github.com/gulshanhex)&nbsp;
-[![License](https://img.shields.io/badge/License-MIT-8ecf00?style=flat-square&labelColor=060908)](LICENSE)
+## Step-by-Step: Connect Public GitHub Repo to Your EXISTING Worker (Bina Worker Delete Kiye)
 
-</div>
+Agar aapne pehle se Cloudflare Worker (`gk-portfolio`) "Edit Code" se banaya hua hai aur `DB` (D1) bind kar rakha hai, toh **Worker delete karne ki zaroorat nahi hai**:
 
-<br/>
+### Step 1 — Worker Name Match Karein
+- Apne Cloudflare Dashboard me dekhein ki aapke existing Worker ka exact naam kya hai (default: `gk-portfolio`).
+- Agar naam `gk-portfolio` hai toh kuch change nahi karna. Agar alag naam hai, toh `wrangler.jsonc` ki pehli line me `name: "aapka-worker-name"` kar dein.
+- `wrangler.jsonc` me apna `database_id` aur `database_name` check kar lein (Note: D1 `database_id` sirf ek internal binding UUID hai; bina aapke Cloudflare login/API token ke koi bhi public repo se aapka DB access nahi kar sakta. Agar aap `database_id` bhi repo me nahi rakhna chahte, toh build environment me `D1_DATABASE_ID` secret de sakte hain — `scripts/prepare-wrangler.mjs` usko build time par auto-inject kar dega).
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+### Step 2 — Worker ke "Variables and Secrets" me `Secret` Mode Set Karein
+1. Cloudflare Dashboard → **Workers & Pages** → Apne existing Worker (`gk-portfolio`) par click karein.
+2. **Settings** tab → **Variables and Secrets** section me jayein.
+3. Agar wahan pehle se koi plain `Text` variable hai jise aap secret rakhna chahte hain, toh use hata kar **+ Add** par click karein aur **Type: `Secret`** (out of `Text`, `JSON`, `Secret`) select karke add karein:
+   - **`ADMIN_SETUP_TOKEN`** → Type: **`Secret`** → Value: कोई भी 32+ characters ka strong secret token.
+   - **`SESSION_SECRET`** → Type: **`Secret`** → Value: कोई भी 32+ characters ka random secret (ye login session cookie ko HMAC-SHA256 se cryptographically sign karta hai).
+   - *(Optional)* **`ADMIN_ACCESS_KEY`** → Type: **`Secret`** → Value: Secret key jo `/admin` ko stealth 404 ke peeche chhupa deti hai (`/admin?key=YOUR_KEY`).
+   - *(Optional)* **`SITE_URL`** → Type: **`Secret`** → Value: `https://portfolio.gulshan-kumar.me`
+   - *(Optional)* **`ENVIRONMENT`** → Type: **`Secret`** → Value: `production`
+4. **Deploy / Save** par click karein. (Aapki existing D1 binding `DB` jo **Bindings** tab me hai, woh waise hi rahegi).
 
-## Repository Structure
-
-```
-gulshan-portfolio/
-│
-├── README.md                    ← You are here
-├── .gitignore
-├── LICENSE
-│
-├── dist/                        ★  DEPLOY THIS — single self-contained file
-│   └── index.html               ←  CSS + JS + all data merged into one file
-│
-└── src/                         ✎  EDIT THIS — clean modular source
-    ├── index.html               ←  HTML structure only
-    ├── style.css                ←  All styles
-    ├── script.js                ←  All JavaScript
-    ├── config.json              ←  Personal info · skills · experience · education
-    ├── projects.json            ←  Projects data
-    └── reviews.json             ←  Client testimonials
+### Step 3 — Code ko Public GitHub Repository me Push Karein
+Is project ke saare files (`package.json`, `astro.config.mjs`, `wrangler.jsonc`, `src/`, `public/`, `scripts/`) apne Public GitHub repo ke root me push kar dein:
+```bash
+git init
+git add .
+git commit -m "Upgrade to modular Astro 5 SSR stack"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main
 ```
 
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
+### Step 4 — Existing Worker ko GitHub Repo se Connect Karein (Auto-Deploy)
+1. Cloudflare Dashboard → **Workers & Pages** → Apne existing Worker (`gk-portfolio`) par click karein.
+2. **Settings** tab → **Build** section me jayein.
+3. **Git Repository** ke samne **Connect** (ya **Connect to Git**) button par click karein.
+4. **GitHub** select karein, apna account authorize karein, aur apna public repository select karein.
+5. **Build configuration** me ye details bharein:
+   - **Production branch**: `main`
+   - **Build command**: `npm run build`
+   - **Deploy command**: `npx wrangler deploy --keep-vars`
+   - **Root directory**: `/` (default)
+6. **Save and Deploy** par click karein!
+   - Ab jab bhi aap GitHub par `git push` karenge, Cloudflare automatically `npm run build` chalayega aur aapke **existing Worker** par deploy kar dega!
 
-## Which File To Use
-
-### ![deploy](https://img.shields.io/badge/-DEPLOY-8ecf00?style=flat-square&labelColor=060908) &nbsp;`dist/index.html` — Upload this to your host
-
+### Step 5 — Existing D1 Database me New Tables Sync Karein
+Deploy complete hone ke baad, ek baar browser me ye URL open karein:
+```text
+https://portfolio.gulshan-kumar.me/setup?token=YOUR_ADMIN_SETUP_TOKEN
 ```
-dist/index.html   ←   UPLOAD ONLY THIS ONE FILE
-```
-
-| Property | Detail |
-|---|---|
-| **Zero Dependencies** | No external files required whatsoever |
-| **Universal Hosting** | Works on cPanel · Hostinger · unaux and all shared hosts |
-| **Works Offline** | Opens directly via `file://` — no server needed |
-| **Self-Contained** | CSS + JS + all data packed into a single file |
-
-<br/>
-
-### ![edit](https://img.shields.io/badge/-EDIT-8ecf00?style=flat-square&labelColor=060908) &nbsp;`src/` — Make changes here
-
-| File | Purpose |
-|---|---|
-| `src/index.html` | HTML structure |
-| `src/style.css` | All visual styles |
-| `src/script.js` | JavaScript logic |
-| `src/config.json` | Personal info · skills · experience · education |
-| `src/projects.json` | Projects — add or update entries |
-| `src/reviews.json` | Client logos and testimonials |
-
-> **Warning:** Never deploy `src/` directly to hosting. JSON files load via `fetch()`, which gets blocked by CORS on shared hosting. Always merge changes back into `dist/index.html` before deploying.
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Features
-
-| Category | Detail |
-|---|---|
-| **Theme** | Forest-Noir dark — `#060908` background · `#8ecf00` lime accent |
-| **Cursor** | Custom sharp lime arrow with animated glow trail |
-| **Particles** | Canvas particle network — 80 animated nodes with collision lines |
-| **Animations** | Scroll-reveal with staggered entrance effects |
-| **Terminal** | Interactive typewriter cycling through 4 live commands |
-| **Projects** | Filterable grid — Bots · Web · Cloud · Industrial · Backend |
-| **Numbers** | Animated stat count-up triggered on scroll |
-| **Buttons** | Magnetic hover pull effect |
-| **Icons** | Google Material Icons Round throughout |
-| **Layout** | Fully responsive — mobile hamburger · adaptive grids |
-
-<br/>
-
-**Sections** — Hero &nbsp;·&nbsp; About &nbsp;·&nbsp; Skills &nbsp;·&nbsp; Experience &nbsp;·&nbsp; Education &nbsp;·&nbsp; Projects &nbsp;·&nbsp; Reviews &nbsp;·&nbsp; Contact
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Tech Stack
-
-<div align="center">
-
-<img src="https://img.shields.io/badge/HTML5-060908?style=for-the-badge&logo=html5&logoColor=E34F26"/>
-<img src="https://img.shields.io/badge/CSS3-060908?style=for-the-badge&logo=css3&logoColor=1572B6"/>
-<img src="https://img.shields.io/badge/JavaScript-060908?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/>
-<img src="https://img.shields.io/badge/JSON-060908?style=for-the-badge&logo=json&logoColor=8ecf00"/>
-<img src="https://img.shields.io/badge/Google_Fonts-060908?style=for-the-badge&logo=google-fonts&logoColor=4285F4"/>
-<img src="https://img.shields.io/badge/Material_Icons-060908?style=for-the-badge&logo=google&logoColor=8ecf00"/>
-
-</div>
-
-<br/>
-
-| Layer | Technology |
-|---|---|
-| **Markup** | HTML5 |
-| **Styling** | CSS3 — custom properties · grid · clip-path · keyframe animations |
-| **Logic** | Vanilla JavaScript ES6+ |
-| **Data** | JSON (`src/` only) |
-| **Fonts** | Google Fonts — Bebas Neue · JetBrains Mono · Fraunces |
-| **Icons** | Google Material Icons Round |
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Theme Colors
-
-| Variable | Swatch | Value | Usage |
-|---|---|---|---|
-| `--bg` | ![bg](https://img.shields.io/badge/-%20%20%20%20-060908?style=flat-square) | `#060908` | Main background |
-| `--lime` | ![lime](https://img.shields.io/badge/-%20%20%20%20-8ecf00?style=flat-square) | `#8ecf00` | Primary accent |
-| `--ember` | ![ember](https://img.shields.io/badge/-%20%20%20%20-cc4500?style=flat-square) | `#cc4500` | Badge accent |
-| `--text` | ![text](https://img.shields.io/badge/-%20%20%20%20-c2d4ae?style=flat-square) | `#c2d4ae` | Body text |
-| `--heading` | ![heading](https://img.shields.io/badge/-%20%20%20%20-d8e8c4?style=flat-square) | `#d8e8c4` | Headings |
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Updating Content
-
-### Option A &nbsp;—&nbsp; Edit `src/` &nbsp;*(Recommended for developers)*
-
-**Personal info · skills · experience · education · terminal commands**
-→ Edit `src/config.json`
-
-**Add or update projects**
-→ Add a new object to the array in `src/projects.json`
-
-**Testimonials and client logos**
-→ Edit `src/reviews.json`
-
-**Visual styles**
-→ Edit `src/style.css` — CSS variables are at the top inside `:root {}`
-
-<br/>
-
-### Option B &nbsp;—&nbsp; Edit `dist/index.html` directly
-
-Open the file and find these clearly labeled constants inside the `<script>` tag:
-
-```javascript
-const SKILLS     = [ ... ]   // Line ~380
-const EXPERIENCE = [ ... ]   // Line ~390
-const EDUCATION  = [ ... ]   // Line ~405
-const PROJECTS   = [ ... ]   // Line ~420
-const CLIENTS    = [ ... ]   // Line ~445
-const REVIEWS    = [ ... ]   // Line ~455
-const TERM_LINES = [ ... ]   // Line ~465
-```
-
-Edit &nbsp;→&nbsp; Save &nbsp;→&nbsp; Upload. Done.
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Deployment
-
-```
-Step 1 — Open the dist/ folder
-Step 2 — Copy index.html
-Step 3 — Upload to your hosting root ( public_html/ or equivalent )
-```
-
-| Platform | Support |
-|---|---|
-| cPanel / Hostinger / unaux | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Netlify | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| GitHub Pages | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Vercel | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| Local — double-click | ![yes](https://img.shields.io/badge/-Supported-8ecf00?style=flat-square&labelColor=060908) |
-| `src/` deployed directly | ![no](https://img.shields.io/badge/-Not%20Supported-cc4500?style=flat-square&labelColor=060908) |
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## Sections Overview
-
-| # | Section | Description |
-|---|---|---|
-| — | **Hero** | Animated name · system info panel · particle canvas |
-| 01 | **About** | Bio · personal motto · animated stat counters |
-| 02 | **Skills** | 6 tech category cards with highlighted hot skills |
-| 03 | **Experience** | Editorial layout — Losung Automation · Elent Electronics |
-| 04 | **Education** | Class 12 (In Progress) · Class 10 (70.8%) |
-| 05 | **Projects** | Filterable grid with hover overlay and CTAs |
-| 06 | **Reviews** | Client logos + star-rated testimonials |
-| 07 | **Contact** | Link cards + live terminal typewriter |
-
-<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=0:060908,50:8ecf00,100:060908" width="100%"/>
-
-## License
-
-[MIT](LICENSE) — Free to use, fork, and modify.
-
-<br/>
-
-<div align="center">
-
-<img src="https://capsule-render.vercel.app/api?type=venom&height=120&text=Delhi%2C%20India%20%C2%B7%202025%E2%80%932026&fontSize=22&color=0:060908,100:1a2e0a&fontColor=8ecf00&stroke=8ecf00&strokeWidth=1&animation=fadeIn" width="100%"/>
-
-</div>
+- Agar aapka admin user pehle se bana hua hai, toh ye aapka koi bhi purana data delete kiye bina naye schema updates ko automatically sync kar dega.
+- Agar naya DB hai, toh aapse Admin Username aur Password banane ko kahega.

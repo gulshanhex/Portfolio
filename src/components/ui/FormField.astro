@@ -1,0 +1,58 @@
+---
+interface Props {
+  label: string;
+  id: string;
+  error?: string;
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  id,
+  error,
+  required = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`ui-form-field ${className}`}>
+  <label for={id} class="ui-field-label">
+    {label}
+    {required && <span class="required-mark" aria-hidden="true">*</span>}
+  </label>
+  <div class="ui-field-control">
+    <slot />
+  </div>
+  {error && <span class="ui-field-error" role="alert">{error}</span>}
+</div>
+
+<style>
+  .ui-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: var(--sp-4);
+  }
+
+  .ui-field-label {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .required-mark {
+    color: var(--accent);
+  }
+
+  .ui-field-error {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: #D9534F;
+    margin-top: 2px;
+  }
+</style>

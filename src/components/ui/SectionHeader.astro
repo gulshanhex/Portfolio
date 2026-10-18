@@ -1,0 +1,68 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  align = 'left',
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`ui-section-header ui-align-${align} ${className}`}>
+  {eyebrow && <div class="ui-eyebrow">{eyebrow}</div>}
+  <h2 class="ui-section-title">{title}</h2>
+  {subtitle && <p class="ui-section-subtitle">{subtitle}</p>}
+</div>
+
+<style>
+  .ui-section-header {
+    margin-bottom: var(--sp-6);
+  }
+
+  .ui-align-left {
+    text-align: left;
+  }
+
+  .ui-align-center {
+    text-align: center;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ui-eyebrow {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-2);
+  }
+
+  .ui-section-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--sp-2);
+  }
+
+  .ui-section-subtitle {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 64ch;
+  }
+</style>

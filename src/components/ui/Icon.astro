@@ -1,0 +1,155 @@
+---
+interface Props {
+  name?: string;
+  size?: number | string;
+  class?: string;
+  title?: string;
+}
+
+const { name = '', size = 20, class: className = '', title } = Astro.props;
+const sz = typeof size === 'number' ? `${size}px` : size;
+
+// Normalized name
+const n = (name || '').trim().toLowerCase();
+---
+
+{
+  n === 'smart_toy' || n === 'bot' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <rect x="3" y="11" width="18" height="10" rx="2" />
+      <circle cx="12" cy="5" r="2" />
+      <path d="M12 7v4" />
+      <line x1="8" y1="16" x2="8.01" y2="16" stroke-width="3" />
+      <line x1="16" y1="16" x2="16.01" y2="16" stroke-width="3" />
+    </svg>
+  ) : n === 'hub' || n === 'workflow' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <circle cx="12" cy="12" r="3" />
+      <circle cx="19" cy="5" r="2" />
+      <circle cx="5" cy="19" r="2" />
+      <path d="m14 10 3.5-3.5" />
+      <path d="m10 14-3.5 3.5" />
+      <circle cx="5" cy="5" r="2" />
+      <path d="m10 10-3.5-3.5" />
+    </svg>
+  ) : n === 'psychology' || n === 'ai' || n === 'brain' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04" />
+      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04" />
+    </svg>
+  ) : n === 'settings_suggest' || n === 'control' || n === 'sliders' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <line x1="4" y1="21" x2="4" y2="14" />
+      <line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" />
+      <line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" />
+      <line x1="9" y1="8" x2="15" y2="8" />
+      <line x1="17" y1="16" x2="23" y2="16" />
+    </svg>
+  ) : n === 'bolt' || n === 'flash' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  ) : n === 'code' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  ) : n === 'work' || n === 'briefcase' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  ) : n === 'school' || n === 'education' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    </svg>
+  ) : n === 'arrow_forward' || n === 'arrow-right' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  ) : n === 'arrow_up_right' || n === 'external' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <line x1="7" y1="17" x2="17" y2="7" />
+      <polyline points="7 7 17 7 17 17" />
+    </svg>
+  ) : n === 'check_circle' || n === 'check' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+  ) : n === 'mail' || n === 'mail_outline' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  ) : n === 'home' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  ) : n === 'menu' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  ) : n === 'close' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ) : n === 'more' || n === 'more_horiz' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
+    </svg>
+  ) : n === 'dashboard' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <rect x="3" y="3" width="7" height="9" rx="1" />
+      <rect x="14" y="3" width="7" height="5" rx="1" />
+      <rect x="14" y="12" width="7" height="9" rx="1" />
+      <rect x="3" y="16" width="7" height="5" rx="1" />
+    </svg>
+  ) : n === 'folder' || n === 'folder_open' ? (
+    <svg class={`ui-icon ${className}`} width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden={title ? undefined : "true"}>
+      {title && <title>{title}</title>}
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+    </svg>
+  ) : (
+    <span class={`material-icons-round ${className}`} style={{ fontSize: sz, width: sz, height: sz, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} aria-hidden={title ? undefined : "true"}>
+      {name}
+    </span>
+  )
+}
+
+<style>
+  .ui-icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+</style>

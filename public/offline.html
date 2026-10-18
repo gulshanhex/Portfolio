@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline · Gulshan Kumar</title>
+    <meta name="theme-color" content="#0A0C0B" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0A0C0B;
+        --surface: #111412;
+        --card: #151A17;
+        --border: #222B25;
+        --text: #F4F1E8;
+        --muted: #8E9992;
+        --accent: #2FBF71;
+        --accent-hover: #3CD07F;
+        --accent-subtle: rgba(47, 191, 113, 0.12);
+        --radius: 12px;
+        --btn-radius: 8px;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        line-height: 1.6;
+      }
+      .offline-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 40px 32px;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      }
+      .icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        border: 1px solid var(--accent);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: var(--accent);
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      p {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      @media (min-width: 440px) {
+        .actions {
+          flex-direction: row;
+          justify-content: center;
+        }
+      }
+      button, a {
+        font-family: var(--font);
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: var(--btn-radius);
+        padding: 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #04130B;
+        border: none;
+      }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        border-color: var(--muted);
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-card">
+      <div class="icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+          <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+          <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+          <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+          <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+          <line x1="12" y1="20" x2="12.01" y2="20"></line>
+        </svg>
+      </div>
+      <div class="eyebrow">// Offline Mode</div>
+      <h1>Connection Lost</h1>
+      <p>It looks like your internet connection is currently unavailable. Cached pages and resources remain accessible.</p>
+      <div class="actions">
+        <button class="btn-primary" onclick="window.location.reload()">Retry Connection</button>
+        <a href="/" class="btn-secondary">Return Home</a>
+      </div>
+    </div>
+  </body>
+</html>

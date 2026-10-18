@@ -1,0 +1,217 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import Card from './ui/Card.astro';
+import Icon from './ui/Icon.astro';
+
+interface EducationItem {
+  id: number;
+  period: string;
+  degree: string;
+  stream: string;
+  school: string;
+  grade: string;
+  items: string[];
+  pills: string[];
+}
+
+interface Props {
+  education: EducationItem[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { education = [], copy = {} } = Astro.props;
+
+const eyebrow = copy.education_eyebrow || '// EDUCATION';
+const title = copy.education_title || 'Where I learned.';
+const subtitle = copy.education_subtitle || 'Academic background and practical technical foundations.';
+---
+
+{
+  education.length > 0 && (
+    <section id="education" class="education-section" aria-labelledby="edu-title">
+      <div class="education-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <div class="education-grid">
+          {education.map((ed, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.1}s`}>
+              <Card class="edu-card">
+                <div class="edu-header">
+                  <div class="edu-icon-wrap" aria-hidden="true">
+                    <Icon name="school" size={24} />
+                  </div>
+                  <div class="edu-title-wrap">
+                    <span class="edu-period">{ed.period}</span>
+                    <h3 class="edu-degree">{ed.degree}</h3>
+                    {ed.stream && <p class="edu-stream">{ed.stream}</p>}
+                  </div>
+                </div>
+
+                <div class="edu-school-row">
+                  <span class="school-name">{ed.school}</span>
+                  {ed.grade && <span class="school-grade">{ed.grade}</span>}
+                </div>
+
+                {ed.items && ed.items.length > 0 && (
+                  <ul class="edu-items-list">
+                    {ed.items.map((it) => (
+                      <li>{it}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {ed.pills && ed.pills.length > 0 && (
+                  <div class="edu-pills-wrap">
+                    {ed.pills.map((p) => (
+                      <span class="edu-pill">{p}</span>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .education-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .education-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .education-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  .edu-card {
+    padding: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .edu-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-4);
+  }
+
+  .edu-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-btn);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .edu-title-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .edu-period {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .edu-degree {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.25;
+  }
+
+  .edu-stream {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+  }
+
+  .edu-school-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--sp-4);
+  }
+
+  .school-name {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .school-grade {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .edu-items-list {
+    margin: 0 0 var(--sp-4) var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+
+  .edu-pills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .edu-pill {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  @media (min-width: 640px) {
+    .education-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .education-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+  }
+</style>

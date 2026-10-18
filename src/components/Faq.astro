@@ -1,0 +1,63 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import FaqItem from './ui/FaqItem.astro';
+
+interface FaqEntry {
+  id: number;
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs: FaqEntry[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { faqs = [], copy = {} } = Astro.props;
+
+const eyebrow = copy.faq_eyebrow || '// QUICK ANSWERS';
+const title = copy.faq_title || 'Frequently asked questions.';
+const subtitle = copy.faq_subtitle || 'Direct answers regarding my engineering background, industrial automation experience, and availability.';
+---
+
+{
+  faqs.length > 0 && (
+    <section id="faq" class="faq-section" aria-labelledby="faq-title">
+      <div class="faq-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <div class="faq-list">
+          {faqs.map((fq, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.06}s`}>
+              <FaqItem question={fq.question} answer={fq.answer} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .faq-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .faq-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .faq-list {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 1024px) {
+    .faq-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+  }
+</style>

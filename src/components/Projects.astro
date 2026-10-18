@@ -1,0 +1,194 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import ProjectCard from './ui/ProjectCard.astro';
+import Icon from './ui/Icon.astro';
+
+interface ProjectItem {
+  id: number;
+  title: string;
+  category: string;
+  category_icon: string;
+  summary: string;
+  tags: string[];
+  stack: string[];
+  featured: number | boolean;
+  external_url?: string | null;
+  github_url?: string | null;
+  demo_url?: string | null;
+  image_url?: string | null;
+  slug?: string | null;
+  problem?: string | null;
+  solution?: string | null;
+  result?: string | null;
+}
+
+interface Props {
+  projects: ProjectItem[];
+  projectsSubdomain?: string;
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const {
+  projects = [],
+  projectsSubdomain = 'https://projects.gulshan-kumar.me',
+  copy = {},
+} = Astro.props;
+
+const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+const eyebrow = copy.projects_eyebrow || '// SELECTED WORK';
+const title = copy.projects_title || 'What I built.';
+const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboards, and automation toolkits.';
+---
+
+{
+  projects.length > 0 && (
+    <section id="projects" class="projects-section" aria-labelledby="proj-title">
+      <div class="projects-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <!-- Category Filters -->
+        {categories.length > 1 && (
+          <div class="proj-filters" role="group" aria-label="Filter projects by category">
+            <button class="proj-filter-btn active" type="button" data-cat="all">
+              <span>All Projects</span>
+            </button>
+            {categories.map((cat) => (
+              <button class="proj-filter-btn" type="button" data-cat={cat.toLowerCase()}>
+                <span>{cat}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <!-- Projects Grid -->
+        <div class="projects-grid" id="proj-grid" role="list">
+          {projects.map((p, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.08}s`}>
+              <ProjectCard
+                id={p.id}
+                title={p.title}
+                category={p.category}
+                categoryIcon={p.category_icon}
+                summary={p.summary}
+                tags={p.tags || []}
+                stack={p.stack || []}
+                featured={Boolean(p.featured)}
+                externalUrl={p.external_url || undefined}
+                githubUrl={p.github_url || undefined}
+                demoUrl={p.demo_url || undefined}
+                slug={p.slug || undefined}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div class="projects-archive-cta">
+          <a href="/work" class="archive-btn">
+            <span>Explore all projects &amp; case studies in archive</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .projects-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .projects-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .proj-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--sp-6);
+  }
+
+  .proj-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .proj-filter-btn:hover {
+    color: var(--text);
+    border-color: var(--border-subtle);
+  }
+
+  .proj-filter-btn.active {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  .projects-archive-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--sp-7);
+  }
+
+  .archive-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-btn);
+    color: var(--text);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .archive-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .projects-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+  }
+</style>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="GK. Portfolio Icon">
+  <rect width="128" height="128" rx="24" fill="#0A0C0B"/>
+  <rect x="6" y="6" width="116" height="116" rx="20" fill="none" stroke="#1E2521" stroke-width="2"/>
+  <text x="52" y="82" text-anchor="middle" fill="#F4F1E8" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="56" letter-spacing="-2">GK</text>
+  <circle cx="94" cy="78" r="8" fill="#2FBF71"/>
+</svg>

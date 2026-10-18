@@ -1,0 +1,205 @@
+@import "./tokens.css";
+/* ── GK Portfolio — Modular Documentation Page Stylesheet ────────────── */
+
+.docs-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 7.5rem 5vw 6rem;
+  position: relative;
+  z-index: 2;
+}
+.docs-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.docs-eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--lime);
+}
+.docs-title {
+  font-family: var(--ff-h);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 0.92;
+  letter-spacing: 2px;
+  color: var(--heading);
+  margin-bottom: 0.5rem;
+}
+.docs-sub {
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+.docs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--bdr-s);
+}
+.docs-nav a {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--bdr-s);
+  padding: 0.4rem 0.8rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.docs-nav a:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+.doc-sec {
+  margin-bottom: 3.5rem;
+}
+.section-num {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 0.5rem;
+}
+.doc-sec h2 {
+  font-family: var(--ff-h);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: 2px;
+  color: var(--heading);
+  margin-bottom: 1.2rem;
+}
+.doc-sec h3 {
+  font-family: var(--ff-h);
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  color: var(--heading);
+  margin: 1.5rem 0 0.7rem;
+}
+.doc-sec p {
+  font-family: var(--ff-s);
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: 0.9rem;
+}
+.doc-sec ul {
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.doc-sec ul li {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.doc-sec ul li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--lime);
+  font-size: 0.75rem;
+}
+.doc-sec ul li code,
+.doc-sec p code,
+.doc-sec h3 code {
+  font-family: var(--ff-b);
+  background: var(--surface);
+  border: 1px solid var(--bdr-s);
+  color: var(--lime);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.82em;
+}
+.codeblock {
+  background: var(--surface);
+  border: 1px solid var(--bdr-s);
+  padding: 1.2rem 1.4rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+.codeblock code {
+  font-family: var(--ff-b);
+  font-size: 0.8rem;
+  color: var(--text);
+  white-space: pre;
+  display: block;
+  line-height: 1.6;
+}
+.step {
+  background: var(--surface);
+  border: 1px solid var(--bdr-s);
+  border-left: 2px solid var(--lime);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 0.8rem;
+}
+.step-num {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 0.4rem;
+}
+.step-title {
+  font-size: 0.9rem;
+  color: var(--heading);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.step-body {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+}
+.back-link:hover {
+  color: var(--lime);
+}
+.back-link .material-icons-round {
+  font-size: 0.9rem;
+}
+.note {
+  background: var(--lime-bg);
+  border: 1px solid var(--lime-b);
+  padding: 0.9rem 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.note strong {
+  color: var(--lime);
+}
+.warn {
+  background: rgba(204, 69, 0, 0.06);
+  border: 1px solid rgba(204, 69, 0, 0.2);
+  padding: 0.9rem 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.warn strong {
+  color: var(--ember);
+}

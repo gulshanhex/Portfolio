@@ -1,0 +1,241 @@
+---
+import Icon from './Icon.astro';
+import Pill from './Pill.astro';
+
+interface Props {
+  id?: number | string;
+  title: string;
+  category?: string;
+  categoryIcon?: string;
+  summary: string;
+  tags?: string[];
+  stack?: string[];
+  externalUrl?: string;
+  githubUrl?: string;
+  demoUrl?: string;
+  slug?: string;
+  featured?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  category = 'Project',
+  categoryIcon = 'folder',
+  summary,
+  tags = [],
+  stack = [],
+  externalUrl,
+  githubUrl,
+  demoUrl,
+  slug,
+  featured = false,
+  class: className = '',
+} = Astro.props;
+
+const detailUrl = slug ? `/work/${slug}` : (demoUrl || externalUrl || githubUrl);
+const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0, 5);
+---
+
+<article class={`project-card ${featured ? 'project-card-featured' : ''} ${className}`} data-cat={category.toLowerCase()}>
+  <div class="project-header">
+    <div class="project-cat">
+      <Icon name={categoryIcon || 'folder'} size={14} />
+      <span>{category}</span>
+    </div>
+    {featured && <Pill variant="accent" size="sm">Featured</Pill>}
+  </div>
+
+  <h3 class="project-title">
+    {detailUrl ? (
+      <a href={detailUrl} class="project-title-link">
+        {title}
+        {detailUrl.startsWith('http') ? <span class="arrow-ext">↗</span> : <span class="arrow-int">→</span>}
+      </a>
+    ) : (
+      title
+    )}
+  </h3>
+
+  <p class="project-summary">{summary}</p>
+
+  {allTags.length > 0 && (
+    <div class="project-tags">
+      {allTags.map((t) => (
+        <span class="project-tag">{t}</span>
+      ))}
+    </div>
+  )}
+
+  <div class="project-footer">
+    <div class="project-links">
+      {slug && (
+        <a href={`/work/${slug}`} class="project-action-link primary-action">
+          <span>Case study</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      )}
+      {demoUrl && (
+        <a href={demoUrl} target="_blank" rel="noopener noreferrer" class="project-action-link">
+          <span>Live demo</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {externalUrl && !demoUrl && (
+        <a href={externalUrl} target="_blank" rel="noopener noreferrer" class="project-action-link">
+          <span>Explore</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {githubUrl && (
+        <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="project-action-link" aria-label={`View ${title} source on GitHub`}>
+          <span>GitHub</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), border-color var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .project-card:hover {
+    border-color: var(--accent-border);
+    background: var(--card-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .project-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-3);
+  }
+
+  .project-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .project-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin-bottom: var(--sp-2);
+  }
+
+  .project-title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .project-title-link:hover {
+    color: var(--accent);
+  }
+
+  .arrow-ext, .arrow-int {
+    display: inline-block;
+    font-family: var(--ff-sans);
+    font-weight: 400;
+    margin-left: 4px;
+    transition: transform var(--transition-fast);
+  }
+
+  .project-title-link:hover .arrow-ext {
+    transform: translate(2px, -2px);
+  }
+
+  .project-title-link:hover .arrow-int {
+    transform: translateX(3px);
+  }
+
+  .project-summary {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: var(--sp-5);
+    flex-grow: 1;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--sp-5);
+  }
+
+  .project-tag {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .project-footer {
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+  }
+
+  .project-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .project-action-link:hover {
+    color: var(--accent);
+  }
+
+  .project-action-link.primary-action {
+    color: var(--accent);
+  }
+
+  .project-action-link.primary-action:hover {
+    color: var(--accent-hover);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card:hover {
+      transform: none;
+    }
+  }
+</style>

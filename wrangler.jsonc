@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gk-portfolio",
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "keep_vars": true,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "portfolio-cms-db",
+      "database_id": "58b45ce6-0a64-4707-9062-132c4a857a04"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,296 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import ProjectCard from '../../components/ui/ProjectCard.astro';
+import Button from '../../components/ui/Button.astro';
+import { getProjects, getAllSettings } from '../../lib/db';
+
+const db = Astro.locals.runtime?.env?.DB;
+const projects = await getProjects(db, true);
+const settings = await getAllSettings(db);
+
+const g = settings.global || {};
+const theme = settings.theme || {};
+const seo = settings.seo || {};
+
+const name = g.name || 'Gulshan Kumar';
+const defaultTheme = theme.default || 'dark';
+const accent = theme.accent || 'emerald';
+const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+
+const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${canonicalBase}/` },
+    { '@type': 'ListItem', position: 2, name: 'Work', item: `${canonicalBase}/work` },
+  ],
+};
+---
+
+<BaseLayout
+  title={`Selected Work & Engineering Case Studies · ${name}`}
+  description={`Production bots, industrial control systems, and automation projects engineered by ${name}.`}
+  canonical={`${canonicalBase}/work`}
+  ogTitle={`Selected Work · ${name}`}
+  ogDescription="Production bots, industrial control systems, and automation projects."
+  defaultTheme={defaultTheme}
+  accent={accent}
+  jsonLd={breadcrumbLd}
+>
+  <header class="work-header">
+    <div class="work-header-inner">
+      <a href="/" class="brand-logo" aria-label={`${name} Home`}>
+        <span class="logo-text">GK</span><span class="logo-dot">.</span>
+      </a>
+      <nav class="work-nav-links">
+        <a href="/" class="back-link">
+          <span aria-hidden="true">←</span>
+          <span>Home</span>
+        </a>
+        <Button variant="primary" size="sm" href="/#contact">
+          Let's talk
+        </Button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="work-main">
+    <div class="work-container">
+      <SectionHeader
+        eyebrow="// SELECTED WORK & ARCHIVE"
+        title="Engineering projects & case studies."
+        subtitle="A complete catalog of automation bots, telemetry dashboards, and cloud workflows built for real production environments."
+      />
+
+      <!-- Category Filter Pills -->
+      {categories.length > 1 && (
+        <div class="work-filters" role="group" aria-label="Filter projects by category">
+          <button class="proj-filter-btn active" type="button" data-cat="all">
+            <span>All Projects ({projects.length})</span>
+          </button>
+          {categories.map((cat) => (
+            <button class="proj-filter-btn" type="button" data-cat={cat.toLowerCase()}>
+              <span>{cat}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <!-- Grid -->
+      {projects.length > 0 ? (
+        <div class="work-grid" id="proj-grid" role="list">
+          {projects.map((p, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.06}s`}>
+              <ProjectCard
+                id={p.id}
+                title={p.title}
+                category={p.category}
+                categoryIcon={p.category_icon}
+                summary={p.summary}
+                tags={p.tags || []}
+                stack={p.stack || []}
+                featured={Boolean(p.featured)}
+                externalUrl={p.external_url || undefined}
+                githubUrl={p.github_url || undefined}
+                demoUrl={p.demo_url || undefined}
+                slug={p.slug || undefined}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="no-projects-box">
+          <p>No published projects found currently. Check back soon!</p>
+          <Button variant="primary" size="md" href="/" class="mt-4">
+            Return Home
+          </Button>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <footer class="work-footer">
+    <div class="work-footer-inner">
+      <span>{name} · {g.location || 'Delhi, India'}</span>
+      <a href="/#contact">Start a project inquiry →</a>
+    </div>
+  </footer>
+
+  <script is:inline>
+    // Project Category Filtering for Work Archive
+    document.querySelectorAll('.proj-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.proj-filter-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = (btn.getAttribute('data-cat') || 'all').toLowerCase();
+        document.querySelectorAll('.project-card').forEach((card) => {
+          const cardCat = (card.getAttribute('data-cat') || '').toLowerCase();
+          const match = cat === 'all' || cardCat === cat;
+          card.style.display = match ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .work-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    background: rgba(10, 12, 11, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-theme="light"] .work-header {
+    background: rgba(246, 247, 244, 0.9);
+  }
+
+  .work-header-inner {
+    max-width: var(--max-w-content);
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--sp-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand-logo {
+    font-family: var(--ff-sans);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--heading);
+    text-decoration: none;
+  }
+
+  .logo-dot {
+    color: var(--accent);
+  }
+
+  .work-nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--heading);
+  }
+
+  .work-main {
+    padding: var(--sp-7) var(--sp-5) var(--sp-9);
+    background: var(--bg);
+  }
+
+  .work-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .work-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--sp-6);
+  }
+
+  .proj-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .proj-filter-btn:hover {
+    color: var(--text);
+    border-color: var(--border-subtle);
+  }
+
+  .proj-filter-btn.active {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  .no-projects-box {
+    text-align: center;
+    padding: var(--sp-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    font-family: var(--ff-sans);
+    color: var(--muted);
+  }
+
+  .work-footer {
+    border-top: 1px solid var(--border);
+    padding: var(--sp-6) var(--sp-5);
+    background: var(--surface);
+  }
+
+  .work-footer-inner {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .work-footer-inner a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (min-width: 640px) {
+    .work-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .work-main {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .work-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+  }
+</style>

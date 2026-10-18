@@ -1,0 +1,97 @@
+---
+interface Props {
+  variant?: 'accent' | 'neutral' | 'status' | 'outline';
+  pulse?: boolean;
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const {
+  variant = 'neutral',
+  pulse = false,
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+---
+
+<span class={`ui-pill ui-pill-${variant} ui-pill-${size} ${className}`}>
+  {pulse && <span class="ui-pill-dot" aria-hidden="true" />}
+  <slot />
+</span>
+
+<style>
+  .ui-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--radius-pill);
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast);
+  }
+
+  .ui-pill-sm {
+    padding: 4px 10px;
+    font-size: 0.72rem;
+  }
+
+  .ui-pill-md {
+    padding: 6px 12px;
+    font-size: var(--fs-xs);
+  }
+
+  .ui-pill-neutral {
+    background: var(--surface);
+    color: var(--text-muted);
+    border-color: var(--border);
+  }
+
+  .ui-pill-accent {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-color: var(--accent-border);
+  }
+
+  .ui-pill-status {
+    background: rgba(47, 191, 113, 0.12);
+    color: var(--accent);
+    border-color: var(--accent-border);
+  }
+
+  .ui-pill-outline {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border);
+  }
+
+  .ui-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: pill-pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pill-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.85);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-pill-dot {
+      animation: none;
+    }
+  }
+</style>

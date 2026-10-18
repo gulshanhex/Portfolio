@@ -1,0 +1,285 @@
+---
+import Icon from './Icon.astro';
+
+interface SectionItem {
+  id: string;
+  label: string;
+  order_idx: number;
+  visible: number;
+}
+
+interface Props {
+  sections?: SectionItem[];
+  contact?: Record<string, any>;
+  nav?: Record<string, any>;
+  hasProjects?: boolean;
+}
+
+const {
+  sections = [],
+  contact = {},
+  nav = {},
+  hasProjects = true,
+} = Astro.props;
+
+const visibleSections = sections
+  .filter((s) => s.id !== 'hero' && s.visible !== 0)
+  .sort((a, b) => (a.order_idx ?? 0) - (b.order_idx ?? 0));
+
+const workHref = hasProjects ? '#projects' : '#about';
+const workLabel = hasProjects ? 'Work' : 'About';
+const showResume = Boolean(contact.resume_url && nav.show_resume !== false);
+const resumeLabel = nav.resume_label || 'Resume';
+---
+
+<nav id="bottom-tab-bar" class="bottom-tab-bar" aria-label="Mobile bottom navigation">
+  <div class="bottom-tab-inner">
+    <a href="#hero" class="tab-item active" data-tab="hero">
+      <span class="tab-icon"><Icon name="home" size={20} /></span>
+      <span class="tab-label">Home</span>
+    </a>
+
+    <a href="#services" class="tab-item" data-tab="services">
+      <span class="tab-icon"><Icon name="hub" size={20} /></span>
+      <span class="tab-label">Services</span>
+    </a>
+
+    <a href={workHref} class="tab-item" data-tab={hasProjects ? 'projects' : 'about'}>
+      <span class="tab-icon"><Icon name={hasProjects ? 'code' : 'work'} size={20} /></span>
+      <span class="tab-label">{workLabel}</span>
+    </a>
+
+    <button type="button" class="tab-item tab-more-btn" id="bottom-more-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="bottom-sheet-modal">
+      <span class="tab-icon"><Icon name="more_horiz" size={20} /></span>
+      <span class="tab-label">More</span>
+    </button>
+
+    <a href="#contact" class="tab-item tab-contact-cta" data-tab="contact">
+      <span class="contact-pill-btn">Contact</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Mobile Slide-Up Bottom Sheet Drawer -->
+<div id="bottom-sheet-modal" class="bottom-sheet-backdrop" role="dialog" aria-modal="true" aria-label="All portfolio sections" hidden>
+  <div class="bottom-sheet-panel">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
+    <div class="sheet-header">
+      <h3 class="sheet-title">Portfolio Navigation</h3>
+      <button type="button" class="sheet-close-btn" id="sheet-close-btn" aria-label="Close navigation sheet">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="sheet-links">
+        {visibleSections.map((sec) => (
+          <a href={`#${sec.id}`} class="sheet-nav-link">
+            <span>{sec.label}</span>
+            <span class="sheet-arrow">→</span>
+          </a>
+        ))}
+        {showResume && (
+          <a href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="sheet-nav-link sheet-resume-link">
+            <span>{resumeLabel} (PDF)</span>
+            <span class="sheet-arrow">↗</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bottom-tab-bar {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-bar-height);
+    background: rgba(10, 12, 11, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  [data-theme="light"] .bottom-tab-bar {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .bottom-tab-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 var(--sp-2);
+  }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--muted);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+    cursor: pointer;
+    font-family: var(--ff-sans);
+    transition: color var(--transition-fast);
+  }
+
+  .tab-item:hover,
+  .tab-item.active {
+    color: var(--accent);
+  }
+
+  .tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tab-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .tab-contact-cta {
+    min-width: 72px;
+  }
+
+  .contact-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: var(--radius-btn);
+    background: var(--accent);
+    color: var(--text-on-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px var(--accent-subtle);
+  }
+
+  /* Bottom Sheet */
+  .bottom-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    animation: fadeIn var(--transition-fast) forwards;
+  }
+
+  .bottom-sheet-backdrop[hidden] {
+    display: none;
+  }
+
+  .bottom-sheet-panel {
+    background: var(--surface-raised);
+    border-top: 1px solid var(--border);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    padding: var(--sp-4) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp var(--transition-smooth) forwards;
+  }
+
+  [data-theme="light"] .bottom-sheet-panel {
+    background: #FFFFFF;
+  }
+
+  .sheet-drag-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    margin: 0 auto var(--sp-3);
+  }
+
+  .sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-4);
+    padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sheet-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .sheet-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+  }
+
+  .sheet-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sheet-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: var(--radius-btn);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .sheet-nav-link:hover,
+  .sheet-nav-link:active {
+    background: var(--surface-hover);
+    color: var(--accent);
+  }
+
+  .sheet-arrow {
+    color: var(--muted);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Hidden on tablet and desktop (>= 640px) */
+  @media (min-width: 640px) {
+    .bottom-tab-bar {
+      display: none !important;
+    }
+  }
+</style>

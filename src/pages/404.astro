@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import { getSetting } from '../lib/db';
+
+const db = Astro.locals.runtime?.env?.DB;
+const theme = (await getSetting(db, 'theme')) || {};
+const defaultTheme = theme.default || 'dark';
+const accent = theme.accent || 'emerald';
+Astro.response.status = 404;
+---
+
+<BaseLayout
+  title="404 — Page Not Found · GK Portfolio"
+  description="The requested page could not be found on Gulshan Kumar's portfolio."
+  robots="noindex, nofollow"
+  defaultTheme={defaultTheme}
+  accent={accent}
+>
+  <main id="main-content" class="error-container">
+    <div class="error-bg-code" aria-hidden="true">404</div>
+    <div class="error-eyebrow">// ERROR_404</div>
+    <h1 class="error-title">Page not found</h1>
+    <p class="error-desc">
+      The route you requested doesn't exist. You may have followed an outdated link or typed the address incorrectly.
+    </p>
+    <div class="error-actions">
+      <Button variant="primary" size="md" href="/">
+        <span>Back to Portfolio</span>
+        <span aria-hidden="true">→</span>
+      </Button>
+      <Button variant="secondary" size="md" href="javascript:history.back()">
+        <span>Go Back</span>
+      </Button>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .error-container {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--sp-6) var(--sp-5);
+    position: relative;
+    z-index: 2;
+  }
+
+  .error-bg-code {
+    font-family: var(--ff-mono);
+    font-size: clamp(6rem, 22vw, 16rem);
+    font-weight: 800;
+    line-height: 0.9;
+    color: var(--accent);
+    opacity: 0.06;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .error-eyebrow {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--sp-2);
+  }
+
+  .error-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-3xl);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--heading);
+    margin-bottom: var(--sp-3);
+  }
+
+  .error-desc {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.6;
+    margin-bottom: var(--sp-6);
+  }
+
+  .error-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>

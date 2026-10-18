@@ -1,0 +1,33 @@
+{
+  "name": "gk-portfolio-astro",
+  "type": "module",
+  "version": "2.1.0",
+  "description": "Modular Astro SSR + Cloudflare Workers & D1 Portfolio for Gulshan Kumar",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "prebuild": "node scripts/check-assets.mjs && node scripts/prepare-wrangler.mjs",
+    "build": "astro build",
+    "preview": "astro build && wrangler dev",
+    "deploy": "astro build && wrangler deploy --keep-vars",
+    "cf-typegen": "wrangler types",
+    "db:schema:local": "wrangler d1 execute portfolio-cms-db --local --file=./schema.sql",
+    "db:seed:local": "wrangler d1 execute portfolio-cms-db --local --file=./seed.sql",
+    "db:schema:remote": "wrangler d1 execute portfolio-cms-db --remote --file=./schema.sql",
+    "db:seed:remote": "wrangler d1 execute portfolio-cms-db --remote --file=./seed.sql",
+    "db:migrate:remote": "wrangler d1 execute portfolio-cms-db --remote --file=./migrations/0001_phase4_slugs_and_details.sql"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.0",
+    "astro": "^5.12.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250214.0",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.30.0"
+  },
+  "engines": {
+    "node": ">=18.17.1"
+  }
+}

@@ -1,0 +1,209 @@
+---
+import Button from './ui/Button.astro';
+import Pill from './ui/Pill.astro';
+import StatRow from './ui/StatRow.astro';
+import HeroVisual from './ui/HeroVisual.astro';
+import { sanitizeBasicHtml } from '../lib/db';
+
+interface Props {
+  globalCfg: Record<string, any>;
+  hero: Record<string, any>;
+  contact: Record<string, any>;
+  hasProjects?: boolean;
+}
+
+const { globalCfg = {}, hero = {}, contact = {}, hasProjects = true } = Astro.props;
+
+const name = globalCfg.name || 'Gulshan Kumar';
+const tagline = globalCfg.tagline || 'Automation & AI Systems Engineer';
+
+// Headline logic: new headline key with fallback to headline_line1 + headline_line2
+const headlineText = hero.headline || `${hero.headline_line1 || 'GULSHAN'} ${hero.headline_line2 || 'KUMAR'}`.trim() || 'I build bots & automation that run your business';
+
+// Subheadline logic: new subheadline with fallback to role_text
+const subheadlineRaw = hero.subheadline || hero.role_text || 'From custom AI workflows to automated scaling—I architect system integrations that eliminate manual work.';
+const subheadlineHtml = sanitizeBasicHtml(subheadlineRaw);
+
+const showAvailability = contact.availability_visible !== false;
+const statusLabel = hero.status_label || 'Available for projects';
+
+// CTAs logic with target section safety
+let primaryLabel = hero.cta_primary_label || 'Start a project';
+let primaryUrl = hero.cta_primary_url || '#contact';
+
+let secondaryLabel = hero.cta_secondary_label || (hasProjects ? 'View work' : 'See services');
+let secondaryUrl = hero.cta_secondary_url || (hasProjects ? '#projects' : '#services');
+
+// If target is #projects but no projects exist, redirect to #services
+if (secondaryUrl === '#projects' && !hasProjects) {
+  secondaryUrl = '#services';
+  if (!hero.cta_secondary_label) secondaryLabel = 'See services';
+}
+if (primaryUrl === '#projects' && !hasProjects) {
+  primaryUrl = '#services';
+  if (!hero.cta_primary_label) primaryLabel = 'See services';
+}
+
+// Avoid duplicate CTA buttons if both point to the same destination
+const showSecondary = secondaryUrl !== primaryUrl;
+
+const showVisual = hero.show_visual !== false;
+const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
+---
+
+<section id="hero" class="hero-section" aria-label="Introduction">
+  <div class="hero-container">
+    <div class="hero-content">
+      <!-- Eyebrow & Status Pill -->
+      <div class="hero-top-meta">
+        <span class="hero-eyebrow">// {name} · {tagline}</span>
+        {showAvailability && (
+          <Pill variant="status" pulse={true} size="sm">
+            {statusLabel}
+          </Pill>
+        )}
+      </div>
+
+      <!-- Exactly one h1 -->
+      <h1 class="hero-headline">{headlineText}</h1>
+
+      <!-- Outcome-focused subheadline -->
+      <p class="hero-subheadline" set:html={subheadlineHtml} />
+
+      <!-- Primary & Secondary CTAs -->
+      <div class="hero-actions">
+        <Button variant="primary" size="lg" href={primaryUrl} class="hero-btn-primary">
+          <span>{primaryLabel}</span>
+          <span aria-hidden="true">→</span>
+        </Button>
+        {showSecondary && (
+          <Button variant="secondary" size="lg" href={secondaryUrl} class="hero-btn-secondary">
+            <span>{secondaryLabel}</span>
+            <span aria-hidden="true">{secondaryUrl.startsWith('http') ? '↗' : '→'}</span>
+          </Button>
+        )}
+      </div>
+
+      <!-- Compact 3-up Stats Row -->
+      {quickStats.length > 0 && <StatRow stats={quickStats} class="hero-stats" />}
+    </div>
+
+    <!-- Hero Visual Artifact (Telegram Bot + Automation API) -->
+    {showVisual && (
+      <div class="hero-visual-wrapper">
+        <HeroVisual />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    padding: var(--sp-7) var(--sp-5) var(--sp-8);
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .hero-container {
+    max-width: var(--max-w-content);
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-7);
+    align-items: center;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  .hero-top-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-4);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .hero-headline {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-hero);
+    font-weight: 800;
+    line-height: 1.08;
+    color: var(--heading);
+    letter-spacing: -0.035em;
+    margin-bottom: var(--sp-4);
+    max-width: 22ch;
+  }
+
+  .hero-subheadline {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: var(--sp-6);
+    max-width: 52ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-2);
+  }
+
+  .hero-visual-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  /* Responsive Rules per Breakpoints */
+  @media (max-width: 639px) {
+    .hero-section {
+      padding: var(--sp-5) var(--sp-4) var(--sp-7);
+    }
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    :global(.hero-btn-primary),
+    :global(.hero-btn-secondary) {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .hero-section {
+      padding: var(--sp-7) var(--sp-6);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-section {
+      min-height: min(100svh, 760px);
+      padding: var(--sp-8) var(--sp-6);
+    }
+    .hero-container {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

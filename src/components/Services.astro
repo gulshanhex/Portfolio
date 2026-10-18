@@ -1,0 +1,85 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import ServiceCard from './ui/ServiceCard.astro';
+
+interface ServiceItem {
+  id: number;
+  icon: string;
+  title: string;
+  description: string;
+  cta_label?: string | null;
+  cta_url?: string | null;
+  slug?: string | null;
+}
+
+interface Props {
+  services: ServiceItem[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { services = [], copy = {} } = Astro.props;
+
+const eyebrow = copy.services_eyebrow || '// SERVICES';
+const title = copy.services_title || 'What I can do for you.';
+const subtitle = copy.services_subtitle || 'Tailored automation, integration, and intelligence for your business.';
+---
+
+{
+  services.length > 0 && (
+    <section id="services" class="services-section" aria-labelledby="services-title">
+      <div class="services-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <div class="services-grid">
+          {services.map((s, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.08}s`}>
+              <ServiceCard
+                icon={s.icon}
+                title={s.title}
+                description={s.description}
+                ctaLabel={s.cta_label || undefined}
+                ctaUrl={s.cta_url || undefined}
+                slug={s.slug || undefined}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .services-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .services-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  @media (min-width: 640px) {
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-5);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .services-grid {
+      gap: var(--sp-6);
+    }
+  }
+</style>

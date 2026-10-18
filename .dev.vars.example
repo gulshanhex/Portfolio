@@ -1,0 +1,15 @@
+# Cloudflare Workers / Wrangler Local Development Environment Variables
+# Copy this file to .dev.vars for local development:
+# cp .dev.vars.example .dev.vars
+
+# Session Secret (Minimum 32 random characters for HMAC cookie encryption)
+SESSION_SECRET="super-secret-session-key-change-me-to-a-secure-random-token"
+
+# Admin Setup Token (Required to access /setup?token=...)
+ADMIN_SETUP_TOKEN="dev-setup-token-12345"
+
+# Optional: TOTP Two-Factor Authentication Secret for admin
+# ADMIN_TOTP_SECRET=""
+
+# Optional: Cloudflare Turnstile Secret Key for contact form spam defense
+# TURNSTILE_SECRET_KEY=""

@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import BottomNav from '../components/ui/BottomNav.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Services from '../components/Services.astro';
+import Skills from '../components/Skills.astro';
+import Experience from '../components/Experience.astro';
+import Education from '../components/Education.astro';
+import Projects from '../components/Projects.astro';
+import Proof from '../components/Proof.astro';
+import Faq from '../components/Faq.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import ClientScripts from '../components/ClientScripts.astro';
+import { getSiteData } from '../lib/db';
+import { buildJsonLdGraph } from '../lib/seo';
+
+const db = Astro.locals.runtime?.env?.DB;
+const data = await getSiteData(db);
+
+const { settings, sections, skills, services, experiences, education, projects, proof, faqs } = data;
+const g = settings.global || {};
+const hero = settings.hero || {};
+const about = settings.about || {};
+const contact = settings.contact || {};
+const seo = settings.seo || {};
+const theme = settings.theme || {};
+const nav = settings.nav || {};
+const proofCfg = settings.proof_section || {};
+const copy = settings.copy || {};
+
+const name = g.name || 'Gulshan Kumar';
+const tagline = g.tagline || 'Automation & AI Systems Engineer';
+const defaultTheme = theme.default || 'dark';
+const accent = theme.accent || 'emerald';
+
+const jsonLd = seo.json_ld_enabled !== false ? buildJsonLdGraph(data) : null;
+const hasProjects = Array.isArray(projects) && projects.length > 0;
+
+// Cache public portfolio at edge with short TTL + stale-while-revalidate
+Astro.response.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+
+// Dynamically sort visible body sections according to Admin -> Sections order_idx
+const orderedBodySections = [...(sections || [])]
+  .filter((s) => s.id !== 'hero' && s.visible !== 0 && (s.id !== 'projects' || hasProjects))
+  .sort((a, b) => (a.order_idx ?? 0) - (b.order_idx ?? 0));
+
+const heroSection = (sections || []).find((s) => s.id === 'hero');
+const showHero = !heroSection || heroSection.visible !== 0;
+
+let visibleIdx = 0;
+const nextSectionNum = () => {
+  visibleIdx += 1;
+  return String(visibleIdx).padStart(2, '0');
+};
+---
+
+<BaseLayout
+  title={seo.title || `${name} — ${tagline}`}
+  description={seo.description || `Portfolio of ${name} — ${tagline} | Delhi, India`}
+  keywords={seo.keywords}
+  canonical={seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me'}
+  ogTitle={seo.og_title || seo.title || `${name} — ${tagline}`}
+  ogDescription={seo.og_description || seo.description}
+  ogImage={seo.og_image || 'https://portfolio.gulshan-kumar.me/og-image.png'}
+  robots={seo.robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+  authorName={name}
+  defaultTheme={defaultTheme}
+  accent={accent}
+  jsonLd={jsonLd}
+>
+  <Navbar
+    name={name}
+    contact={contact}
+    nav={nav}
+    theme={theme}
+    sections={sections}
+    hasProjects={hasProjects}
+  />
+
+  <main id="main-content">
+    {showHero && (
+      <Hero
+        globalCfg={g}
+        hero={hero}
+        contact={contact}
+        hasProjects={hasProjects}
+      />
+    )}
+
+    {
+      orderedBodySections.map((sec) => {
+        if (sec.id === 'about') {
+          return (
+            <About
+              sectionNum={nextSectionNum()}
+              about={about}
+              globalCfg={g}
+              contact={contact}
+              hero={hero}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'services' && services.length > 0) {
+          return (
+            <Services
+              sectionNum={nextSectionNum()}
+              services={services}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'skills' && skills.length > 0) {
+          return (
+            <Skills
+              sectionNum={nextSectionNum()}
+              skills={skills}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'experience' && experiences.length > 0) {
+          return (
+            <Experience
+              sectionNum={nextSectionNum()}
+              experiences={experiences}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'education' && education.length > 0) {
+          return (
+            <Education
+              sectionNum={nextSectionNum()}
+              education={education}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'projects' && hasProjects) {
+          return (
+            <Projects
+              sectionNum={nextSectionNum()}
+              projects={projects}
+              projectsSubdomain={g.projects_subdomain || 'https://projects.gulshan-kumar.me'}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'proof' && proof.length > 0) {
+          return (
+            <Proof
+              sectionNum={nextSectionNum()}
+              proofCfg={proofCfg}
+              proof={proof}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'faq' && faqs.length > 0) {
+          return (
+            <Faq
+              sectionNum={nextSectionNum()}
+              faqs={faqs}
+              copy={copy}
+            />
+          );
+        }
+        if (sec.id === 'contact') {
+          return (
+            <Contact
+              sectionNum={nextSectionNum()}
+              contact={contact}
+              nav={nav}
+              copy={copy}
+            />
+          );
+        }
+        return null;
+      })
+    }
+  </main>
+
+  <Footer globalCfg={g} contact={contact} />
+  <BottomNav
+    sections={sections}
+    contact={contact}
+    nav={nav}
+    hasProjects={hasProjects}
+  />
+  <ClientScripts userToggleEnabled={theme.user_toggle_enabled !== false} />
+</BaseLayout>

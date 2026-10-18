@@ -1,0 +1,175 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'icon';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  target?: string;
+  rel?: string;
+  disabled?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  target,
+  rel,
+  disabled = false,
+  class: className = '',
+  id,
+  ariaLabel,
+} = Astro.props;
+
+const classes = [
+  'ui-btn',
+  `ui-btn-${variant}`,
+  `ui-btn-${size}`,
+  className,
+].filter(Boolean).join(' ');
+
+const isLink = Boolean(href);
+const resolvedRel = target === '_blank' && !rel ? 'noopener noreferrer' : rel;
+---
+
+{
+  isLink ? (
+    <a
+      href={href}
+      class={classes}
+      id={id}
+      target={target}
+      rel={resolvedRel}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      class={classes}
+      id={id}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .ui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--ff-sans);
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    border-radius: var(--radius-btn);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .ui-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .ui-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .ui-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Sizes */
+  .ui-btn-sm {
+    padding: 8px 14px;
+    font-size: var(--fs-xs);
+  }
+
+  .ui-btn-md {
+    padding: 11px 20px;
+    font-size: var(--fs-sm);
+  }
+
+  .ui-btn-lg {
+    padding: 14px 28px;
+    font-size: var(--fs-base);
+  }
+
+  /* Variants */
+  .ui-btn-primary {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-color: var(--accent);
+  }
+
+  .ui-btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--accent-subtle);
+  }
+
+  .ui-btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .ui-btn-secondary:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-subtle);
+    color: var(--text-heading);
+    transform: translateY(-1px);
+  }
+
+  .ui-btn-outline {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .ui-btn-outline:hover {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .ui-btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: transparent;
+  }
+
+  .ui-btn-ghost:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  .ui-btn-icon {
+    padding: 8px;
+    border-radius: var(--radius-btn);
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .ui-btn-icon:hover {
+    background: var(--surface-hover);
+    color: var(--accent);
+  }
+</style>

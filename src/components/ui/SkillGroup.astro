@@ -1,0 +1,129 @@
+---
+import Icon from './Icon.astro';
+
+interface PillItem {
+  id?: number | string;
+  label: string;
+  is_hot?: boolean | number;
+}
+
+interface Props {
+  icon?: string;
+  label: string;
+  pills: PillItem[];
+  class?: string;
+}
+
+const {
+  icon = 'code',
+  label,
+  pills = [],
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`skill-group-card ${className}`}>
+  <div class="skill-group-header">
+    <div class="skill-group-icon" aria-hidden="true">
+      <Icon name={icon} size={20} />
+    </div>
+    <h3 class="skill-group-label">{label}</h3>
+  </div>
+
+  <div class="skill-pills-list">
+    {pills.map((p) => (
+      <span class={`skill-pill ${p.is_hot ? 'skill-pill-hot' : ''}`}>
+        {p.is_hot ? <span class="hot-indicator" aria-hidden="true">★</span> : null}
+        <span>{p.label}</span>
+      </span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .skill-group-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), border-color var(--transition-base);
+  }
+
+  .skill-group-card:hover {
+    border-color: var(--accent-border);
+    transform: translateY(-2px);
+  }
+
+  .skill-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .skill-group-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-btn);
+    background: var(--accent-subtle);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .skill-group-label {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .skill-pills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    padding: 5px 11px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    transition: all var(--transition-fast);
+  }
+
+  .skill-pill:hover {
+    color: var(--text);
+    border-color: var(--border-subtle);
+  }
+
+  .skill-pill-hot {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-color: var(--accent-border);
+    font-weight: 600;
+  }
+
+  .hot-indicator {
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skill-group-card:hover {
+      transform: none;
+    }
+  }
+</style>

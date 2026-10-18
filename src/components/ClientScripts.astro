@@ -1,0 +1,374 @@
+---
+interface Props {
+  userToggleEnabled?: boolean;
+}
+
+const { userToggleEnabled = true } = Astro.props;
+---
+
+<script is:inline define:vars={{ userToggleEnabled }}>
+  (function () {
+    const root = document.documentElement;
+
+    // ── Theme Toggle ───────────────────────────────────
+    const themeIcon = document.getElementById('theme-icon');
+    function syncThemeIcon() {
+      const current = root.getAttribute('data-theme') || 'dark';
+      if (themeIcon) {
+        themeIcon.textContent = current === 'dark' ? 'light_mode' : 'dark_mode';
+      }
+    }
+    syncThemeIcon();
+
+    if (userToggleEnabled) {
+      document.querySelectorAll('#theme-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const current = root.getAttribute('data-theme') || 'dark';
+          const next = current === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try {
+            localStorage.setItem('gk-theme', next);
+          } catch (e) {}
+          syncThemeIcon();
+        });
+      });
+    }
+
+    // ── Progressive Reveal on Scroll (IntersectionObserver) ──
+    if (
+      'IntersectionObserver' in window &&
+      window.matchMedia('(prefers-reduced-motion: no-preference)').matches
+    ) {
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('vis');
+              revealObserver.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.rv').forEach((el) => revealObserver.observe(el));
+    } else {
+      document.querySelectorAll('.rv').forEach((el) => el.classList.add('vis'));
+    }
+
+    // ── Scroll Spy for Active Navigation Links ─────────
+    if ('IntersectionObserver' in window) {
+      const navLinks = document.querySelectorAll('.nav-link, .tab-item[data-tab]');
+      const sections = document.querySelectorAll('section[id]');
+
+      const spyObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.getAttribute('id');
+              navLinks.forEach((link) => {
+                const isMatch =
+                  link.getAttribute('data-section') === id ||
+                  link.getAttribute('data-tab') === id ||
+                  link.getAttribute('href') === '#' + id;
+                if (isMatch) {
+                  link.classList.add('active');
+                } else if (link.getAttribute('data-tab') !== 'contact') {
+                  link.classList.remove('active');
+                }
+              });
+            }
+          });
+        },
+        { threshold: 0.25, rootMargin: '-64px 0px -40% 0px' }
+      );
+
+      sections.forEach((sec) => spyObserver.observe(sec));
+    }
+
+    // ── Desktop Top Nav "More" Dropdown ────────────────
+    const topMoreBtn = document.getElementById('top-more-btn');
+    const topMoreMenu = document.getElementById('top-more-menu');
+    if (topMoreBtn && topMoreMenu) {
+      topMoreBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !topMoreMenu.hidden;
+        topMoreMenu.hidden = isOpen;
+        topMoreBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!topMoreMenu.contains(e.target) && e.target !== topMoreBtn) {
+          topMoreMenu.hidden = true;
+          topMoreBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // ── Mobile Bottom Sheet Drawer ─────────────────────
+    const bottomMoreBtn = document.getElementById('bottom-more-btn');
+    const bottomSheetModal = document.getElementById('bottom-sheet-modal');
+    const sheetCloseBtn = document.getElementById('sheet-close-btn');
+
+    function openBottomSheet() {
+      if (bottomSheetModal) {
+        bottomSheetModal.hidden = false;
+        bottomMoreBtn?.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeBottomSheet() {
+      if (bottomSheetModal) {
+        bottomSheetModal.hidden = true;
+        bottomMoreBtn?.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+    }
+
+    bottomMoreBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openBottomSheet();
+    });
+
+    sheetCloseBtn?.addEventListener('click', closeBottomSheet);
+
+    bottomSheetModal?.addEventListener('click', (e) => {
+      if (e.target === bottomSheetModal) {
+        closeBottomSheet();
+      }
+    });
+
+    bottomSheetModal?.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', closeBottomSheet);
+    });
+
+    // Escape Key Listener
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (topMoreMenu && !topMoreMenu.hidden) {
+          topMoreMenu.hidden = true;
+          topMoreBtn?.setAttribute('aria-expanded', 'false');
+        }
+        if (bottomSheetModal && !bottomSheetModal.hidden) {
+          closeBottomSheet();
+        }
+      }
+    });
+
+    // ── Project Category Filter ────────────────────────
+    document.querySelectorAll('.proj-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.proj-filter-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = (btn.getAttribute('data-cat') || 'all').toLowerCase();
+        document.querySelectorAll('.project-card').forEach((card) => {
+          const cardCat = (card.getAttribute('data-cat') || '').toLowerCase();
+          const match = cat === 'all' || cardCat === cat;
+          card.style.display = match ? '' : 'none';
+        });
+      });
+    });
+
+    // ── Contact Form Submission (Honeypot + Elapsed Delta) ──
+    const ctForm = document.getElementById('ct-form');
+    const ctMsg = document.getElementById('ct-msg');
+    const ctBtnTxt = document.getElementById('ct-btn-txt');
+    const formInitTime = performance.now();
+
+    if (ctForm && ctMsg) {
+      ctForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(ctForm);
+        const elapsedMs = Math.round(performance.now() - formInitTime);
+        const body = {
+          name: String(fd.get('name') || '').trim(),
+          email: String(fd.get('email') || '').trim(),
+          subject: String(fd.get('subject') || '').trim() || undefined,
+          message: String(fd.get('message') || '').trim(),
+          _hp: String(fd.get('_hp') || '').trim(),
+          _elapsed: elapsedMs,
+        };
+
+        if (!body.name || !body.email || !body.message) {
+          ctMsg.className = 'form-msg err';
+          ctMsg.textContent = 'Please fill in all required fields.';
+          ctMsg.style.display = 'block';
+          return;
+        }
+
+        const btn = ctForm.querySelector('button[type="submit"]');
+        if (ctBtnTxt) ctBtnTxt.textContent = 'Sending...';
+        if (btn) btn.disabled = true;
+
+        try {
+          const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            ctMsg.className = 'form-msg ok';
+            ctMsg.textContent = data.message || "Message sent! I'll get back to you soon.";
+            ctMsg.style.display = 'block';
+            ctForm.reset();
+                      } else {
+            ctMsg.className = 'form-msg err';
+            ctMsg.textContent = data.error || 'Something went wrong. Please try again.';
+            ctMsg.style.display = 'block';
+          }
+        } catch {
+          ctMsg.className = 'form-msg err';
+          ctMsg.textContent = 'Network error. Please try again.';
+          ctMsg.style.display = 'block';
+        }
+
+        if (ctBtnTxt) ctBtnTxt.textContent = 'Send Message';
+        if (btn) btn.disabled = false;
+      });
+    }
+
+  // PWA Service Worker & Install Flow
+  if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js');
+
+        // Check for waiting service worker (update available)
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          showUpdateToast(reg.waiting);
+        }
+
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast(newWorker);
+              }
+            });
+          }
+        });
+      } catch (e) {
+        // SW registration failed silently
+      }
+    });
+
+    function showUpdateToast(worker) {
+      if (document.getElementById('pwa-update-toast')) return;
+      const toast = document.createElement('div');
+      toast.id = 'pwa-update-toast';
+      toast.className = 'pwa-toast';
+      toast.innerHTML = `
+        <div class="pwa-toast-inner">
+          <span>A new version is available.</span>
+          <button type="button" id="pwa-refresh-btn" class="pwa-toast-btn">Refresh</button>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      document.getElementById('pwa-refresh-btn')?.addEventListener('click', () => {
+        worker.postMessage({ type: 'SKIP_WAITING' });
+      });
+    }
+
+    // Custom beforeinstallprompt handling (Mobile engagement banner + Desktop nav button)
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Desktop nav button if available
+      const deskBtn = document.getElementById('pwa-desktop-install');
+      if (deskBtn) {
+        deskBtn.style.display = 'inline-flex';
+        deskBtn.addEventListener('click', async () => {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          deskBtn.style.display = 'none';
+        });
+      }
+
+      // Mobile engagement banner
+      const isDismissed = localStorage.getItem('pwa_install_dismissed') === 'true';
+      if (!isDismissed) {
+        const triggerBanner = () => {
+          if (document.getElementById('pwa-install-banner') || !deferredPrompt) return;
+          const banner = document.createElement('div');
+          banner.id = 'pwa-install-banner';
+          banner.className = 'pwa-banner';
+          banner.innerHTML = `
+            <div class="pwa-banner-inner">
+              <div class="pwa-banner-text">
+                <strong>Install GK Portfolio</strong>
+                <p>Install on your home screen for quick offline access</p>
+              </div>
+              <div class="pwa-banner-actions">
+                <button type="button" id="pwa-install-action" class="pwa-action-btn">Install</button>
+                <button type="button" id="pwa-dismiss-action" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(banner);
+
+          document.getElementById('pwa-install-action')?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            banner.remove();
+          });
+
+          document.getElementById('pwa-dismiss-action')?.addEventListener('click', () => {
+            banner.remove();
+            localStorage.setItem('pwa_install_dismissed', 'true');
+          });
+        };
+
+        // Show banner after 4 seconds or after user scrolls down 300px
+        setTimeout(triggerBanner, 4000);
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) triggerBanner();
+        }, { once: true });
+      }
+    });
+
+    // iOS "Share -> Add to Home Screen" hint banner
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in navigator && navigator.standalone);
+    const isIosDismissed = localStorage.getItem('pwa_ios_hint_dismissed') === 'true';
+
+    if (isIOS && !isStandalone && !isIosDismissed) {
+      setTimeout(() => {
+        if (document.getElementById('pwa-ios-hint')) return;
+        const hint = document.createElement('div');
+        hint.id = 'pwa-ios-hint';
+        hint.className = 'pwa-banner';
+        hint.innerHTML = `
+          <div class="pwa-banner-inner">
+            <div class="pwa-banner-text">
+              <strong>Add to Home Screen</strong>
+              <p>Tap <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <em>'Add to Home Screen'</em> for full offline app experience.</p>
+            </div>
+            <button type="button" id="pwa-ios-dismiss" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+          </div>
+        `;
+        document.body.appendChild(hint);
+        document.getElementById('pwa-ios-dismiss')?.addEventListener('click', () => {
+          hint.remove();
+          localStorage.setItem('pwa_ios_hint_dismissed', 'true');
+        });
+      }, 5000);
+    }
+  }
+  })();
+</script>

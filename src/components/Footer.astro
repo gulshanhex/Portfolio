@@ -1,0 +1,159 @@
+---
+import { sanitizeBasicHtml } from '../lib/db';
+
+interface Props {
+  globalCfg?: Record<string, any>;
+  contact?: Record<string, any>;
+}
+
+const { globalCfg = {}, contact = {} } = Astro.props;
+const name = globalCfg.name || 'Gulshan Kumar';
+const tagline = globalCfg.tagline || 'Automation & AI Systems Engineer';
+const footerHtml = sanitizeBasicHtml(
+  globalCfg.footer_text || `Built by <strong>${name}</strong> · Delhi, India`
+);
+---
+
+<footer id="gk-footer" class="site-footer" role="contentinfo">
+  <div class="footer-container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#hero" class="footer-logo" aria-label={`${name} Home`}>
+          <span>GK</span><span class="footer-dot">.</span>
+        </a>
+        <p class="footer-tagline">{tagline}</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer links">
+        {globalCfg.domain && (
+          <a href={globalCfg.domain} target="_blank" rel="noopener noreferrer" class="footer-link">
+            Main Site ↗
+          </a>
+        )}
+        {contact.github && (
+          <a href={contact.github} target="_blank" rel="noopener noreferrer" class="footer-link">
+            GitHub ↗
+          </a>
+        )}
+        {contact.linkedin && (
+          <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" class="footer-link">
+            LinkedIn ↗
+          </a>
+        )}
+        <a href="/llms.txt" class="footer-link">LLMs.txt</a>
+        <a href="/sitemap.xml" class="footer-link">Sitemap</a>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy" set:html={footerHtml} />
+      <div class="footer-subcopy">
+        portfolio.gulshan-kumar.me · All rights reserved
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: var(--sp-8) var(--sp-5) calc(var(--sp-8) + var(--bottom-bar-height));
+    margin-top: var(--sp-8);
+  }
+
+  .footer-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    padding-bottom: var(--sp-6);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--sp-5);
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ff-sans);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--heading);
+    text-decoration: none;
+    letter-spacing: -0.03em;
+  }
+
+  .footer-dot {
+    color: var(--accent);
+  }
+
+  .footer-tagline {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+  }
+
+  .footer-link {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-link:hover {
+    color: var(--accent);
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .footer-copy strong {
+    color: var(--text);
+  }
+
+  .footer-subcopy {
+    opacity: 0.7;
+    font-size: 0.72rem;
+    font-family: var(--ff-mono);
+  }
+
+  @media (min-width: 640px) {
+    .site-footer {
+      padding-bottom: var(--sp-8);
+    }
+    .footer-top {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-bottom {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+</style>

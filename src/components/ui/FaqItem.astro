@@ -1,0 +1,84 @@
+---
+interface Props {
+  question: string;
+  answer: string;
+  class?: string;
+}
+
+const { question, answer, class: className = '' } = Astro.props;
+---
+
+<details class={`faq-item-details ${className}`}>
+  <summary class="faq-summary">
+    <span class="faq-question">{question}</span>
+    <span class="faq-toggle-icon" aria-hidden="true">+</span>
+  </summary>
+  <div class="faq-content">
+    <p>{answer}</p>
+  </div>
+</details>
+
+<style>
+  .faq-item-details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    margin-bottom: var(--sp-3);
+    overflow: hidden;
+    transition: border-color var(--transition-fast);
+  }
+
+  .faq-item-details[open] {
+    border-color: var(--accent-border);
+  }
+
+  .faq-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-5);
+    cursor: pointer;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    color: var(--heading);
+    list-style: none;
+    user-select: none;
+    gap: var(--sp-4);
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .faq-toggle-icon {
+    font-family: var(--ff-mono);
+    font-size: 1.25rem;
+    color: var(--accent);
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .faq-item-details[open] .faq-toggle-icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-content {
+    padding: 0 var(--sp-5) var(--sp-5);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    line-height: 1.65;
+    border-top: 1px solid transparent;
+  }
+
+  .faq-item-details[open] .faq-content {
+    border-top-color: var(--border-subtle);
+    padding-top: var(--sp-3);
+  }
+</style>

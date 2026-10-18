@@ -1,0 +1,452 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`hero-visual-container ${className}`} aria-label="Interactive automation workflow demonstration">
+  <!-- Subtle green background radial glow (dark mode only) -->
+  <div class="hero-glow" aria-hidden="true"></div>
+
+  <!-- Background Layer: Automation API Dashboard Card -->
+  <div class="visual-card card-api" aria-hidden="true">
+    <div class="api-header">
+      <div class="api-title">
+        <span class="api-dot"></span>
+        <span>Automation API</span>
+      </div>
+      <span class="api-badge">Active</span>
+    </div>
+
+    <!-- Sparkline Chart -->
+    <div class="api-chart">
+      <svg viewBox="0 0 300 80" class="sparkline-svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0,60 Q40,65 70,45 T140,40 T210,20 T280,35 L300,25 L300,80 L0,80 Z"
+          fill="url(#chartGrad)"
+        />
+        <path
+          d="M0,60 Q40,65 70,45 T140,40 T210,20 T280,35 L300,25"
+          fill="none"
+          stroke="var(--accent)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </div>
+
+    <!-- Dashboard Sub-metrics -->
+    <div class="api-stats">
+      <div class="api-stat">
+        <span class="api-stat-k">Workflows</span>
+        <span class="api-stat-v">24/7 Live</span>
+      </div>
+      <div class="api-stat">
+        <span class="api-stat-k">Execution</span>
+        <span class="api-stat-v">Edge Webhook</span>
+      </div>
+      <div class="api-stat">
+        <span class="api-stat-k">Status</span>
+        <span class="api-stat-v">Operational</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Foreground Layer: Telegram-style Bot Chat Card -->
+  <div class="visual-card card-chat" aria-hidden="true">
+    <div class="chat-header">
+      <div class="chat-user">
+        <div class="chat-avatar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+        </div>
+        <div class="chat-info">
+          <span class="chat-name">Bot Engine</span>
+          <span class="chat-status">automated sequence</span>
+        </div>
+      </div>
+      <div class="chat-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="chat-body">
+      <!-- Bot Message -->
+      <div class="chat-bubble bot-bubble">
+        <span class="bubble-sender">System Bot</span>
+        <p>Triggered scheduled operational cycle.</p>
+      </div>
+
+      <!-- Code Trigger Snippet -->
+      <div class="chat-code">
+        <code>schedule.every().day.at("09:00").do(run_audit)</code>
+      </div>
+
+      <!-- User Command -->
+      <div class="chat-bubble user-bubble">
+        <p>Scale resources to 2x.</p>
+      </div>
+
+      <!-- Bot Success Response -->
+      <div class="chat-bubble bot-bubble success-bubble">
+        <span class="check-icon">✓</span>
+        <span>Allocated 2x capacity in 1.4s</span>
+      </div>
+    </div>
+
+    <!-- Chat Footer Input Simulation -->
+    <div class="chat-footer">
+      <span class="chat-placeholder">Write a command...</span>
+      <div class="chat-actions">
+        <span class="chat-action-btn">↵</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="visual-caption">
+    <span class="caption-dot"></span>
+    <span>Sample automated orchestration workflow</span>
+  </div>
+</div>
+
+<style>
+  .hero-visual-container {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    perspective: 1000px;
+  }
+
+  /* Dark mode hero glow */
+  .hero-glow {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
+    filter: blur(48px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  [data-theme="light"] .hero-glow {
+    opacity: 0.25;
+    background: radial-gradient(circle, rgba(23, 128, 74, 0.12) 0%, transparent 70%);
+  }
+
+  .visual-card {
+    position: relative;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    z-index: 1;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Card 1: API Dashboard */
+  .card-api {
+    padding: var(--sp-4);
+    margin-bottom: -40px;
+    width: 90%;
+    margin-left: 0;
+    background: var(--card);
+    border-color: var(--border);
+  }
+
+  .api-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-3);
+  }
+
+  .api-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--heading);
+  }
+
+  .api-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .api-badge {
+    font-family: var(--ff-mono);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+
+  .api-chart {
+    width: 100%;
+    height: 64px;
+    margin-bottom: var(--sp-3);
+  }
+
+  .sparkline-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .api-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-2);
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .api-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .api-stat-k {
+    font-family: var(--ff-sans);
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  .api-stat-v {
+    font-family: var(--ff-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--heading);
+  }
+
+  /* Card 2: Telegram Chat Card */
+  .card-chat {
+    width: 94%;
+    margin-left: auto;
+    padding: var(--sp-4);
+    z-index: 2;
+    background: var(--surface-raised);
+    border-color: var(--border);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  [data-theme="light"] .card-chat {
+    background: #FFFFFF;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--sp-3);
+  }
+
+  .chat-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chat-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #2AABEE;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-name {
+    font-family: var(--ff-sans);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--heading);
+    line-height: 1.2;
+  }
+
+  .chat-status {
+    font-family: var(--ff-mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+  }
+
+  .chat-dots {
+    display: flex;
+    gap: 3px;
+  }
+
+  .chat-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--muted);
+    opacity: 0.6;
+  }
+
+  .chat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: var(--sp-3);
+  }
+
+  .chat-bubble {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    max-width: 85%;
+  }
+
+  .bot-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    align-self: flex-start;
+  }
+
+  .bubble-sender {
+    display: block;
+    font-family: var(--ff-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+
+  .user-bubble {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    font-weight: 500;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+
+  .success-bubble {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .check-icon {
+    font-weight: 700;
+  }
+
+  .chat-code {
+    background: var(--bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    align-self: flex-start;
+    max-width: 95%;
+    overflow-x: auto;
+  }
+
+  .chat-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .chat-placeholder {
+    font-size: 0.78rem;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  .chat-action-btn {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .visual-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: var(--sp-4);
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .caption-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* Responsive layout adjustments */
+  @media (min-width: 1024px) {
+    .hero-visual-container {
+      max-width: 480px;
+    }
+    .card-api {
+      transform: translateY(-8px) rotate(-1.5deg);
+      transition: transform var(--transition-base);
+    }
+    .card-chat {
+      transform: translateY(-16px) rotate(1deg);
+      transition: transform var(--transition-base);
+    }
+    .hero-visual-container:hover .card-api {
+      transform: translateY(-14px) rotate(-2deg);
+    }
+    .hero-visual-container:hover .card-chat {
+      transform: translateY(-24px) rotate(1.5deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-api,
+    .card-chat {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+</style>

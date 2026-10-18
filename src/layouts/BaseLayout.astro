@@ -1,0 +1,139 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  canonical?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  robots?: string;
+  authorName?: string;
+  defaultTheme?: string;
+  accent?: string;
+  jsonLd?: Record<string, any> | null;
+}
+
+const {
+  title = 'Gulshan Kumar — Automation & AI Systems Engineer | Python, Bots, PLC & Cloud',
+  description = 'Official portfolio of Gulshan Kumar, an Automation & AI Systems Engineer in Delhi, India specializing in Python backends, Telegram & Discord bots, PLC industrial automation, and Cloudflare edge systems.',
+  keywords = 'Gulshan Kumar, Automation Engineer, AI Systems Engineer, Python Developer Delhi, Telegram Bot Developer, Discord Bot Developer, PLC Systems, Industrial Automation, Cloudflare Workers',
+  canonical = 'https://portfolio.gulshan-kumar.me',
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = 'https://portfolio.gulshan-kumar.me/og-image.png',
+  robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+  authorName = 'Gulshan Kumar',
+  defaultTheme = 'dark',
+  accent = 'emerald',
+  jsonLd = null,
+} = Astro.props;
+
+const cleanCanonical = canonical.replace(/\/$/, '') || 'https://portfolio.gulshan-kumar.me';
+const resolvedOgImage = ogImage
+  ? ogImage.startsWith('http')
+    ? ogImage
+    : `${cleanCanonical}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`
+  : `${cleanCanonical}/og-image.png`;
+---
+
+<!DOCTYPE html>
+<html lang="en-IN" data-theme={defaultTheme} data-accent={accent}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Primary SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={authorName} />
+    <meta name="creator" content={authorName} />
+    <meta name="publisher" content={authorName} />
+    <meta name="robots" content={robots} />
+    <meta name="googlebot" content={robots} />
+    <link rel="canonical" href={cleanCanonical} />
+
+    <!-- GEO & LLM Context Profiles -->
+    <meta name="geo.region" content="IN-DL" />
+    <meta name="geo.placename" content="New Delhi, Delhi, India" />
+    <meta name="geo.position" content="28.6139;77.2090" />
+    <meta name="ICBM" content="28.6139, 77.2090" />
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM Context Summary" />
+    <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="LLM Full Context Profile" />
+
+    <!-- Favicons & PWA Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48 64x64" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0A0C0B" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F6F7F4" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- OpenGraph / Social Meta Tags -->
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="GK Portfolio — Gulshan Kumar" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content={cleanCanonical} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:image:secure_url" content={resolvedOgImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${authorName} — Automation & AI Systems Engineer Portfolio`} />
+    <meta property="profile:first_name" content="Gulshan" />
+    <meta property="profile:last_name" content="Kumar" />
+    <meta property="profile:username" content="gulshanhex" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={cleanCanonical} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+    <meta name="twitter:image:alt" content={`${authorName} — Automation & AI Systems Engineer Portfolio`} />
+
+    <!-- Preload Critical Self-Hosted Font -->
+    <link rel="preload" href="/fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Early Theme Detection & Progressive Enhancement Bootstrap -->
+    <script is:inline define:vars={{ defaultTheme, accent }}>
+      (function () {
+        try {
+          document.documentElement.classList.add('js');
+          var saved = localStorage.getItem('gk-theme');
+          var theme = saved;
+          if (!theme) {
+            if (defaultTheme === 'system') {
+              theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+            } else {
+              theme = defaultTheme || 'dark';
+            }
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          if (accent) {
+            document.documentElement.setAttribute('data-accent', accent);
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Schema.org JSON-LD @graph -->
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <slot />
+  </body>
+</html>

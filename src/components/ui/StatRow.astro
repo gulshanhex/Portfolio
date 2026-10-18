@@ -1,0 +1,81 @@
+---
+interface StatItem {
+  value: string;
+  label: string;
+  desc?: string;
+}
+
+interface Props {
+  stats: StatItem[];
+  class?: string;
+}
+
+const { stats = [], class: className = '' } = Astro.props;
+---
+
+{
+  stats.length > 0 && (
+    <div class={`ui-stat-row ${className}`}>
+      {stats.map((s) => (
+        <div class="ui-stat-item">
+          <div class="ui-stat-value">{s.value}</div>
+          <div class="ui-stat-label">{s.label}</div>
+          {s.desc && <div class="ui-stat-desc">{s.desc}</div>}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .ui-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-4);
+    padding: var(--sp-4) 0;
+    border-top: 1px solid var(--border);
+    margin-top: var(--sp-6);
+  }
+
+  .ui-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ui-stat-value {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .ui-stat-label {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .ui-stat-desc {
+    display: none;
+    font-family: var(--ff-sans);
+    font-size: 0.72rem;
+    color: var(--muted);
+    opacity: 0.8;
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+
+  @media (min-width: 640px) {
+    .ui-stat-desc {
+      display: block;
+    }
+    .ui-stat-row {
+      gap: var(--sp-6);
+    }
+  }
+</style>

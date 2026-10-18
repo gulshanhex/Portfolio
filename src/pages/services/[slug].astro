@@ -1,0 +1,608 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import Card from '../../components/ui/Card.astro';
+import Pill from '../../components/ui/Pill.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { getServiceBySlug, getAllSettings, getServices } from '../../lib/db';
+
+const { slug } = Astro.params;
+const db = Astro.locals.runtime?.env?.DB;
+
+if (!slug) {
+  return Astro.redirect('/#services');
+}
+
+const service = await getServiceBySlug(db, slug);
+
+if (!service) {
+  Astro.response.status = 404;
+}
+
+const settings = await getAllSettings(db);
+const g = settings.global || {};
+const theme = settings.theme || {};
+const seo = settings.seo || {};
+
+const name = g.name || 'Gulshan Kumar';
+const defaultTheme = theme.default || 'dark';
+const accent = theme.accent || 'emerald';
+const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+
+// Related services for bottom recommendations
+const allServices = await getServices(db, true);
+const relatedServices = allServices.filter((s) => s.slug !== slug).slice(0, 3);
+
+// Breadcrumb Schema.org
+const breadcrumbLd = service ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${canonicalBase}/` },
+    { '@type': 'ListItem', position: 2, name: 'Services', item: `${canonicalBase}/#services` },
+    { '@type': 'ListItem', position: 3, name: service.title, item: `${canonicalBase}/services/${slug}` },
+  ],
+} : null;
+---
+
+{
+  !service ? (
+    <BaseLayout
+      title={`Service Not Found · ${name}`}
+      description="The requested engineering service could not be located."
+      robots="noindex, nofollow"
+      defaultTheme={defaultTheme}
+      accent={accent}
+    >
+      <main id="main-content" class="not-found-wrap">
+        <div class="nf-eyebrow">// 404 ERROR</div>
+        <h1 class="nf-title">Service Not Found</h1>
+        <p class="nf-desc">The service "{slug}" doesn't exist or is currently inactive.</p>
+        <div class="nf-actions">
+          <Button variant="primary" size="md" href="/#services">
+            <span>View All Services</span>
+            <span aria-hidden="true">→</span>
+          </Button>
+          <Button variant="secondary" size="md" href="/">
+            <span>Return Home</span>
+          </Button>
+        </div>
+      </main>
+    </BaseLayout>
+  ) : (
+    <BaseLayout
+      title={`${service.title} — Technical Services · ${name}`}
+      description={service.description || `Specialized engineering and automation for ${service.title} by ${name}.`}
+      canonical={`${canonicalBase}/services/${slug}`}
+      ogTitle={`${service.title} — ${name}`}
+      ogDescription={service.description}
+      defaultTheme={defaultTheme}
+      accent={accent}
+      jsonLd={breadcrumbLd}
+    >
+      <!-- Minimal Sticky Header for Detail Pages -->
+      <header class="detail-header">
+        <div class="detail-header-inner">
+          <a href="/" class="brand-logo" aria-label={`${name} Home`}>
+            <span class="logo-text">GK</span><span class="logo-dot">.</span>
+          </a>
+          <nav class="detail-nav-links">
+            <a href="/#services" class="back-link">
+              <span aria-hidden="true">←</span>
+              <span>All Services</span>
+            </a>
+            <Button variant="primary" size="sm" href="/#contact">
+              Inquire
+            </Button>
+          </nav>
+        </div>
+      </header>
+
+      <main id="main-content" class="service-detail-main">
+        <div class="service-detail-container">
+          <!-- Breadcrumb Trail -->
+          <nav class="breadcrumb-trail" aria-label="Breadcrumb navigation">
+            <a href="/">Home</a>
+            <span class="crumb-sep">/</span>
+            <a href="/#services">Services</a>
+            <span class="crumb-sep">/</span>
+            <span class="crumb-current">{service.title}</span>
+          </nav>
+
+          <!-- Hero Block -->
+          <div class="service-hero">
+            <div class="service-hero-icon" aria-hidden="true">
+              <Icon name={service.icon || 'build'} size={36} />
+            </div>
+            <div class="service-hero-text">
+              <span class="service-eyebrow">// ENGINEERING SERVICE</span>
+              <h1 class="service-page-title">{service.title}</h1>
+              <p class="service-lead">{service.description}</p>
+            </div>
+          </div>
+
+          <!-- Content Grid: Details & Features -->
+          <div class="service-content-grid">
+            <div class="service-overview">
+              <h2 class="section-subheading">Technical Overview</h2>
+              <div class="service-long-desc">
+                {service.long_description ? (
+                  <p>{service.long_description}</p>
+                ) : (
+                  <p>
+                    Production-grade implementation tailored for robust systems integration. Built with resilient
+                    error handling, telemetry diagnostics, and edge deployment standards.
+                  </p>
+                )}
+              </div>
+
+              <!-- Workflow & Capabilities -->
+              {service.features && service.features.length > 0 && (
+                <div class="service-features-block">
+                  <h3 class="features-heading">Key Capabilities & Standards</h3>
+                  <ul class="features-list">
+                    {service.features.map((feat: string) => (
+                      <li class="feature-item">
+                        <span class="feature-check" aria-hidden="true">✓</span>
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <!-- Sidebar / Action Card -->
+            <aside class="service-sidebar">
+              <Card class="inquiry-card">
+                <h3 class="inquiry-title">Ready to automate?</h3>
+                <p class="inquiry-desc">
+                  Have a specific workflow, hardware integration, or backend requirement? Let's discuss scope and timelines.
+                </p>
+                <Button variant="primary" size="lg" href="/#contact" class="inquiry-btn">
+                  <span>Start Discussion</span>
+                  <span aria-hidden="true">→</span>
+                </Button>
+                <div class="inquiry-meta">
+                  <span class="meta-item">
+                    <span class="dot-live" aria-hidden="true"></span>
+                    <span>Direct engineering consultation</span>
+                  </span>
+                  <span class="meta-item">
+                    <span>Delhi, India &amp; Remote</span>
+                  </span>
+                </div>
+              </Card>
+            </aside>
+          </div>
+
+          <!-- Related Services -->
+          {relatedServices.length > 0 && (
+            <div class="related-services-section">
+              <h3 class="related-heading">Other Engineering Capabilities</h3>
+              <div class="related-grid">
+                {relatedServices.map((relSvc) => (
+                  <Card as="a" href={`/services/${relSvc.slug}`} class="related-card" interactive={true}>
+                    <div class="related-icon" aria-hidden="true">
+                      <Icon name={relSvc.icon || 'build'} size={20} />
+                    </div>
+                    <div class="related-text">
+                      <h4 class="related-title">{relSvc.title}</h4>
+                      <p class="related-desc">{relSvc.description}</p>
+                    </div>
+                    <span class="related-arrow" aria-hidden="true">→</span>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <footer class="detail-footer">
+        <div class="detail-footer-inner">
+          <span>{name} · {g.location || 'Delhi, India'}</span>
+          <a href="/#services">Back to top of services ↑</a>
+        </div>
+      </footer>
+    </BaseLayout>
+  )
+}
+
+<style>
+  .detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    background: rgba(10, 12, 11, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-theme="light"] .detail-header {
+    background: rgba(246, 247, 244, 0.9);
+  }
+
+  .detail-header-inner {
+    max-width: var(--max-w-content);
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--sp-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand-logo {
+    font-family: var(--ff-sans);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--heading);
+    text-decoration: none;
+  }
+
+  .logo-dot {
+    color: var(--accent);
+  }
+
+  .detail-nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--heading);
+  }
+
+  .service-detail-main {
+    padding: var(--sp-6) var(--sp-5) var(--sp-9);
+    background: var(--bg);
+  }
+
+  .service-detail-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .breadcrumb-trail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+    margin-bottom: var(--sp-6);
+  }
+
+  .breadcrumb-trail a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb-trail a:hover {
+    color: var(--accent);
+  }
+
+  .crumb-sep {
+    opacity: 0.5;
+  }
+
+  .crumb-current {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .service-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-5);
+    padding-bottom: var(--sp-6);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--sp-7);
+  }
+
+  .service-hero-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-card);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .service-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .service-eyebrow {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+
+  .service-page-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-3xl);
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .service-lead {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+
+  .service-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-7);
+    margin-bottom: var(--sp-8);
+  }
+
+  .section-subheading {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-4);
+  }
+
+  .service-long-desc p {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: var(--sp-4);
+  }
+
+  .service-features-block {
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .features-heading {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-3);
+  }
+
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    list-style: none;
+    padding: 0;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--text);
+  }
+
+  .feature-check {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Inquiry Card */
+  .inquiry-card {
+    background: var(--surface);
+    padding: var(--sp-6);
+  }
+
+  .inquiry-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-2);
+  }
+
+  .inquiry-desc {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: var(--sp-5);
+  }
+
+  :global(.inquiry-btn) {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-bottom: var(--sp-4);
+  }
+
+  .inquiry-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--sp-3);
+  }
+
+  .dot-live {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* Related Services */
+  .related-services-section {
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-7);
+    border-top: 1px solid var(--border);
+  }
+
+  .related-heading {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-5);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+
+  .related-card {
+    padding: var(--sp-4) var(--sp-5);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    text-decoration: none;
+  }
+
+  .related-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-btn);
+    background: var(--accent-subtle);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .related-text {
+    flex-grow: 1;
+  }
+
+  .related-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .related-desc {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .related-arrow {
+    color: var(--muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+  }
+
+  .related-card:hover .related-arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+
+  .detail-footer {
+    border-top: 1px solid var(--border);
+    padding: var(--sp-6) var(--sp-5);
+    background: var(--surface);
+  }
+
+  .detail-footer-inner {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .detail-footer-inner a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* 404 block */
+  .not-found-wrap {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--sp-6) var(--sp-5);
+  }
+
+  .nf-eyebrow {
+    font-family: var(--ff-mono);
+    color: var(--accent);
+    font-size: var(--fs-xs);
+    margin-bottom: var(--sp-2);
+  }
+
+  .nf-title {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-3xl);
+    font-weight: 800;
+    color: var(--heading);
+    margin-bottom: var(--sp-3);
+  }
+
+  .nf-desc {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--muted);
+    margin-bottom: var(--sp-6);
+  }
+
+  .nf-actions {
+    display: flex;
+    gap: var(--sp-3);
+  }
+
+  @media (min-width: 640px) {
+    .related-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .service-content-grid {
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

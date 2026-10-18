@@ -1,0 +1,60 @@
+---
+interface Props {
+  as?: 'div' | 'article' | 'section' | 'a';
+  href?: string;
+  interactive?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  as: Tag = 'div',
+  href,
+  interactive = false,
+  class: className = '',
+  id,
+} = Astro.props;
+
+const isInteractive = interactive || Boolean(href);
+const Component = href ? 'a' : Tag;
+---
+
+<Component
+  href={href}
+  id={id}
+  class={`ui-card ${isInteractive ? 'ui-card-interactive' : ''} ${className}`}
+>
+  <slot />
+</Component>
+
+<style>
+  .ui-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: var(--sp-5);
+    position: relative;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), border-color var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
+    color: var(--text);
+    text-decoration: none;
+    display: block;
+  }
+
+  .ui-card-interactive {
+    cursor: pointer;
+  }
+
+  .ui-card-interactive:hover {
+    border-color: var(--accent-border);
+    background: var(--card-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-card-interactive:hover {
+      transform: none;
+    }
+  }
+</style>

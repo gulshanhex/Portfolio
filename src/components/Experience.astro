@@ -1,0 +1,81 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import TimelineItem from './ui/TimelineItem.astro';
+
+interface ExperienceItem {
+  id: number;
+  badge_label: string;
+  badge_type: string;
+  icon: string;
+  title: string;
+  company: string;
+  date_range: string;
+  duration: string;
+  location: string;
+  bullet_points: string[];
+  tags: string[];
+}
+
+interface Props {
+  experiences: ExperienceItem[];
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { experiences = [], copy = {} } = Astro.props;
+
+const eyebrow = copy.experience_eyebrow || '// WORK HISTORY';
+const title = copy.experience_title || "Where I've engineered.";
+const subtitle = copy.experience_subtitle || 'Hands-on production environments, industrial automation, and software engineering roles.';
+---
+
+{
+  experiences.length > 0 && (
+    <section id="experience" class="experience-section" aria-labelledby="experience-title">
+      <div class="experience-container">
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+        <div class="experience-list">
+          {experiences.map((x, i) => (
+            <div class="rv" style={`transition-delay: ${i * 0.1}s`}>
+              <TimelineItem
+                icon={x.icon || 'work'}
+                title={x.title}
+                organization={x.company}
+                dateRange={x.date_range}
+                duration={x.duration}
+                location={x.location}
+                badgeLabel={x.badge_label}
+                bulletPoints={x.bullet_points || []}
+                tags={x.tags || []}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .experience-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .experience-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .experience-list {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 1024px) {
+    .experience-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+  }
+</style>

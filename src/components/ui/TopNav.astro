@@ -1,0 +1,339 @@
+---
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+
+interface SectionItem {
+  id: string;
+  label: string;
+  order_idx: number;
+  visible: number;
+}
+
+interface Props {
+  name?: string;
+  sections?: SectionItem[];
+  contact?: Record<string, any>;
+  nav?: Record<string, any>;
+  theme?: Record<string, any>;
+  hasProjects?: boolean;
+}
+
+const {
+  name = 'Gulshan Kumar',
+  sections = [],
+  contact = {},
+  nav = {},
+  theme = {},
+  hasProjects = true,
+} = Astro.props;
+
+// Filter visible sections excluding hero and excluding projects if hasProjects is false
+const visibleSections = sections
+  .filter((s) => s.id !== 'hero' && s.visible !== 0 && (s.id !== 'projects' || hasProjects))
+  .sort((a, b) => (a.order_idx ?? 0) - (b.order_idx ?? 0));
+
+// First 4 sections shown directly on tablet/desktop, rest under "More"
+const primaryLinks = visibleSections.slice(0, 4);
+const overflowLinks = visibleSections.slice(4);
+
+const showResume = Boolean(contact.resume_url && nav.show_resume !== false);
+const resumeLabel = nav.resume_label || 'Resume';
+const showThemeToggle = theme.user_toggle_enabled !== false;
+---
+
+<header id="site-header" class="site-top-nav">
+  <div class="nav-inner">
+    <!-- Brand Wordmark -->
+    <a href="#hero" class="brand-logo" aria-label={`${name} Home`}>
+      <span class="logo-text">GK</span><span class="logo-dot">.</span>
+    </a>
+
+    <!-- Desktop & Tablet Navigation Links -->
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <ul class="nav-link-list" role="list">
+        {primaryLinks.map((sec) => (
+          <li>
+            <a href={`#${sec.id}`} class="nav-link" data-section={sec.id}>
+              {sec.label}
+            </a>
+          </li>
+        ))}
+
+        {overflowLinks.length > 0 && (
+          <li class="nav-more-item">
+            <button
+              type="button"
+              class="nav-more-btn"
+              id="top-more-btn"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="top-more-menu"
+            >
+              <span>More</span>
+              <span class="more-caret" aria-hidden="true">▾</span>
+            </button>
+            <div id="top-more-menu" class="nav-dropdown" role="menu" hidden>
+              {overflowLinks.map((sec) => (
+                <a href={`#${sec.id}`} class="dropdown-link" role="menuitem" data-section={sec.id}>
+                  {sec.label}
+                </a>
+              ))}
+              {showResume && (
+                <a href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="dropdown-link" role="menuitem">
+                  {resumeLabel} ↗
+                </a>
+              )}
+            </div>
+          </li>
+        )}
+      </ul>
+    </nav>
+
+    <!-- Nav Actions (Theme Toggle & CTA) -->
+    <div class="nav-actions">
+      <!-- Desktop PWA Install Button (revealed on beforeinstallprompt) -->
+      <button
+        id="pwa-desktop-install"
+        class="pwa-nav-btn"
+        type="button"
+        style="display:none;"
+        title="Install Portfolio Application"
+        aria-label="Install App"
+      >
+        <span class="material-icons-round" aria-hidden="true" style="font-size:16px">download</span>
+        <span>Install</span>
+      </button>
+      {showThemeToggle && (
+        <button
+          class="theme-toggle-btn"
+          id="theme-btn"
+          type="button"
+          aria-label="Toggle dark or light theme"
+          title="Toggle theme"
+        >
+          <span class="material-icons-round" id="theme-icon" aria-hidden="true">
+            light_mode
+          </span>
+        </button>
+      )}
+
+      <!-- Primary CTA Button (Tablet & Desktop) -->
+      <div class="nav-cta-wrap">
+        <Button variant="primary" size="sm" href="#contact">
+          Let's talk
+        </Button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-top-nav {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: rgba(10, 12, 11, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    transition: background var(--transition-base), border-color var(--transition-base);
+  }
+
+  [data-theme="light"] .site-top-nav {
+    background: rgba(246, 247, 244, 0.85);
+  }
+
+  .nav-inner {
+    max-width: var(--max-w-content);
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 var(--sp-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+  }
+
+  .brand-logo {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ff-sans);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--heading);
+    text-decoration: none;
+    line-height: 1;
+    user-select: none;
+    padding: 4px 0;
+  }
+
+  .logo-dot {
+    color: var(--accent);
+  }
+
+  /* Desktop links */
+  .desktop-nav {
+    display: none;
+  }
+
+  .nav-link-list {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    list-style: none;
+  }
+
+  .nav-link {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 4px;
+    border-bottom: 2px solid transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--heading);
+  }
+
+  .nav-link.active {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Dropdown Menu */
+  .nav-more-item {
+    position: relative;
+  }
+
+  .nav-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 6px 4px;
+    transition: color var(--transition-fast);
+  }
+
+  .nav-more-btn:hover {
+    color: var(--heading);
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 6px;
+    min-width: 170px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    z-index: 101;
+  }
+
+  .nav-dropdown[hidden] {
+    display: none;
+  }
+
+  .dropdown-link {
+    padding: 8px 12px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .dropdown-link:hover {
+    background: var(--surface-hover);
+    color: var(--accent);
+  }
+
+  /* Actions */
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-btn);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .theme-toggle-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .nav-cta-wrap {
+    display: none;
+  }
+
+  /* Breakpoints */
+  @media (min-width: 640px) {
+    .desktop-nav {
+      display: block;
+    }
+    .nav-cta-wrap {
+      display: block;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-link-list {
+      gap: var(--sp-6);
+    }
+  }
+  .pwa-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-btn, 8px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs, 0.78rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .pwa-nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  @media (display-mode: standalone) {
+    .pwa-nav-btn {
+      display: none !important;
+    }
+  }
+</style>

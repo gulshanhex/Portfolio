@@ -1,0 +1,317 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import Card from './ui/Card.astro';
+import Pill from './ui/Pill.astro';
+import Icon from './ui/Icon.astro';
+import { sanitizeBasicHtml } from '../lib/db';
+
+interface Props {
+  about?: Record<string, any>;
+  globalCfg?: Record<string, any>;
+  contact?: Record<string, any>;
+  hero?: Record<string, any>;
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const {
+  about = {},
+  globalCfg = {},
+  contact = {},
+  hero = {},
+  copy = {},
+} = Astro.props;
+
+const paragraphs = Array.isArray(about.paragraphs) ? about.paragraphs : [];
+const eyebrow = copy.about_eyebrow || '// ABOUT ME';
+const title = copy.about_title || 'Who am I?';
+const subtitle = copy.about_subtitle || 'Engineering intelligent software that interfaces with the physical and digital world.';
+
+const name = globalCfg.name || 'Gulshan Kumar';
+const role = globalCfg.tagline || 'Automation & AI Systems Engineer';
+const location = globalCfg.location || 'Delhi, India';
+const status = hero.status_label || 'Available for projects';
+---
+
+<section id="about" class="about-section" aria-labelledby="about-title">
+  <div class="about-container">
+    <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+    <div class="about-grid">
+      <!-- Left Column: Editorial narrative -->
+      <div class="about-narrative rv">
+        {paragraphs.map((p: string) => (
+          <p class="about-para" set:html={sanitizeBasicHtml(p)} />
+        ))}
+        {
+          about.quote && (
+            <blockquote class="about-quote">
+              <span class="quote-mark">“</span>
+              <p>{about.quote}</p>
+            </blockquote>
+          )
+        }
+      </div>
+
+      <!-- Right Column: Data-driven Profile Card (Replaces old typing terminal) -->
+      <div class="about-profile-wrap rv" style="transition-delay: 0.15s">
+        <Card class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" aria-hidden="true">
+              <span>GK</span>
+            </div>
+            <div class="profile-title-block">
+              <h3 class="profile-name">{name}</h3>
+              <p class="profile-role">{role}</p>
+            </div>
+            <Pill variant="status" pulse={true} size="sm">
+              {status}
+            </Pill>
+          </div>
+
+          <div class="profile-facts-list">
+            <div class="profile-fact-row">
+              <span class="fact-label">
+                <Icon name="location_on" size={16} />
+                <span>Base Location</span>
+              </span>
+              <span class="fact-value">{location}</span>
+            </div>
+
+            {contact.email && (
+              <div class="profile-fact-row">
+                <span class="fact-label">
+                  <Icon name="mail" size={16} />
+                  <span>Direct Email</span>
+                </span>
+                <span class="fact-value">
+                  <a href={`mailto:${contact.email}`} class="fact-link">{contact.email}</a>
+                </span>
+              </div>
+            )}
+
+            {contact.github && (
+              <div class="profile-fact-row">
+                <span class="fact-label">
+                  <Icon name="code" size={16} />
+                  <span>GitHub</span>
+                </span>
+                <span class="fact-value">
+                  <a href={contact.github} target="_blank" rel="noopener noreferrer" class="fact-link">
+                    {contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, '')} ↗
+                  </a>
+                </span>
+              </div>
+            )}
+
+            {contact.linkedin && (
+              <div class="profile-fact-row">
+                <span class="fact-label">
+                  <Icon name="work" size={16} />
+                  <span>LinkedIn</span>
+                </span>
+                <span class="fact-value">
+                  <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" class="fact-link">
+                    {contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '/in/')} ↗
+                  </a>
+                </span>
+              </div>
+            )}
+
+            {contact.resume_url && (
+              <div class="profile-fact-row">
+                <span class="fact-label">
+                  <Icon name="school" size={16} />
+                  <span>Credentials</span>
+                </span>
+                <span class="fact-value">
+                  <a href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="fact-link highlight">
+                    Curriculum Vitae (PDF) ↗
+                  </a>
+                </span>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .about-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+    align-items: start;
+  }
+
+  .about-narrative {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .about-para {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .about-para strong {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .about-para em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .about-quote {
+    margin-top: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    border-left: 2px solid var(--accent);
+    background: var(--surface);
+    border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--text);
+    position: relative;
+  }
+
+  .quote-mark {
+    font-size: 1.8rem;
+    color: var(--accent);
+    line-height: 0;
+    position: absolute;
+    top: 14px;
+    left: -12px;
+  }
+
+  /* Profile Card */
+  .profile-card {
+    background: var(--surface);
+    border-color: var(--border);
+    padding: var(--sp-6);
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--sp-4);
+  }
+
+  .profile-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-btn);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ff-sans);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .profile-title-block {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .profile-name {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.2;
+  }
+
+  .profile-role {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+
+  .profile-facts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .profile-fact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .profile-fact-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .fact-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .fact-value {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--heading);
+    text-align: right;
+  }
+
+  .fact-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .fact-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+  }
+
+  .fact-link.highlight {
+    font-weight: 600;
+  }
+
+  @media (min-width: 1024px) {
+    .about-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .about-grid {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

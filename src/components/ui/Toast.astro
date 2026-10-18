@@ -1,0 +1,90 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+}
+
+const { id = 'ui-toast', class: className = '' } = Astro.props;
+---
+
+<div id={id} class={`ui-toast-container ${className}`} role="status" aria-live="polite">
+  <div class="ui-toast-box">
+    <div class="ui-toast-message" id={`${id}-msg`}>
+      <slot>Notification</slot>
+    </div>
+    <button type="button" class="ui-toast-close" id={`${id}-close`} aria-label="Dismiss notification">
+      ✕
+    </button>
+  </div>
+</div>
+
+<style>
+  .ui-toast-container {
+    position: fixed;
+    bottom: var(--sp-6);
+    right: var(--sp-6);
+    z-index: 9999;
+    display: none;
+    max-width: 380px;
+    animation: toast-in var(--transition-smooth) forwards;
+  }
+
+  .ui-toast-container.active {
+    display: block;
+  }
+
+  .ui-toast-box {
+    background: var(--surface-raised);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-card);
+    padding: var(--sp-4) var(--sp-5);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    color: var(--text);
+  }
+
+  .ui-toast-message {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+
+  .ui-toast-close {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: color var(--transition-fast);
+  }
+
+  .ui-toast-close:hover {
+    color: var(--text);
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .ui-toast-container {
+      bottom: calc(var(--bottom-bar-height) + 12px);
+      left: var(--sp-4);
+      right: var(--sp-4);
+      max-width: none;
+    }
+  }
+</style>

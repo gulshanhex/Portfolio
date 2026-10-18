@@ -1,0 +1,369 @@
+---
+import SectionHeader from './ui/SectionHeader.astro';
+import Button from './ui/Button.astro';
+import Card from './ui/Card.astro';
+import Icon from './ui/Icon.astro';
+
+interface Props {
+  contact?: Record<string, any>;
+  nav?: Record<string, any>;
+  copy?: Record<string, any>;
+  sectionNum?: string;
+}
+
+const { contact = {}, nav = {}, copy = {} } = Astro.props;
+const formEnabled = contact.form_enabled !== false;
+
+const eyebrow = copy.contact_eyebrow || "// LET'S CONNECT";
+const title = copy.contact_title || 'Get in touch.';
+const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open to automation workflows, backend architecture, and custom bots.";
+---
+
+<section id="contact" class="contact-section" aria-labelledby="contact-title">
+  <div class="contact-container">
+    <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+
+    <div class="contact-grid">
+      <!-- Contact Direct Channels Column -->
+      <div class="contact-channels rv">
+        <p class="channels-intro">
+          {contact.intro_text || 'Reach out directly for automation projects, freelance builds, or technical collaborations.'}
+        </p>
+
+        <div class="channels-list">
+          {contact.email && (
+            <Card as="a" href={`mailto:${contact.email}`} class="channel-card" interactive={true}>
+              <div class="channel-card-inner">
+                <div class="channel-icon" aria-hidden="true">
+                  <Icon name="mail" size={20} />
+                </div>
+                <div class="channel-text">
+                  <span class="channel-label">Email</span>
+                  <span class="channel-val">{contact.email}</span>
+                </div>
+                <span class="channel-arrow" aria-hidden="true">→</span>
+              </div>
+            </Card>
+          )}
+
+          {contact.linkedin && (
+            <Card as="a" href={contact.linkedin} target="_blank" rel="noopener noreferrer" class="channel-card" interactive={true}>
+              <div class="channel-card-inner">
+                <div class="channel-icon" aria-hidden="true">
+                  <Icon name="work" size={20} />
+                </div>
+                <div class="channel-text">
+                  <span class="channel-label">LinkedIn</span>
+                  <span class="channel-val">{contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '/in/')}</span>
+                </div>
+                <span class="channel-arrow" aria-hidden="true">↗</span>
+              </div>
+            </Card>
+          )}
+
+          {contact.github && (
+            <Card as="a" href={contact.github} target="_blank" rel="noopener noreferrer" class="channel-card" interactive={true}>
+              <div class="channel-card-inner">
+                <div class="channel-icon" aria-hidden="true">
+                  <Icon name="code" size={20} />
+                </div>
+                <div class="channel-text">
+                  <span class="channel-label">GitHub</span>
+                  <span class="channel-val">{contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, 'github.com/')}</span>
+                </div>
+                <span class="channel-arrow" aria-hidden="true">↗</span>
+              </div>
+            </Card>
+          )}
+
+          {contact.resume_url && (
+            <Card as="a" href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="channel-card" interactive={true}>
+              <div class="channel-card-inner">
+                <div class="channel-icon" aria-hidden="true">
+                  <Icon name="school" size={20} />
+                </div>
+                <div class="channel-text">
+                  <span class="channel-label">Resume</span>
+                  <span class="channel-val">{nav.resume_label || 'Download CV'}</span>
+                </div>
+                <span class="channel-arrow" aria-hidden="true">↗</span>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      <!-- Contact Message Form Column -->
+      <div class="contact-form-wrap rv" style="transition-delay: 0.12s">
+        {formEnabled ? (
+          <Card class="form-card">
+            <form id="ct-form" class="ct-form" novalidate aria-label="Direct message form">
+              <!-- Honeypot field (hidden from humans, catches bots) -->
+              <div class="hp-field" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;height:0;overflow:hidden" aria-hidden="true">
+                <label for="ct-hp">Leave this field blank</label>
+                <input type="text" id="ct-hp" name="_hp" tabindex="-1" autocomplete="off" />
+              </div>
+
+              <!-- Timestamp field for minimum-fill-time validation -->
+              
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="ct-name" class="field-label">Name <span class="req">*</span></label>
+                  <input
+                    type="text"
+                    id="ct-name"
+                    name="name"
+                    placeholder="Your name"
+                    required
+                    autocomplete="name"
+                    maxlength="100"
+                    class="field-input"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="ct-email" class="field-label">Email <span class="req">*</span></label>
+                  <input
+                    type="email"
+                    id="ct-email"
+                    name="email"
+                    placeholder="you@domain.com"
+                    required
+                    autocomplete="email"
+                    maxlength="200"
+                    class="field-input"
+                  />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="ct-subject" class="field-label">Subject</label>
+                <input
+                  type="text"
+                  id="ct-subject"
+                  name="subject"
+                  placeholder="Bot build, workflow automation, inquiry..."
+                  maxlength="200"
+                  class="field-input"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="ct-message" class="field-label">Message <span class="req">*</span></label>
+                <textarea
+                  id="ct-message"
+                  name="message"
+                  placeholder="Briefly describe your systems, workflow requirements, or project scope..."
+                  required
+                  rows="4"
+                  maxlength="5000"
+                  class="field-textarea"
+                />
+              </div>
+
+              <div id="ct-msg" role="status" aria-live="polite" class="form-feedback" style="display:none"></div>
+
+              <Button type="submit" variant="primary" size="lg" class="submit-btn">
+                <span id="ct-btn-txt">Send Message</span>
+                <span aria-hidden="true">→</span>
+              </Button>
+            </form>
+          </Card>
+        ) : (
+          <Card class="form-disabled-card">
+            <p>The web message form is currently unavailable. Please send an email directly to <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
+          </Card>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-section {
+    padding: var(--sp-8) var(--sp-5);
+    background: var(--bg);
+  }
+
+  .contact-container {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+
+  .channels-intro {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-base);
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: var(--sp-5);
+  }
+
+  .channels-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .channel-card {
+    padding: var(--sp-4);
+    text-decoration: none;
+  }
+
+  .channel-card-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .channel-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-btn);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .channel-text {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .channel-label {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .channel-val {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--heading);
+  }
+
+  .channel-arrow {
+    color: var(--muted);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .channel-card:hover .channel-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  /* Form */
+  .form-card {
+    padding: var(--sp-6);
+    background: var(--surface);
+  }
+
+  .ct-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .req {
+    color: var(--accent);
+  }
+
+  .field-input,
+  .field-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-btn);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-sm);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .field-input:focus,
+  .field-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-subtle);
+  }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  .form-feedback {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-family: var(--ff-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+  }
+
+  :global(.form-msg.ok) {
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+  }
+
+  :global(.form-msg.err) {
+    background: rgba(217, 83, 79, 0.12);
+    border: 1px solid rgba(217, 83, 79, 0.3);
+    color: #D9534F;
+  }
+
+  :global(.submit-btn) {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-top: var(--sp-2);
+  }
+
+  @media (min-width: 640px) {
+    .form-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .contact-section {
+      padding: var(--sp-9) var(--sp-6);
+    }
+    .contact-grid {
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--sp-8);
+    }
+  }
+</style>

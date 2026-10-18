@@ -1,0 +1,278 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   GK PORTFOLIO DESIGN SYSTEM — TOKENS
+   Single source of truth for color, typography, elevation, spacing & motion.
+   Verified WCAG AA across all text/background pairs in both themes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Self-Hosted Fonts ───────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-variable.woff2') format('woff2-variations'),
+       url('/fonts/inter-variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/mono-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Material Icons Round';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/material-icons-round.woff2') format('woff2');
+}
+
+/* Base Material Icons Ligature Styling (Public Site + Admin Panel) */
+.material-icons-round,
+.mi {
+  font-family: 'Material Icons Round' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+  vertical-align: middle;
+}
+
+/* ── Design Tokens & Themes ──────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  /* Color Palette — Refined Editorial Dark */
+  --bg: #0A0C0B;
+  --bg-subtle: #0E1210;
+  --surface: #111513;
+  --surface-raised: #161C19;
+  --surface-hover: #1A221E;
+  --card: #111513;
+  --card-hover: #161C19;
+  --border: #1E2521;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-focus: var(--accent);
+
+  --text: #F4F1E8;
+  --text-heading: #F4F1E8;
+  --heading: #F4F1E8;
+  --muted: #9AA39E;
+  --text-muted: #9AA39E;
+
+  /* Default Accent: Emerald (#2FBF71) */
+  --accent: #2FBF71;
+  --accent-hover: #3DD683;
+  --accent-active: #28A762;
+  --text-on-accent: #04130B;
+  --accent-subtle: rgba(47, 191, 113, 0.12);
+  --accent-border: rgba(47, 191, 113, 0.28);
+  --accent-glow: rgba(47, 191, 113, 0.15);
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  /* Color Palette — Editorial Tech Light */
+  --bg: #F6F7F4;
+  --bg-subtle: #ECEEE9;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-hover: #F2F4F0;
+  --card: #FFFFFF;
+  --card-hover: #F8F9F7;
+  --border: #E3E6E0;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-focus: var(--accent);
+
+  --text: #0B0F0D;
+  --text-heading: #0B0F0D;
+  --heading: #0B0F0D;
+  --muted: #5B645F;
+  --text-muted: #5B645F;
+
+  /* Default Accent: Forest Emerald (#17804A) */
+  --accent: #17804A;
+  --accent-hover: #136C3E;
+  --accent-active: #0F5832;
+  --text-on-accent: #FFFFFF;
+  --accent-subtle: rgba(23, 128, 74, 0.08);
+  --accent-border: rgba(23, 128, 74, 0.24);
+  --accent-glow: rgba(23, 128, 74, 0.1);
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+  color-scheme: light;
+}
+
+/* ── Accent Presets (All Verified WCAG AA >= 4.5:1) ─────────────────────── */
+[data-accent="teal"] {
+  --accent: #2DD4BF;
+  --accent-hover: #5EEAD4;
+  --text-on-accent: #042F2E;
+  --accent-subtle: rgba(45, 212, 191, 0.12);
+  --accent-border: rgba(45, 212, 191, 0.28);
+}
+[data-theme="light"][data-accent="teal"] {
+  --accent: #0F766E;
+  --accent-hover: #115E59;
+  --text-on-accent: #FFFFFF;
+  --accent-subtle: rgba(15, 118, 110, 0.08);
+  --accent-border: rgba(15, 118, 110, 0.24);
+}
+
+[data-accent="blue"] {
+  --accent: #38BDF8;
+  --accent-hover: #7DD3FC;
+  --text-on-accent: #082F49;
+  --accent-subtle: rgba(56, 189, 248, 0.12);
+  --accent-border: rgba(56, 189, 248, 0.28);
+}
+/* Fixed WCAG AA: #0369A1 delivers 5.97:1 contrast with white text */
+[data-theme="light"][data-accent="blue"] {
+  --accent: #0369A1;
+  --accent-hover: #075985;
+  --text-on-accent: #FFFFFF;
+  --accent-subtle: rgba(3, 105, 161, 0.08);
+  --accent-border: rgba(3, 105, 161, 0.24);
+}
+
+[data-accent="indigo"] {
+  --accent: #818CF8;
+  --accent-hover: #A5B4FC;
+  --text-on-accent: #1E1B4B;
+  --accent-subtle: rgba(129, 140, 248, 0.12);
+  --accent-border: rgba(129, 140, 248, 0.28);
+}
+[data-theme="light"][data-accent="indigo"] {
+  --accent: #4338CA;
+  --accent-hover: #3730A3;
+  --text-on-accent: #FFFFFF;
+  --accent-subtle: rgba(67, 56, 202, 0.08);
+  --accent-border: rgba(67, 56, 202, 0.24);
+}
+
+/* ── Typography Scale & Radii ────────────────────────────────────────────── */
+:root {
+  /* Fonts */
+  --ff-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Font Sizes with clamp() */
+  --fs-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+  --fs-sm: clamp(0.82rem, 0.8rem + 0.15vw, 0.88rem);
+  --fs-base: clamp(0.94rem, 0.91rem + 0.2vw, 1.02rem);
+  --fs-md: clamp(1.06rem, 1rem + 0.3vw, 1.18rem);
+  --fs-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.45rem);
+  --fs-xl: clamp(1.5rem, 1.35rem + 0.8vw, 1.85rem);
+  --fs-2xl: clamp(1.85rem, 1.6rem + 1.2vw, 2.4rem);
+  --fs-3xl: clamp(2.3rem, 1.9rem + 1.8vw, 3.2rem);
+  --fs-hero: clamp(2.4rem, 2rem + 2.5vw, 4rem);
+
+  /* Spacing Scale (4, 8, 12, 16, 24, 32, 48, 64, 96) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* Radii (12 cards, 10 buttons, pill full) */
+  --radius-sm: 6px;
+  --radius-btn: 10px;
+  --radius-card: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Layout Widths */
+  --max-w-prose: 70ch;
+  --max-w-content: 1240px;
+  --max-w-wide: 1360px;
+  --nav-height: 64px;
+  --bottom-bar-height: 68px;
+
+  /* Transitions & Motion (150-250ms ease-out) */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Legacy Aliases for backward compatibility ─────────────────────────── */
+  --lime: var(--accent);
+  --lime-d: var(--accent-hover);
+  --lime-glow: var(--accent-glow);
+  --lime-b: var(--accent-border);
+  --lime-bg: var(--accent-subtle);
+  --ember: #D9534F;
+  --ember-b: rgba(217, 83, 79, 0.25);
+  --bdr: var(--border);
+  --bdr-s: var(--border-subtle);
+  --bdr-c: var(--border);
+  --text-dim: var(--muted);
+  --text-faint: var(--muted);
+  --ff-h: var(--ff-sans);
+  --ff-b: var(--ff-sans);
+  --ff-s: var(--ff-sans);
+  --radius: var(--radius-card);
+  --glow-lime: none;
+  --header-offset: var(--nav-height);
+  --mw: var(--max-w-content);
+  --tr: var(--transition-base);
+}
+
+/* ── Progressive Enhancement Visibility ──────────────────────────────────── */
+/* Without JS (.js class on <html>), everything is visible by default */
+.rv {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+}
+
+html.js .rv {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+html.js .rv.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html.js .rv {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
