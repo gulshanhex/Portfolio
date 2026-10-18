@@ -1,6 +1,6 @@
 # GK Portfolio — Modular Astro 5 SSR + Cloudflare Workers & D1 Stack
 
-Personal portfolio and edge CMS for **Gulshan Kumar** ([portfolio.gulshan-kumar.me](https://portfolio.gulshan-kumar.me)), built on **Astro 5 SSR + `@astrojs/cloudflare` + Cloudflare D1**.
+Personal portfolio and edge CMS for **Gulshan Kumar** ([LIVE:portfolio.gulshan-kumar.me](https://portfolio.gulshan-kumar.me)), built on **Astro 5 SSR + `@astrojs/cloudflare` + Cloudflare D1**.
 
 > **Public GitHub Repo Safe:** No secrets or `[vars]` are stored in `wrangler.jsonc`. It has `keep_vars = true` enabled so all Secrets configured in your Cloudflare Worker Dashboard (`Settings → Variables and Secrets → Type: Secret`) are preserved across every GitHub auto-deployment.
 
