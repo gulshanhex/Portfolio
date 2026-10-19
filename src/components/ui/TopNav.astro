@@ -1,6 +1,5 @@
 ---
 import Button from './Button.astro';
-import Icon from './Icon.astro';
 
 interface SectionItem {
   id: string;
@@ -48,7 +47,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
       <span class="logo-text">GK</span><span class="logo-dot">.</span>
     </a>
 
-    <!-- Desktop & Tablet Navigation Links -->
+    <!-- Desktop & Tablet Navigation Links (>= 768px) -->
     <nav class="desktop-nav" aria-label="Main navigation">
       <ul class="nav-link-list" role="list">
         {primaryLinks.map((sec) => (
@@ -59,7 +58,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
           </li>
         ))}
 
-        {overflowLinks.length > 0 && (
+        {(overflowLinks.length > 0 || showResume) && (
           <li class="nav-more-item">
             <button
               type="button"
@@ -101,8 +100,9 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
         aria-label="Install App"
       >
         <span class="material-icons-round" aria-hidden="true" style="font-size:16px">download</span>
-        <span>Install</span>
+        <span class="pwa-nav-label">Install</span>
       </button>
+
       {showThemeToggle && (
         <button
           class="theme-toggle-btn"
@@ -117,7 +117,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
         </button>
       )}
 
-      <!-- Primary CTA Button (Tablet & Desktop) -->
+      <!-- Primary CTA Button -->
       <div class="nav-cta-wrap">
         <Button variant="primary" size="sm" href="#contact">
           Let's talk
@@ -134,34 +134,34 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     left: 0;
     right: 0;
     height: var(--nav-height);
-    background: rgba(10, 12, 11, 0.82);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(10, 12, 11, 0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
     z-index: 100;
     transition: background var(--transition-base), border-color var(--transition-base);
   }
 
   [data-theme="light"] .site-top-nav {
-    background: rgba(246, 247, 244, 0.85);
+    background: rgba(246, 247, 244, 0.9);
   }
 
   .nav-inner {
     max-width: var(--max-w-content);
     height: 100%;
     margin: 0 auto;
-    padding: 0 var(--sp-5);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--sp-4);
+    gap: var(--sp-3);
   }
 
   .brand-logo {
     display: inline-flex;
     align-items: center;
     font-family: var(--ff-sans);
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--heading);
@@ -169,13 +169,14 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     line-height: 1;
     user-select: none;
     padding: 4px 0;
+    flex-shrink: 0;
   }
 
   .logo-dot {
     color: var(--accent);
   }
 
-  /* Desktop links */
+  /* Desktop & Tablet links (>= 768px) */
   .desktop-nav {
     display: none;
   }
@@ -183,8 +184,10 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
   .nav-link-list {
     display: flex;
     align-items: center;
-    gap: var(--sp-5);
+    gap: 18px;
     list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .nav-link {
@@ -196,6 +199,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     padding: 6px 4px;
     border-bottom: 2px solid transparent;
     transition: color var(--transition-fast), border-color var(--transition-fast);
+    white-space: nowrap;
   }
 
   .nav-link:hover,
@@ -225,6 +229,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     cursor: pointer;
     padding: 6px 4px;
     transition: color var(--transition-fast);
+    white-space: nowrap;
   }
 
   .nav-more-btn:hover {
@@ -240,7 +245,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     padding: 6px;
-    min-width: 170px;
+    min-width: 176px;
     box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
@@ -252,7 +257,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
   }
 
   .dropdown-link {
-    padding: 8px 12px;
+    padding: 9px 12px;
     font-family: var(--ff-sans);
     font-size: var(--fs-xs);
     font-weight: 500;
@@ -271,7 +276,8 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
   .nav-actions {
     display: flex;
     align-items: center;
-    gap: var(--sp-3);
+    gap: 10px;
+    flex-shrink: 0;
   }
 
   .theme-toggle-btn {
@@ -294,24 +300,9 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
   }
 
   .nav-cta-wrap {
-    display: none;
+    display: block;
   }
 
-  /* Breakpoints */
-  @media (min-width: 640px) {
-    .desktop-nav {
-      display: block;
-    }
-    .nav-cta-wrap {
-      display: block;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .nav-link-list {
-      gap: var(--sp-6);
-    }
-  }
   .pwa-nav-btn {
     display: inline-flex;
     align-items: center;
@@ -327,10 +318,40 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     cursor: pointer;
     transition: all var(--transition-fast);
   }
+
   .pwa-nav-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
   }
+
+  @media (max-width: 767px) {
+    .pwa-nav-label {
+      display: none;
+    }
+    .nav-cta-wrap {
+      display: none;
+    }
+  }
+
+  /* Breakpoints */
+  @media (min-width: 768px) {
+    .nav-inner {
+      padding: 0 28px;
+    }
+    .desktop-nav {
+      display: block;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-inner {
+      padding: 0 32px;
+    }
+    .nav-link-list {
+      gap: 28px;
+    }
+  }
+
   @media (display-mode: standalone) {
     .pwa-nav-btn {
       display: none !important;

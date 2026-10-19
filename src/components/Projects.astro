@@ -1,7 +1,6 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import ProjectCard from './ui/ProjectCard.astro';
-import Icon from './ui/Icon.astro';
 
 interface ProjectItem {
   id: number;
@@ -31,7 +30,6 @@ interface Props {
 
 const {
   projects = [],
-  projectsSubdomain = 'https://projects.gulshan-kumar.me',
   copy = {},
 } = Astro.props;
 
@@ -96,7 +94,7 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
 
 <style>
   .projects-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -110,7 +108,7 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-5);
   }
 
   .proj-filter-btn {
@@ -144,20 +142,21 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
   .projects-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-5);
+    gap: 16px;
   }
 
   .projects-archive-cta {
     display: flex;
     justify-content: center;
-    margin-top: var(--sp-7);
+    margin-top: var(--sp-6);
   }
 
   .archive-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 11px 22px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-btn);
@@ -166,6 +165,7 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
     font-size: var(--fs-sm);
     font-weight: 600;
     text-decoration: none;
+    text-align: center;
     transition: all var(--transition-fast);
   }
 
@@ -177,18 +177,22 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
   }
 
   @media (min-width: 640px) {
+    .projects-section {
+      padding: 64px 28px;
+    }
     .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
     }
   }
 
   @media (min-width: 1024px) {
     .projects-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
     }
     .projects-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--sp-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
     }
   }
 </style>

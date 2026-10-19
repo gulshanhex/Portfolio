@@ -282,6 +282,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     height: var(--nav-height);
     background: rgba(10, 12, 11, 0.88);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
   }
 
@@ -293,7 +294,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     max-width: var(--max-w-content);
     height: 100%;
     margin: 0 auto;
-    padding: 0 var(--sp-5);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -314,7 +315,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
   .detail-nav-links {
     display: flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
   .back-link {
@@ -334,7 +335,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
   }
 
   .project-detail-main {
-    padding: var(--sp-6) var(--sp-5) var(--sp-9);
+    padding: 36px 20px 64px;
     background: var(--bg);
   }
 
@@ -346,11 +347,12 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
   .breadcrumb-trail {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     font-family: var(--ff-mono);
     font-size: var(--fs-xs);
     color: var(--muted);
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-5);
   }
 
   .breadcrumb-trail a {
@@ -375,12 +377,13 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
   .case-study-hero {
     padding-bottom: var(--sp-6);
     border-bottom: 1px solid var(--border);
-    margin-bottom: var(--sp-7);
+    margin-bottom: var(--sp-6);
   }
 
   .hero-cat-wrap {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--sp-3);
     margin-bottom: var(--sp-3);
   }
@@ -403,7 +406,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-weight: 800;
     color: var(--heading);
     letter-spacing: -0.03em;
-    line-height: 1.1;
+    line-height: 1.12;
     margin-bottom: var(--sp-4);
   }
 
@@ -411,7 +414,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-family: var(--ff-sans);
     font-size: var(--fs-md);
     color: var(--muted);
-    line-height: 1.6;
+    line-height: 1.65;
     margin-bottom: var(--sp-5);
   }
 
@@ -419,7 +422,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--sp-3);
+    gap: 12px;
     margin-bottom: var(--sp-5);
   }
 
@@ -459,8 +462,8 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
   .case-study-content {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-7);
-    margin-bottom: var(--sp-8);
+    gap: var(--sp-6);
+    margin-bottom: var(--sp-7);
   }
 
   .cs-section {
@@ -482,7 +485,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-size: var(--fs-xl);
     font-weight: 700;
     color: var(--heading);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     margin-bottom: var(--sp-2);
   }
 
@@ -490,18 +493,18 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-family: var(--ff-sans);
     font-size: var(--fs-base);
     color: var(--text);
-    line-height: 1.7;
+    line-height: 1.72;
   }
 
   /* Contact CTA card */
-  .cs-contact-card {
-    margin-top: var(--sp-4);
-    padding: var(--sp-6);
-    background: var(--surface);
+  :global(.cs-contact-card) {
+    margin-top: var(--sp-3);
+    padding: 24px 20px !important;
+    background: var(--surface) !important;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
   .cs-contact-title {
@@ -516,15 +519,15 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-family: var(--ff-sans);
     font-size: var(--fs-sm);
     color: var(--muted);
-    max-width: 50ch;
+    max-width: 52ch;
     margin-bottom: var(--sp-5);
-    line-height: 1.55;
+    line-height: 1.6;
   }
 
   /* Related work block */
   .related-work-block {
-    margin-top: var(--sp-8);
-    padding-top: var(--sp-7);
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-6);
     border-top: 1px solid var(--border);
   }
 
@@ -533,20 +536,21 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-size: var(--fs-lg);
     font-weight: 700;
     color: var(--heading);
-    margin-bottom: var(--sp-5);
+    margin-bottom: var(--sp-4);
   }
 
   .related-work-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
-  .related-proj-card {
-    padding: var(--sp-5);
+  :global(.related-proj-card) {
+    padding: 20px !important;
     text-decoration: none;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
   }
 
   .rp-cat {
@@ -565,13 +569,14 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-weight: 700;
     color: var(--heading);
     margin-bottom: var(--sp-2);
+    line-height: 1.3;
   }
 
   .rp-summary {
     font-family: var(--ff-sans);
     font-size: var(--fs-xs);
     color: var(--muted);
-    line-height: 1.5;
+    line-height: 1.55;
     margin-bottom: var(--sp-4);
     flex-grow: 1;
   }
@@ -581,12 +586,13 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--accent);
+    margin-top: auto;
     transition: color var(--transition-fast);
   }
 
   .detail-footer {
     border-top: 1px solid var(--border);
-    padding: var(--sp-6) var(--sp-5);
+    padding: 28px 20px;
     background: var(--surface);
   }
 
@@ -594,7 +600,8 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     max-width: var(--max-w-content);
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
     font-family: var(--ff-mono);
     font-size: var(--fs-xs);
     color: var(--muted);
@@ -612,7 +619,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: var(--sp-6) var(--sp-5);
+    padding: var(--sp-6) 20px;
   }
 
   .nf-eyebrow {
@@ -639,12 +646,44 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
 
   .nf-actions {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--sp-3);
   }
 
   @media (min-width: 640px) {
+    .detail-header-inner {
+      padding: 0 28px;
+    }
+    .project-detail-main {
+      padding: 48px 28px 72px;
+    }
+    :global(.cs-contact-card) {
+      padding: 32px !important;
+    }
     .related-work-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .detail-footer {
+      padding: 32px 28px;
+    }
+    .detail-footer-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .detail-header-inner {
+      padding: 0 32px;
+    }
+    .project-detail-main {
+      padding: 64px 32px 84px;
+    }
+    .related-work-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

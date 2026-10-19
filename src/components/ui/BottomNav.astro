@@ -112,7 +112,7 @@ const resumeLabel = nav.resume_label || 'Resume';
     align-items: center;
     justify-content: space-around;
     height: 100%;
-    max-width: 500px;
+    max-width: 520px;
     margin: 0 auto;
     padding: 0 var(--sp-2);
   }
@@ -127,7 +127,7 @@ const resumeLabel = nav.resume_label || 'Resume';
     text-decoration: none;
     background: transparent;
     border: none;
-    min-width: 48px;
+    min-width: 52px;
     min-height: 48px;
     padding: 4px;
     cursor: pointer;
@@ -149,24 +149,25 @@ const resumeLabel = nav.resume_label || 'Resume';
   .tab-label {
     font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
+    line-height: 1;
   }
 
   .tab-contact-cta {
-    min-width: 72px;
+    min-width: 76px;
   }
 
   .contact-pill-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 14px;
+    padding: 7px 14px;
     border-radius: var(--radius-btn);
     background: var(--accent);
     color: var(--text-on-accent);
     font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     box-shadow: 0 2px 8px var(--accent-subtle);
   }
 
@@ -192,7 +193,7 @@ const resumeLabel = nav.resume_label || 'Resume';
     border-top: 1px solid var(--border);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
-    padding: var(--sp-4) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+    padding: var(--sp-4) 20px calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
     max-height: 80vh;
     overflow-y: auto;
     animation: slideUp var(--transition-smooth) forwards;
@@ -214,8 +215,8 @@ const resumeLabel = nav.resume_label || 'Resume';
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--sp-4);
-    padding-bottom: var(--sp-2);
+    margin-bottom: var(--sp-3);
+    padding-bottom: var(--sp-3);
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -276,9 +277,10 @@ const resumeLabel = nav.resume_label || 'Resume';
     to { transform: translateY(0); }
   }
 
-  /* Hidden on tablet and desktop (>= 640px) */
-  @media (min-width: 640px) {
-    .bottom-tab-bar {
+  /* Hidden on tablet and desktop (>= 768px) to match TopNav */
+  @media (min-width: 768px) {
+    .bottom-tab-bar,
+    .bottom-sheet-backdrop {
       display: none !important;
     }
   }

@@ -45,11 +45,19 @@ const {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
-    padding: var(--sp-5);
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    flex: 1;
     box-shadow: var(--shadow-card);
     transition: transform var(--transition-base), border-color var(--transition-base);
+  }
+
+  @media (min-width: 640px) {
+    .skill-group-card {
+      padding: var(--sp-5);
+    }
   }
 
   .skill-group-card:hover {
@@ -67,14 +75,16 @@ const {
   }
 
   .skill-group-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-btn);
     background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
     color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .skill-group-label {
@@ -82,12 +92,14 @@ const {
     font-size: var(--fs-md);
     font-weight: 700;
     color: var(--heading);
+    line-height: 1.25;
   }
 
   .skill-pills-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-content: flex-start;
   }
 
   .skill-pill {

@@ -39,7 +39,7 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
               <Card class="edu-card">
                 <div class="edu-header">
                   <div class="edu-icon-wrap" aria-hidden="true">
-                    <Icon name="school" size={24} />
+                    <Icon name="school" size={22} />
                   </div>
                   <div class="edu-title-wrap">
                     <span class="edu-period">{ed.period}</span>
@@ -79,7 +79,7 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
 
 <style>
   .education-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -91,20 +91,21 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
   .education-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-5);
+    gap: 16px;
   }
 
-  .edu-card {
-    padding: var(--sp-6);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  :global(.edu-card) {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    flex: 1 !important;
   }
 
   .edu-header {
     display: flex;
     align-items: flex-start;
-    gap: var(--sp-4);
+    gap: 14px;
     margin-bottom: var(--sp-4);
   }
 
@@ -124,6 +125,8 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
   .edu-title-wrap {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    min-width: 0;
   }
 
   .edu-period {
@@ -135,15 +138,15 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
 
   .edu-degree {
     font-family: var(--ff-sans);
-    font-size: var(--fs-lg);
+    font-size: var(--fs-md);
     font-weight: 700;
     color: var(--heading);
-    line-height: 1.25;
+    line-height: 1.28;
   }
 
   .edu-stream {
     font-family: var(--ff-sans);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-xs);
     color: var(--muted);
   }
 
@@ -151,7 +154,9 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--sp-3) 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 0;
     border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
     margin-bottom: var(--sp-4);
@@ -175,14 +180,16 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
   }
 
   .edu-items-list {
-    margin: 0 0 var(--sp-4) var(--sp-4);
+    margin: 0 0 var(--sp-4) 0;
+    padding-left: 18px;
+    list-style: disc;
     display: flex;
     flex-direction: column;
     gap: 6px;
     font-family: var(--ff-sans);
     font-size: var(--fs-sm);
     color: var(--muted);
-    line-height: 1.5;
+    line-height: 1.55;
     flex-grow: 1;
   }
 
@@ -204,14 +211,24 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
   }
 
   @media (min-width: 640px) {
+    .education-section {
+      padding: 64px 28px;
+    }
     .education-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    :global(.edu-card) {
+      padding: var(--sp-5) !important;
     }
   }
 
   @media (min-width: 1024px) {
     .education-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
+    }
+    .education-grid {
+      gap: 24px;
     }
   }
 </style>

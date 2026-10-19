@@ -57,6 +57,7 @@
   /* Color Palette — Refined Editorial Dark */
   --bg: #0A0C0B;
   --bg-subtle: #0E1210;
+  --bg-alt: #0E1210;
   --surface: #111513;
   --surface-raised: #161C19;
   --surface-hover: #1A221E;
@@ -94,6 +95,7 @@
   /* Color Palette — Editorial Tech Light */
   --bg: #F6F7F4;
   --bg-subtle: #ECEEE9;
+  --bg-alt: #ECEEE9;
   --surface: #FFFFFF;
   --surface-raised: #FFFFFF;
   --surface-hover: #F2F4F0;
@@ -181,17 +183,17 @@
   --ff-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Font Sizes with clamp() */
-  --fs-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
-  --fs-sm: clamp(0.82rem, 0.8rem + 0.15vw, 0.88rem);
-  --fs-base: clamp(0.94rem, 0.91rem + 0.2vw, 1.02rem);
-  --fs-md: clamp(1.06rem, 1rem + 0.3vw, 1.18rem);
-  --fs-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.45rem);
-  --fs-xl: clamp(1.5rem, 1.35rem + 0.8vw, 1.85rem);
-  --fs-2xl: clamp(1.85rem, 1.6rem + 1.2vw, 2.4rem);
-  --fs-3xl: clamp(2.3rem, 1.9rem + 1.8vw, 3.2rem);
-  --fs-hero: clamp(2.4rem, 2rem + 2.5vw, 4rem);
+  --fs-xs: clamp(0.74rem, 0.71rem + 0.12vw, 0.8rem);
+  --fs-sm: clamp(0.84rem, 0.81rem + 0.15vw, 0.9rem);
+  --fs-base: clamp(0.95rem, 0.92rem + 0.18vw, 1.02rem);
+  --fs-md: clamp(1.05rem, 1rem + 0.25vw, 1.16rem);
+  --fs-lg: clamp(1.2rem, 1.12rem + 0.4vw, 1.38rem);
+  --fs-xl: clamp(1.4rem, 1.28rem + 0.65vw, 1.75rem);
+  --fs-2xl: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  --fs-3xl: clamp(2.1rem, 1.75rem + 1.5vw, 2.9rem);
+  --fs-hero: clamp(2.15rem, 1.8rem + 2.2vw, 3.6rem);
 
-  /* Spacing Scale (4, 8, 12, 16, 24, 32, 48, 64, 96) */
+  /* Spacing Scale (4, 8, 12, 16, 24, 32, 48, 64, 84) */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -200,7 +202,7 @@
   --sp-6: 32px;
   --sp-7: 48px;
   --sp-8: 64px;
-  --sp-9: 96px;
+  --sp-9: 84px;
 
   /* Radii (12 cards, 10 buttons, pill full) */
   --radius-sm: 6px;

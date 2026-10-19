@@ -7,10 +7,10 @@ const { class: className = '' } = Astro.props;
 ---
 
 <div class={`hero-visual-container ${className}`} aria-label="Interactive automation workflow demonstration">
-  <!-- Subtle green background radial glow (dark mode only) -->
+  <!-- Subtle green background radial glow -->
   <div class="hero-glow" aria-hidden="true"></div>
 
-  <!-- Background Layer: Automation API Dashboard Card -->
+  <!-- Top Layer: Automation API Telemetry Card -->
   <div class="visual-card card-api" aria-hidden="true">
     <div class="api-header">
       <div class="api-title">
@@ -22,19 +22,19 @@ const { class: className = '' } = Astro.props;
 
     <!-- Sparkline Chart -->
     <div class="api-chart">
-      <svg viewBox="0 0 300 80" class="sparkline-svg" preserveAspectRatio="none">
+      <svg viewBox="0 0 300 72" class="sparkline-svg" preserveAspectRatio="none">
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3" />
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
             <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
           </linearGradient>
         </defs>
         <path
-          d="M0,60 Q40,65 70,45 T140,40 T210,20 T280,35 L300,25 L300,80 L0,80 Z"
+          d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18 L300,72 L0,72 Z"
           fill="url(#chartGrad)"
         />
         <path
-          d="M0,60 Q40,65 70,45 T140,40 T210,20 T280,35 L300,25"
+          d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18"
           fill="none"
           stroke="var(--accent)"
           stroke-width="2.5"
@@ -44,7 +44,7 @@ const { class: className = '' } = Astro.props;
       </svg>
     </div>
 
-    <!-- Dashboard Sub-metrics -->
+    <!-- Dashboard Sub-metrics (Always fully visible, never covered) -->
     <div class="api-stats">
       <div class="api-stat">
         <span class="api-stat-k">Workflows</span>
@@ -61,7 +61,14 @@ const { class: className = '' } = Astro.props;
     </div>
   </div>
 
-  <!-- Foreground Layer: Telegram-style Bot Chat Card -->
+  <!-- Pipeline Connector Indicator -->
+  <div class="pipeline-connector" aria-hidden="true">
+    <span class="connector-line"></span>
+    <span class="connector-pill">webhook trigger &rarr; bot dispatch</span>
+    <span class="connector-line"></span>
+  </div>
+
+  <!-- Bottom Layer: Telegram-style Bot Chat Card -->
   <div class="visual-card card-chat" aria-hidden="true">
     <div class="chat-header">
       <div class="chat-user">
@@ -123,18 +130,19 @@ const { class: className = '' } = Astro.props;
   .hero-visual-container {
     position: relative;
     width: 100%;
-    max-width: 520px;
+    max-width: 500px;
     margin: 0 auto;
-    perspective: 1000px;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Dark mode hero glow */
   .hero-glow {
     position: absolute;
-    top: 20%;
-    right: 10%;
-    width: 320px;
-    height: 320px;
+    top: 15%;
+    right: 5%;
+    width: 300px;
+    height: 300px;
     background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
     filter: blur(48px);
     pointer-events: none;
@@ -152,18 +160,15 @@ const { class: className = '' } = Astro.props;
     border-radius: var(--radius-card);
     border: 1px solid var(--border);
     background: var(--surface);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-card);
     z-index: 1;
     overflow: hidden;
-    backdrop-filter: blur(8px);
   }
 
   /* Card 1: API Dashboard */
   .card-api {
-    padding: var(--sp-4);
-    margin-bottom: -40px;
-    width: 90%;
-    margin-left: 0;
+    padding: 16px 18px;
+    width: 100%;
     background: var(--card);
     border-color: var(--border);
   }
@@ -172,7 +177,7 @@ const { class: className = '' } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--sp-3);
+    margin-bottom: 10px;
   }
 
   .api-title {
@@ -204,8 +209,8 @@ const { class: className = '' } = Astro.props;
 
   .api-chart {
     width: 100%;
-    height: 64px;
-    margin-bottom: var(--sp-3);
+    height: 54px;
+    margin-bottom: 10px;
   }
 
   .sparkline-svg {
@@ -216,15 +221,17 @@ const { class: className = '' } = Astro.props;
 
   .api-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--sp-2);
-    padding-top: var(--sp-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding-top: 10px;
     border-top: 1px solid var(--border-subtle);
   }
 
   .api-stat {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    min-width: 0;
   }
 
   .api-stat-k {
@@ -235,34 +242,62 @@ const { class: className = '' } = Astro.props;
 
   .api-stat-v {
     font-family: var(--ff-mono);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     font-weight: 600;
     color: var(--heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Pipeline Connector between cards */
+  .pipeline-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 16px;
+    z-index: 1;
+  }
+
+  .connector-line {
+    height: 1px;
+    flex: 1;
+    background: var(--border);
+  }
+
+  .connector-pill {
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 2px 10px;
+    letter-spacing: 0.02em;
   }
 
   /* Card 2: Telegram Chat Card */
   .card-chat {
-    width: 94%;
-    margin-left: auto;
-    padding: var(--sp-4);
+    width: 100%;
+    padding: 16px 18px;
     z-index: 2;
     background: var(--surface-raised);
     border-color: var(--border);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--shadow-md);
   }
 
   [data-theme="light"] .card-chat {
     background: #FFFFFF;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
   }
 
   .chat-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: var(--sp-3);
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: var(--sp-3);
+    margin-bottom: 12px;
   }
 
   .chat-user {
@@ -280,6 +315,7 @@ const { class: className = '' } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .chat-info {
@@ -318,7 +354,7 @@ const { class: className = '' } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: var(--sp-3);
+    margin-bottom: 12px;
   }
 
   .chat-bubble {
@@ -326,7 +362,7 @@ const { class: className = '' } = Astro.props;
     border-radius: 10px;
     font-size: 0.82rem;
     line-height: 1.4;
-    max-width: 85%;
+    max-width: 88%;
   }
 
   .bot-bubble {
@@ -376,7 +412,7 @@ const { class: className = '' } = Astro.props;
     font-size: 0.72rem;
     color: var(--accent);
     align-self: flex-start;
-    max-width: 95%;
+    max-width: 100%;
     overflow-x: auto;
   }
 
@@ -393,7 +429,7 @@ const { class: className = '' } = Astro.props;
   .chat-placeholder {
     font-size: 0.78rem;
     color: var(--muted);
-    opacity: 0.7;
+    opacity: 0.75;
   }
 
   .chat-action-btn {
@@ -408,7 +444,7 @@ const { class: className = '' } = Astro.props;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    margin-top: var(--sp-4);
+    margin-top: 12px;
     font-family: var(--ff-mono);
     font-size: 0.72rem;
     color: var(--muted);
@@ -421,32 +457,21 @@ const { class: className = '' } = Astro.props;
     background: var(--accent);
   }
 
-  /* Responsive layout adjustments */
   @media (min-width: 1024px) {
     .hero-visual-container {
-      max-width: 480px;
+      max-width: 470px;
     }
-    .card-api {
-      transform: translateY(-8px) rotate(-1.5deg);
-      transition: transform var(--transition-base);
-    }
-    .card-chat {
-      transform: translateY(-16px) rotate(1deg);
-      transition: transform var(--transition-base);
-    }
-    .hero-visual-container:hover .card-api {
-      transform: translateY(-14px) rotate(-2deg);
-    }
-    .hero-visual-container:hover .card-chat {
-      transform: translateY(-24px) rotate(1.5deg);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
     .card-api,
     .card-chat {
-      transform: none !important;
-      transition: none !important;
+      transition: transform var(--transition-base), border-color var(--transition-base);
+    }
+    .hero-visual-container:hover .card-api {
+      transform: translateY(-2px);
+      border-color: var(--accent-border);
+    }
+    .hero-visual-container:hover .card-chat {
+      transform: translateY(-2px);
+      border-color: var(--accent-border);
     }
   }
 </style>

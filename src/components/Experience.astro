@@ -33,24 +33,28 @@ const subtitle = copy.experience_subtitle || 'Hands-on production environments, 
   experiences.length > 0 && (
     <section id="experience" class="experience-section" aria-labelledby="experience-title">
       <div class="experience-container">
-        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+        <div class="experience-layout">
+          <div class="experience-intro">
+            <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+          </div>
 
-        <div class="experience-list">
-          {experiences.map((x, i) => (
-            <div class="rv" style={`transition-delay: ${i * 0.1}s`}>
-              <TimelineItem
-                icon={x.icon || 'work'}
-                title={x.title}
-                organization={x.company}
-                dateRange={x.date_range}
-                duration={x.duration}
-                location={x.location}
-                badgeLabel={x.badge_label}
-                bulletPoints={x.bullet_points || []}
-                tags={x.tags || []}
-              />
-            </div>
-          ))}
+          <div class="experience-list">
+            {experiences.map((x, i) => (
+              <div class="rv" style={`transition-delay: ${i * 0.1}s`}>
+                <TimelineItem
+                  icon={x.icon || 'work'}
+                  title={x.title}
+                  organization={x.company}
+                  dateRange={x.date_range}
+                  duration={x.duration}
+                  location={x.location}
+                  badgeLabel={x.badge_label}
+                  bulletPoints={x.bullet_points || []}
+                  tags={x.tags || []}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -59,7 +63,7 @@ const subtitle = copy.experience_subtitle || 'Hands-on production environments, 
 
 <style>
   .experience-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -68,14 +72,34 @@ const subtitle = copy.experience_subtitle || 'Hands-on production environments, 
     margin: 0 auto;
   }
 
+  .experience-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
   .experience-list {
-    max-width: 860px;
-    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .experience-section {
+      padding: 64px 28px;
+    }
   }
 
   @media (min-width: 1024px) {
     .experience-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
+    }
+    .experience-layout {
+      grid-template-columns: minmax(0, 0.36fr) minmax(0, 0.64fr);
+      gap: 48px;
+    }
+    .experience-intro {
+      position: sticky;
+      top: calc(var(--nav-height) + 32px);
     }
   }
 </style>

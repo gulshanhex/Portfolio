@@ -52,7 +52,7 @@ const subtitle = copy.skills_subtitle || 'A curated set of tools, languages, and
 
 <style>
   .skills-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -64,22 +64,26 @@ const subtitle = copy.skills_subtitle || 'A curated set of tools, languages, and
   .skills-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-5);
+    gap: 16px;
   }
 
   @media (min-width: 640px) {
+    .skills-section {
+      padding: 64px 28px;
+    }
     .skills-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
     }
   }
 
   @media (min-width: 1024px) {
     .skills-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
     }
     .skills-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--sp-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
     }
   }
 </style>

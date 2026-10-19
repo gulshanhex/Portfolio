@@ -104,8 +104,6 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                 <input type="text" id="ct-hp" name="_hp" tabindex="-1" autocomplete="off" />
               </div>
 
-              <!-- Timestamp field for minimum-fill-time validation -->
-              
               <div class="form-row">
                 <div class="form-field">
                   <label for="ct-name" class="field-label">Name <span class="req">*</span></label>
@@ -180,7 +178,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
 
 <style>
   .contact-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -192,7 +190,8 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
   .contact-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-6);
+    gap: 28px;
+    align-items: start;
   }
 
   .channels-intro {
@@ -200,24 +199,24 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
     font-size: var(--fs-base);
     color: var(--muted);
     line-height: 1.6;
-    margin-bottom: var(--sp-5);
+    margin-bottom: var(--sp-4);
   }
 
   .channels-list {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-3);
+    gap: 12px;
   }
 
-  .channel-card {
-    padding: var(--sp-4);
+  :global(.channel-card) {
+    padding: 14px 18px !important;
     text-decoration: none;
   }
 
   .channel-card-inner {
     display: flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: 14px;
   }
 
   .channel-icon {
@@ -238,11 +237,12 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
   }
 
   .channel-label {
     font-family: var(--ff-mono);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -253,34 +253,36 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
     font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--heading);
+    overflow-wrap: anywhere;
   }
 
   .channel-arrow {
     color: var(--muted);
+    flex-shrink: 0;
     transition: color var(--transition-fast), transform var(--transition-fast);
   }
 
-  .channel-card:hover .channel-arrow {
+  :global(.channel-card:hover) .channel-arrow {
     color: var(--accent);
     transform: translateX(3px);
   }
 
   /* Form */
-  .form-card {
-    padding: var(--sp-6);
-    background: var(--surface);
+  :global(.form-card) {
+    padding: 20px !important;
+    background: var(--surface) !important;
   }
 
   .ct-form {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
   .form-row {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
   .form-field {
@@ -306,7 +308,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-btn);
-    padding: 10px 14px;
+    padding: 11px 14px;
     color: var(--text);
     font-family: var(--ff-sans);
     font-size: var(--fs-sm);
@@ -322,7 +324,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
 
   .field-textarea {
     resize: vertical;
-    min-height: 110px;
+    min-height: 115px;
   }
 
   .form-feedback {
@@ -348,22 +350,35 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
   :global(.submit-btn) {
     width: 100% !important;
     justify-content: center !important;
-    margin-top: var(--sp-2);
+    margin-top: var(--sp-1);
   }
 
   @media (min-width: 640px) {
+    .contact-section {
+      padding: 64px 28px;
+    }
     .form-row {
       grid-template-columns: 1fr 1fr;
+    }
+    :global(.form-card) {
+      padding: 24px !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 32px;
     }
   }
 
   @media (min-width: 1024px) {
     .contact-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
     }
     .contact-grid {
-      grid-template-columns: 1fr 1.2fr;
-      gap: var(--sp-8);
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 48px;
     }
   }
 </style>

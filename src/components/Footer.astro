@@ -40,6 +40,7 @@ const footerHtml = sanitizeBasicHtml(
             LinkedIn ↗
           </a>
         )}
+        <a href="/work" class="footer-link">Work Archive</a>
         <a href="/llms.txt" class="footer-link">LLMs.txt</a>
         <a href="/sitemap.xml" class="footer-link">Sitemap</a>
       </nav>
@@ -58,8 +59,7 @@ const footerHtml = sanitizeBasicHtml(
   .site-footer {
     border-top: 1px solid var(--border);
     background: var(--surface);
-    padding: var(--sp-8) var(--sp-5) calc(var(--sp-8) + var(--bottom-bar-height));
-    margin-top: var(--sp-8);
+    padding: 40px 20px calc(40px + var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
   }
 
   .footer-container {
@@ -70,10 +70,10 @@ const footerHtml = sanitizeBasicHtml(
   .footer-top {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-5);
-    padding-bottom: var(--sp-6);
+    gap: 20px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: var(--sp-5);
+    margin-bottom: 20px;
   }
 
   .footer-brand {
@@ -86,7 +86,7 @@ const footerHtml = sanitizeBasicHtml(
     display: inline-flex;
     align-items: center;
     font-family: var(--ff-sans);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 800;
     color: var(--heading);
     text-decoration: none;
@@ -106,7 +106,7 @@ const footerHtml = sanitizeBasicHtml(
   .footer-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--sp-4);
+    gap: 16px 24px;
   }
 
   .footer-link {
@@ -131,19 +131,19 @@ const footerHtml = sanitizeBasicHtml(
     color: var(--muted);
   }
 
-  .footer-copy strong {
+  .footer-copy :global(strong) {
     color: var(--text);
   }
 
   .footer-subcopy {
-    opacity: 0.7;
+    opacity: 0.75;
     font-size: 0.72rem;
     font-family: var(--ff-mono);
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 768px) {
     .site-footer {
-      padding-bottom: var(--sp-8);
+      padding: 48px 28px;
     }
     .footer-top {
       flex-direction: row;
@@ -154,6 +154,12 @@ const footerHtml = sanitizeBasicHtml(
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .site-footer {
+      padding: 56px 32px;
     }
   }
 </style>

@@ -2,7 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/ui/Button.astro';
 import Card from '../../components/ui/Card.astro';
-import Pill from '../../components/ui/Pill.astro';
 import Icon from '../../components/ui/Icon.astro';
 import { getServiceBySlug, getAllSettings, getServices } from '../../lib/db';
 
@@ -112,7 +111,7 @@ const breadcrumbLd = service ? {
           <!-- Hero Block -->
           <div class="service-hero">
             <div class="service-hero-icon" aria-hidden="true">
-              <Icon name={service.icon || 'build'} size={36} />
+              <Icon name={service.icon || 'build'} size={32} />
             </div>
             <div class="service-hero-text">
               <span class="service-eyebrow">// ENGINEERING SERVICE</span>
@@ -139,7 +138,7 @@ const breadcrumbLd = service ? {
               <!-- Workflow & Capabilities -->
               {service.features && service.features.length > 0 && (
                 <div class="service-features-block">
-                  <h3 class="features-heading">Key Capabilities & Standards</h3>
+                  <h3 class="features-heading">Key Capabilities &amp; Standards</h3>
                   <ul class="features-list">
                     {service.features.map((feat: string) => (
                       <li class="feature-item">
@@ -217,6 +216,7 @@ const breadcrumbLd = service ? {
     height: var(--nav-height);
     background: rgba(10, 12, 11, 0.88);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
   }
 
@@ -228,7 +228,7 @@ const breadcrumbLd = service ? {
     max-width: var(--max-w-content);
     height: 100%;
     margin: 0 auto;
-    padding: 0 var(--sp-5);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -249,7 +249,7 @@ const breadcrumbLd = service ? {
   .detail-nav-links {
     display: flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
   .back-link {
@@ -269,7 +269,7 @@ const breadcrumbLd = service ? {
   }
 
   .service-detail-main {
-    padding: var(--sp-6) var(--sp-5) var(--sp-9);
+    padding: 36px 20px 64px;
     background: var(--bg);
   }
 
@@ -281,11 +281,12 @@ const breadcrumbLd = service ? {
   .breadcrumb-trail {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     font-family: var(--ff-mono);
     font-size: var(--fs-xs);
     color: var(--muted);
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-5);
   }
 
   .breadcrumb-trail a {
@@ -309,16 +310,17 @@ const breadcrumbLd = service ? {
 
   .service-hero {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    gap: var(--sp-5);
+    gap: 16px;
     padding-bottom: var(--sp-6);
     border-bottom: 1px solid var(--border);
-    margin-bottom: var(--sp-7);
+    margin-bottom: var(--sp-6);
   }
 
   .service-hero-icon {
-    width: 60px;
-    height: 60px;
+    width: 54px;
+    height: 54px;
     border-radius: var(--radius-card);
     background: var(--accent-subtle);
     border: 1px solid var(--accent-border);
@@ -333,6 +335,7 @@ const breadcrumbLd = service ? {
     display: flex;
     flex-direction: column;
     gap: var(--sp-2);
+    min-width: 0;
   }
 
   .service-eyebrow {
@@ -348,22 +351,23 @@ const breadcrumbLd = service ? {
     font-weight: 800;
     color: var(--heading);
     letter-spacing: -0.03em;
-    line-height: 1.1;
+    line-height: 1.12;
   }
 
   .service-lead {
     font-family: var(--ff-sans);
     font-size: var(--fs-md);
     color: var(--muted);
-    line-height: 1.6;
-    max-width: 60ch;
+    line-height: 1.65;
+    max-width: 62ch;
   }
 
   .service-content-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-7);
-    margin-bottom: var(--sp-8);
+    gap: 32px;
+    margin-bottom: var(--sp-7);
+    align-items: start;
   }
 
   .section-subheading {
@@ -378,12 +382,12 @@ const breadcrumbLd = service ? {
     font-family: var(--ff-sans);
     font-size: var(--fs-base);
     color: var(--text);
-    line-height: 1.7;
+    line-height: 1.72;
     margin-bottom: var(--sp-4);
   }
 
   .service-features-block {
-    margin-top: var(--sp-6);
+    margin-top: var(--sp-5);
     padding-top: var(--sp-5);
     border-top: 1px solid var(--border-subtle);
   }
@@ -399,29 +403,31 @@ const breadcrumbLd = service ? {
   .features-list {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-3);
+    gap: 10px;
     list-style: none;
     padding: 0;
   }
 
   .feature-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     font-family: var(--ff-sans);
     font-size: var(--fs-sm);
     color: var(--text);
+    line-height: 1.5;
   }
 
   .feature-check {
     color: var(--accent);
     font-weight: 700;
+    flex-shrink: 0;
   }
 
   /* Inquiry Card */
-  .inquiry-card {
-    background: var(--surface);
-    padding: var(--sp-6);
+  :global(.inquiry-card) {
+    background: var(--surface) !important;
+    padding: 20px !important;
   }
 
   .inquiry-title {
@@ -436,7 +442,7 @@ const breadcrumbLd = service ? {
     font-family: var(--ff-sans);
     font-size: var(--fs-sm);
     color: var(--muted);
-    line-height: 1.55;
+    line-height: 1.6;
     margin-bottom: var(--sp-5);
   }
 
@@ -468,8 +474,8 @@ const breadcrumbLd = service ? {
 
   /* Related Services */
   .related-services-section {
-    margin-top: var(--sp-8);
-    padding-top: var(--sp-7);
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-6);
     border-top: 1px solid var(--border);
   }
 
@@ -478,28 +484,30 @@ const breadcrumbLd = service ? {
     font-size: var(--fs-lg);
     font-weight: 700;
     color: var(--heading);
-    margin-bottom: var(--sp-5);
+    margin-bottom: var(--sp-4);
   }
 
   .related-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
-  .related-card {
-    padding: var(--sp-4) var(--sp-5);
-    display: flex;
-    align-items: center;
-    gap: var(--sp-4);
+  :global(.related-card) {
+    padding: 18px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
     text-decoration: none;
+    height: 100% !important;
   }
 
   .related-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: var(--radius-btn);
     background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
     color: var(--accent);
     display: flex;
     align-items: center;
@@ -509,6 +517,7 @@ const breadcrumbLd = service ? {
 
   .related-text {
     flex-grow: 1;
+    min-width: 0;
   }
 
   .related-title {
@@ -516,27 +525,31 @@ const breadcrumbLd = service ? {
     font-size: var(--fs-base);
     font-weight: 700;
     color: var(--heading);
+    line-height: 1.3;
+    margin-bottom: 2px;
   }
 
   .related-desc {
     font-family: var(--ff-sans);
     font-size: var(--fs-xs);
     color: var(--muted);
+    line-height: 1.45;
   }
 
   .related-arrow {
     color: var(--muted);
+    flex-shrink: 0;
     transition: transform var(--transition-fast), color var(--transition-fast);
   }
 
-  .related-card:hover .related-arrow {
+  :global(.related-card:hover) .related-arrow {
     transform: translateX(4px);
     color: var(--accent);
   }
 
   .detail-footer {
     border-top: 1px solid var(--border);
-    padding: var(--sp-6) var(--sp-5);
+    padding: 28px 20px;
     background: var(--surface);
   }
 
@@ -544,7 +557,8 @@ const breadcrumbLd = service ? {
     max-width: var(--max-w-content);
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
     font-family: var(--ff-mono);
     font-size: var(--fs-xs);
     color: var(--muted);
@@ -563,7 +577,7 @@ const breadcrumbLd = service ? {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: var(--sp-6) var(--sp-5);
+    padding: var(--sp-6) 20px;
   }
 
   .nf-eyebrow {
@@ -590,19 +604,59 @@ const breadcrumbLd = service ? {
 
   .nf-actions {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--sp-3);
   }
 
   @media (min-width: 640px) {
+    .detail-header-inner {
+      padding: 0 28px;
+    }
+    .service-detail-main {
+      padding: 48px 28px 72px;
+    }
+    .service-hero {
+      flex-direction: row;
+      gap: var(--sp-5);
+    }
+    :global(.inquiry-card) {
+      padding: 24px !important;
+    }
     .related-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .detail-footer {
+      padding: 32px 28px;
+    }
+    .detail-footer-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .service-content-grid {
+      grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.78fr);
+      gap: 32px;
     }
   }
 
   @media (min-width: 1024px) {
+    .detail-header-inner {
+      padding: 0 32px;
+    }
+    .service-detail-main {
+      padding: 64px 32px 84px;
+    }
     .service-content-grid {
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: var(--sp-8);
+      grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+      gap: 48px;
+    }
+    .related-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

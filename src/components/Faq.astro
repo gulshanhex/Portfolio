@@ -25,14 +25,18 @@ const subtitle = copy.faq_subtitle || 'Direct answers regarding my engineering b
   faqs.length > 0 && (
     <section id="faq" class="faq-section" aria-labelledby="faq-title">
       <div class="faq-container">
-        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+        <div class="faq-layout">
+          <div class="faq-intro">
+            <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+          </div>
 
-        <div class="faq-list">
-          {faqs.map((fq, i) => (
-            <div class="rv" style={`transition-delay: ${i * 0.06}s`}>
-              <FaqItem question={fq.question} answer={fq.answer} />
-            </div>
-          ))}
+          <div class="faq-list">
+            {faqs.map((fq, i) => (
+              <div class="rv" style={`transition-delay: ${i * 0.06}s`}>
+                <FaqItem question={fq.question} answer={fq.answer} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -41,7 +45,7 @@ const subtitle = copy.faq_subtitle || 'Direct answers regarding my engineering b
 
 <style>
   .faq-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -50,14 +54,34 @@ const subtitle = copy.faq_subtitle || 'Direct answers regarding my engineering b
     margin: 0 auto;
   }
 
+  .faq-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
   .faq-list {
-    max-width: 860px;
-    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .faq-section {
+      padding: 64px 28px;
+    }
   }
 
   @media (min-width: 1024px) {
     .faq-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
+    }
+    .faq-layout {
+      grid-template-columns: minmax(0, 0.36fr) minmax(0, 0.64fr);
+      gap: 48px;
+    }
+    .faq-intro {
+      position: sticky;
+      top: calc(var(--nav-height) + 32px);
     }
   }
 </style>

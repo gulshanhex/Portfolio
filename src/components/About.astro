@@ -46,15 +46,14 @@ const status = hero.status_label || 'Available for projects';
         {
           about.quote && (
             <blockquote class="about-quote">
-              <span class="quote-mark">“</span>
               <p>{about.quote}</p>
             </blockquote>
           )
         }
       </div>
 
-      <!-- Right Column: Data-driven Profile Card (Replaces old typing terminal) -->
-      <div class="about-profile-wrap rv" style="transition-delay: 0.15s">
+      <!-- Right Column: Data-driven Profile Card -->
+      <div class="about-profile-wrap rv" style="transition-delay: 0.12s">
         <Card class="profile-card">
           <div class="profile-header">
             <div class="profile-avatar" aria-hidden="true">
@@ -140,7 +139,7 @@ const status = hero.status_label || 'Available for projects';
 
 <style>
   .about-section {
-    padding: var(--sp-8) var(--sp-5);
+    padding: 48px 20px;
     background: var(--bg);
   }
 
@@ -152,7 +151,7 @@ const status = hero.status_label || 'Available for projects';
   .about-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-6);
+    gap: 28px;
     align-items: start;
   }
 
@@ -160,61 +159,54 @@ const status = hero.status_label || 'Available for projects';
     display: flex;
     flex-direction: column;
     gap: var(--sp-4);
+    min-width: 0;
   }
 
   .about-para {
     font-family: var(--ff-sans);
-    font-size: var(--fs-md);
-    line-height: 1.7;
+    font-size: var(--fs-base);
+    line-height: 1.72;
     color: var(--muted);
   }
 
-  .about-para strong {
+  .about-para :global(strong) {
     color: var(--heading);
     font-weight: 600;
   }
 
-  .about-para em {
+  .about-para :global(em) {
     color: var(--accent);
     font-style: normal;
   }
 
   .about-quote {
-    margin-top: var(--sp-3);
-    padding: var(--sp-4) var(--sp-5);
-    border-left: 2px solid var(--accent);
+    margin-top: var(--sp-2);
+    padding: 16px 20px;
+    border-left: 3px solid var(--accent);
     background: var(--surface);
     border-radius: 0 var(--radius-card) var(--radius-card) 0;
     font-family: var(--ff-sans);
     font-size: var(--fs-base);
+    font-weight: 500;
     color: var(--text);
-    position: relative;
-  }
-
-  .quote-mark {
-    font-size: 1.8rem;
-    color: var(--accent);
-    line-height: 0;
-    position: absolute;
-    top: 14px;
-    left: -12px;
+    line-height: 1.6;
   }
 
   /* Profile Card */
-  .profile-card {
-    background: var(--surface);
-    border-color: var(--border);
-    padding: var(--sp-6);
+  :global(.profile-card) {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+    padding: 20px !important;
   }
 
   .profile-header {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--sp-3);
-    padding-bottom: var(--sp-4);
+    gap: 12px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: var(--sp-4);
+    margin-bottom: 16px;
   }
 
   .profile-avatar {
@@ -231,12 +223,14 @@ const status = hero.status_label || 'Available for projects';
     font-weight: 800;
     font-size: 1rem;
     letter-spacing: -0.02em;
+    flex-shrink: 0;
   }
 
   .profile-title-block {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    flex: 1 1 140px;
+    min-width: 0;
   }
 
   .profile-name {
@@ -244,7 +238,7 @@ const status = hero.status_label || 'Available for projects';
     font-size: var(--fs-base);
     font-weight: 700;
     color: var(--heading);
-    line-height: 1.2;
+    line-height: 1.25;
   }
 
   .profile-role {
@@ -256,15 +250,16 @@ const status = hero.status_label || 'Available for projects';
   .profile-facts-list {
     display: flex;
     flex-direction: column;
-    gap: var(--sp-3);
+    gap: 10px;
   }
 
   .profile-fact-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--sp-3);
-    padding: var(--sp-2) 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -281,6 +276,7 @@ const status = hero.status_label || 'Available for projects';
     font-size: var(--fs-xs);
     font-weight: 500;
     color: var(--muted);
+    flex-shrink: 0;
   }
 
   .fact-value {
@@ -288,6 +284,7 @@ const status = hero.status_label || 'Available for projects';
     font-size: var(--fs-xs);
     color: var(--heading);
     text-align: right;
+    overflow-wrap: anywhere;
   }
 
   .fact-link {
@@ -305,13 +302,29 @@ const status = hero.status_label || 'Available for projects';
     font-weight: 600;
   }
 
+  @media (min-width: 640px) {
+    .about-section {
+      padding: 64px 28px;
+    }
+    :global(.profile-card) {
+      padding: 24px !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .about-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 32px;
+    }
+  }
+
   @media (min-width: 1024px) {
     .about-section {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 80px 32px;
     }
     .about-grid {
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: var(--sp-8);
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 48px;
     }
   }
 </style>

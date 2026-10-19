@@ -155,7 +155,7 @@ const { userToggleEnabled = true } = Astro.props;
       }
     });
 
-    // ── Project Category Filter ────────────────────────
+    // ── Project Category Filter (Hides grid wrapper .rv so no empty grid cells remain) ──
     document.querySelectorAll('.proj-filter-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.proj-filter-btn').forEach((b) => b.classList.remove('active'));
@@ -164,7 +164,8 @@ const { userToggleEnabled = true } = Astro.props;
         document.querySelectorAll('.project-card').forEach((card) => {
           const cardCat = (card.getAttribute('data-cat') || '').toLowerCase();
           const match = cat === 'all' || cardCat === cat;
-          card.style.display = match ? '' : 'none';
+          const wrapper = card.closest('.rv') || card;
+          wrapper.style.display = match ? '' : 'none';
         });
       });
     });
@@ -212,7 +213,7 @@ const { userToggleEnabled = true } = Astro.props;
             ctMsg.textContent = data.message || "Message sent! I'll get back to you soon.";
             ctMsg.style.display = 'block';
             ctForm.reset();
-                      } else {
+          } else {
             ctMsg.className = 'form-msg err';
             ctMsg.textContent = data.error || 'Something went wrong. Please try again.';
             ctMsg.style.display = 'block';
@@ -228,156 +229,153 @@ const { userToggleEnabled = true } = Astro.props;
       });
     }
 
-  // PWA Service Worker & Install Flow
-  if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
-    });
-
-    window.addEventListener('load', async () => {
-      try {
-        const reg = await navigator.serviceWorker.register('/sw.js');
-
-        // Check for waiting service worker (update available)
-        if (reg.waiting && navigator.serviceWorker.controller) {
-          showUpdateToast(reg.waiting);
+    // PWA Service Worker & Install Flow
+    if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
         }
-
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateToast(newWorker);
-              }
-            });
-          }
-        });
-      } catch (e) {
-        // SW registration failed silently
-      }
-    });
-
-    function showUpdateToast(worker) {
-      if (document.getElementById('pwa-update-toast')) return;
-      const toast = document.createElement('div');
-      toast.id = 'pwa-update-toast';
-      toast.className = 'pwa-toast';
-      toast.innerHTML = `
-        <div class="pwa-toast-inner">
-          <span>A new version is available.</span>
-          <button type="button" id="pwa-refresh-btn" class="pwa-toast-btn">Refresh</button>
-        </div>
-      `;
-      document.body.appendChild(toast);
-      document.getElementById('pwa-refresh-btn')?.addEventListener('click', () => {
-        worker.postMessage({ type: 'SKIP_WAITING' });
       });
-    }
 
-    // Custom beforeinstallprompt handling (Mobile engagement banner + Desktop nav button)
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('/sw.js');
 
-      // Desktop nav button if available
-      const deskBtn = document.getElementById('pwa-desktop-install');
-      if (deskBtn) {
-        deskBtn.style.display = 'inline-flex';
-        deskBtn.addEventListener('click', async () => {
-          if (!deferredPrompt) return;
-          deferredPrompt.prompt();
-          await deferredPrompt.userChoice;
-          deferredPrompt = null;
-          deskBtn.style.display = 'none';
+          if (reg.waiting && navigator.serviceWorker.controller) {
+            showUpdateToast(reg.waiting);
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showUpdateToast(newWorker);
+                }
+              });
+            }
+          });
+        } catch (e) {
+          // SW registration failed silently
+        }
+      });
+
+      function showUpdateToast(worker) {
+        if (document.getElementById('pwa-update-toast')) return;
+        const toast = document.createElement('div');
+        toast.id = 'pwa-update-toast';
+        toast.className = 'pwa-toast';
+        toast.innerHTML = `
+          <div class="pwa-toast-inner">
+            <span>A new version is available.</span>
+            <button type="button" id="pwa-refresh-btn" class="pwa-toast-btn">Refresh</button>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        document.getElementById('pwa-refresh-btn')?.addEventListener('click', () => {
+          worker.postMessage({ type: 'SKIP_WAITING' });
         });
       }
 
-      // Mobile engagement banner
-      const isDismissed = localStorage.getItem('pwa_install_dismissed') === 'true';
-      if (!isDismissed) {
-        const triggerBanner = () => {
-          if (document.getElementById('pwa-install-banner') || !deferredPrompt) return;
-          const banner = document.createElement('div');
-          banner.id = 'pwa-install-banner';
-          banner.className = 'pwa-banner';
-          banner.innerHTML = `
-            <div class="pwa-banner-inner">
-              <div class="pwa-banner-text">
-                <strong>Install GK Portfolio</strong>
-                <p>Install on your home screen for quick offline access</p>
-              </div>
-              <div class="pwa-banner-actions">
-                <button type="button" id="pwa-install-action" class="pwa-action-btn">Install</button>
-                <button type="button" id="pwa-dismiss-action" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
-              </div>
-            </div>
-          `;
-          document.body.appendChild(banner);
+      let deferredPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
 
-          document.getElementById('pwa-install-action')?.addEventListener('click', async () => {
+        const deskBtn = document.getElementById('pwa-desktop-install');
+        if (deskBtn) {
+          deskBtn.style.display = 'inline-flex';
+          deskBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
             deferredPrompt = null;
-            banner.remove();
+            deskBtn.style.display = 'none';
           });
+        }
 
-          document.getElementById('pwa-dismiss-action')?.addEventListener('click', () => {
-            banner.remove();
-            localStorage.setItem('pwa_install_dismissed', 'true');
-          });
-        };
+        const isDismissed = localStorage.getItem('pwa_install_dismissed') === 'true';
+        if (!isDismissed) {
+          const triggerBanner = () => {
+            if (document.getElementById('pwa-install-banner') || !deferredPrompt) return;
+            const banner = document.createElement('div');
+            banner.id = 'pwa-install-banner';
+            banner.className = 'pwa-banner';
+            banner.innerHTML = `
+              <div class="pwa-banner-inner">
+                <div class="pwa-banner-text">
+                  <strong>Install GK Portfolio</strong>
+                  <p>Install on your home screen for quick offline access</p>
+                </div>
+                <div class="pwa-banner-actions">
+                  <button type="button" id="pwa-install-action" class="pwa-action-btn">Install</button>
+                  <button type="button" id="pwa-dismiss-action" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(banner);
 
-        // Show banner after 4 seconds or after user scrolls down 300px
-        setTimeout(triggerBanner, 4000);
-        window.addEventListener('scroll', () => {
-          if (window.scrollY > 300) triggerBanner();
-        }, { once: true });
-      }
-    });
+            document.getElementById('pwa-install-action')?.addEventListener('click', async () => {
+              if (!deferredPrompt) return;
+              deferredPrompt.prompt();
+              await deferredPrompt.userChoice;
+              deferredPrompt = null;
+              banner.remove();
+            });
 
-    // iOS "Share -> Add to Home Screen" hint banner
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in navigator && navigator.standalone);
-    const isIosDismissed = localStorage.getItem('pwa_ios_hint_dismissed') === 'true';
+            document.getElementById('pwa-dismiss-action')?.addEventListener('click', () => {
+              banner.remove();
+              localStorage.setItem('pwa_install_dismissed', 'true');
+            });
+          };
 
-    if (isIOS && !isStandalone && !isIosDismissed) {
-      setTimeout(() => {
-        if (document.getElementById('pwa-ios-hint')) return;
-        const hint = document.createElement('div');
-        hint.id = 'pwa-ios-hint';
-        hint.className = 'pwa-banner';
-        hint.innerHTML = `
-          <div class="pwa-banner-inner">
-            <div class="pwa-banner-text">
-              <strong>Add to Home Screen</strong>
-              <p>Tap <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <em>'Add to Home Screen'</em> for full offline app experience.</p>
+          setTimeout(triggerBanner, 4000);
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) triggerBanner();
+          }, { once: true });
+        }
+      });
+
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in navigator && navigator.standalone);
+      const isIosDismissed = localStorage.getItem('pwa_ios_hint_dismissed') === 'true';
+
+      if (isIOS && !isStandalone && !isIosDismissed) {
+        setTimeout(() => {
+          if (document.getElementById('pwa-ios-hint')) return;
+          const hint = document.createElement('div');
+          hint.id = 'pwa-ios-hint';
+          hint.className = 'pwa-banner';
+          hint.innerHTML = `
+            <div class="pwa-banner-inner">
+              <div class="pwa-banner-text">
+                <strong>Add to Home Screen</strong>
+                <p>Tap <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <em>'Add to Home Screen'</em> for full offline app experience.</p>
+              </div>
+              <button type="button" id="pwa-ios-dismiss" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
             </div>
-            <button type="button" id="pwa-ios-dismiss" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
-          </div>
-        `;
-        document.body.appendChild(hint);
-        document.getElementById('pwa-ios-dismiss')?.addEventListener('click', () => {
-          hint.remove();
-          localStorage.setItem('pwa_ios_hint_dismissed', 'true');
-        });
-      }, 5000);
+          `;
+          document.body.appendChild(hint);
+          document.getElementById('pwa-ios-dismiss')?.addEventListener('click', () => {
+            hint.remove();
+            localStorage.setItem('pwa_ios_hint_dismissed', 'true');
+          });
+        }, 5000);
+      }
     }
-  }
   })();
 </script>
 
 <style is:global>
   .pwa-toast {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: calc(var(--bottom-bar-height) + 16px);
+    right: 16px;
+    left: 16px;
+    max-width: 360px;
+    margin-left: auto;
     z-index: 10000;
     background: var(--card);
     border: 1px solid var(--accent);
@@ -391,6 +389,7 @@ const { userToggleEnabled = true } = Astro.props;
   .pwa-toast-inner {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
   }
   .pwa-toast-btn {
@@ -405,7 +404,7 @@ const { userToggleEnabled = true } = Astro.props;
   }
   .pwa-banner {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(var(--bottom-bar-height) + 14px);
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 32px);
@@ -417,6 +416,16 @@ const { userToggleEnabled = true } = Astro.props;
     padding: 14px 18px;
     z-index: 9999;
     font-family: var(--ff-sans);
+  }
+  @media (min-width: 768px) {
+    .pwa-toast {
+      bottom: 24px;
+      right: 24px;
+      left: auto;
+    }
+    .pwa-banner {
+      bottom: 20px;
+    }
   }
   .pwa-banner-inner {
     display: flex;

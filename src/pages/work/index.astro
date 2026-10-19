@@ -120,7 +120,7 @@ const breadcrumbLd = {
   </footer>
 
   <script is:inline>
-    // Project Category Filtering for Work Archive
+    // Project Category Filtering for Work Archive (hides .rv grid wrapper so no empty cells remain)
     document.querySelectorAll('.proj-filter-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.proj-filter-btn').forEach((b) => b.classList.remove('active'));
@@ -129,7 +129,8 @@ const breadcrumbLd = {
         document.querySelectorAll('.project-card').forEach((card) => {
           const cardCat = (card.getAttribute('data-cat') || '').toLowerCase();
           const match = cat === 'all' || cardCat === cat;
-          card.style.display = match ? '' : 'none';
+          const wrapper = card.closest('.rv') || card;
+          wrapper.style.display = match ? '' : 'none';
         });
       });
     });
@@ -144,6 +145,7 @@ const breadcrumbLd = {
     height: var(--nav-height);
     background: rgba(10, 12, 11, 0.88);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
   }
 
@@ -155,7 +157,7 @@ const breadcrumbLd = {
     max-width: var(--max-w-content);
     height: 100%;
     margin: 0 auto;
-    padding: 0 var(--sp-5);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -176,7 +178,7 @@ const breadcrumbLd = {
   .work-nav-links {
     display: flex;
     align-items: center;
-    gap: var(--sp-4);
+    gap: 16px;
   }
 
   .back-link {
@@ -196,7 +198,7 @@ const breadcrumbLd = {
   }
 
   .work-main {
-    padding: var(--sp-7) var(--sp-5) var(--sp-9);
+    padding: 40px 20px 64px;
     background: var(--bg);
   }
 
@@ -210,7 +212,7 @@ const breadcrumbLd = {
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-5);
   }
 
   .proj-filter-btn {
@@ -244,7 +246,7 @@ const breadcrumbLd = {
   .work-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--sp-5);
+    gap: 16px;
   }
 
   .no-projects-box {
@@ -259,7 +261,7 @@ const breadcrumbLd = {
 
   .work-footer {
     border-top: 1px solid var(--border);
-    padding: var(--sp-6) var(--sp-5);
+    padding: 28px 20px;
     background: var(--surface);
   }
 
@@ -267,7 +269,8 @@ const breadcrumbLd = {
     max-width: var(--max-w-content);
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
     font-family: var(--ff-mono);
     font-size: var(--fs-xs);
     color: var(--muted);
@@ -279,18 +282,39 @@ const breadcrumbLd = {
   }
 
   @media (min-width: 640px) {
+    .work-header-inner {
+      padding: 0 28px;
+    }
+    .work-main {
+      padding: 56px 28px 72px;
+    }
     .work-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .work-footer {
+      padding: 32px 28px;
+    }
+    .work-footer-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
     }
   }
 
   @media (min-width: 1024px) {
+    .work-header-inner {
+      padding: 0 32px;
+    }
     .work-main {
-      padding: var(--sp-9) var(--sp-6);
+      padding: 72px 32px 84px;
     }
     .work-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--sp-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .work-footer {
+      padding: 36px 32px;
     }
   }
 </style>

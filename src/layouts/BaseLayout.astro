@@ -15,6 +15,7 @@ interface Props {
   defaultTheme?: string;
   accent?: string;
   jsonLd?: Record<string, any> | null;
+  starsEnabled?: boolean;
 }
 
 const {
@@ -101,9 +102,8 @@ const resolvedOgImage = ogImage
     <meta name="twitter:image" content={resolvedOgImage} />
     <meta name="twitter:image:alt" content={`${authorName} — Automation & AI Systems Engineer Portfolio`} />
 
-    <!-- Preload Critical Self-Hosted Font -->
-    <link rel="preload" href="/fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Preload Critical Self-Hosted Variable Font -->
+    <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Early Theme Detection & Progressive Enhancement Bootstrap -->
     <script is:inline define:vars={{ defaultTheme, accent }}>
