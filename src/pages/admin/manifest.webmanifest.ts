@@ -1,8 +1,9 @@
+import { getEnv } from '../../lib/env';
 import type { APIRoute } from 'astro';
 import { getAllSettings } from '../../lib/db';
 
 export const GET: APIRoute = async ({ locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   const settings = await getAllSettings(db);
   const g = settings.global || {};
   const siteName = g.site_name || 'Portfolio';

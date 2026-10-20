@@ -1,3 +1,4 @@
+import { env } from 'cloudflare:workers';
 // ── Cloudflare Worker Environment & Secret Helper ─────────────────────────
 // Safely reads variables and secrets configured in Cloudflare Dashboard
 // (Settings → Variables and Secrets → Text | JSON | Secret modes).
@@ -23,4 +24,11 @@ export function getSiteUrl(env: any, fallbackOrigin = 'https://portfolio.example
     return fromSecret.replace(/\/$/, '');
   }
   return (fallbackOrigin || 'https://portfolio.example.com').replace(/\/$/, '');
+}
+
+// ── Astro 7 / @astrojs/cloudflare v14 migration ───────────────────────────
+// `Astro.locals.runtime` was removed in adapter v14. Worker bindings and
+// secrets are now imported directly from the `cloudflare:workers` module.
+export function getEnv(): Env {
+  return env as unknown as Env;
 }

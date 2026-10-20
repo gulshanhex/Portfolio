@@ -1,9 +1,10 @@
+import { getEnv } from '../../lib/env';
 import type { APIRoute } from 'astro';
 import { clearSessionCookie, deleteSession, getSessionIdFromCookie } from '../../lib/auth';
 import { redirect } from '../../lib/response';
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   const sid = getSessionIdFromCookie(request.headers.get('Cookie'));
   if (sid && db) {
     await deleteSession(db, sid);

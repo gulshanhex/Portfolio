@@ -1,3 +1,4 @@
+import { getEnv } from '../../../lib/env';
 import type { APIRoute } from 'astro';
 import {
   buildOtpAuthUri,
@@ -48,7 +49,7 @@ export const ALL: APIRoute = async ({ request, locals }) => {
     return unauthorized('Unauthorized');
   }
 
-  const env = locals.runtime?.env;
+  const env = getEnv();
   const DB = env?.DB;
   if (!DB) {
     return serverError('D1 database binding (DB) not configured.');

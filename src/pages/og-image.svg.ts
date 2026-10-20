@@ -1,3 +1,4 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { getAllSettings, escHtml } from '../lib/db';
 import { t } from '../lib/ui-strings';
@@ -7,7 +8,7 @@ import { t } from '../lib/ui-strings';
  * Reflects live name, tagline, location, and status from Cloudflare D1.
  */
 export const GET: APIRoute = async ({ locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   const settings = await getAllSettings(db);
   const g = settings.global || {};
   const hero = settings.hero || {};

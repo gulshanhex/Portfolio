@@ -1,7 +1,5 @@
 /// <reference path="../.astro/types.d.ts" />
-/// <reference types="@cloudflare/workers-types/2023-07-01" />
-
-type Runtime = import('@astrojs/cloudflare').Runtime<Env>;
+/// <reference types="@cloudflare/workers-types" />
 
 interface Env {
   // Cloudflare D1 Binding
@@ -18,7 +16,7 @@ interface Env {
 }
 
 declare namespace App {
-  interface Locals extends Runtime {
+  interface Locals {
     adminSession?: {
       user_id: number;
       username: string;

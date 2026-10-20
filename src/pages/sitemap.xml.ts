@@ -1,9 +1,10 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { getAllSettings, getServices, getProjects, escHtml } from '../lib/db';
 import { getSiteUrl } from '../lib/env';
 
 export const GET: APIRoute = async ({ request, locals }) => {
-  const env = locals.runtime?.env;
+  const env = getEnv();
   const db = env?.DB;
   const settings = await getAllSettings(db);
   const seo = settings.seo || {};

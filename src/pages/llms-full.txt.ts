@@ -1,3 +1,4 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { getSiteData, stripHtml } from '../lib/db';
 
@@ -7,7 +8,7 @@ import { getSiteData, stripHtml } from '../lib/db';
  * education, projects, testimonials, and FAQs.
  */
 export const GET: APIRoute = async ({ locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   const data = await getSiteData(db);
   const g = data.settings.global || {};
   const hero = data.settings.hero || {};

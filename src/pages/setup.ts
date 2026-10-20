@@ -1,3 +1,4 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { hashPassword } from '../lib/auth';
 import { escHtml } from '../lib/db';
@@ -146,7 +147,7 @@ function renderSetupForm(token: string, error = ''): string {
 async function handleSetupRequest(request: Request, locals: App.Locals): Promise<Response> {
   const url = new URL(request.url);
   const token = (url.searchParams.get('token') || '').trim();
-  const env = locals.runtime?.env;
+  const env = getEnv();
   const db = env?.DB;
   const setupToken = getEnvSecret(env, 'ADMIN_SETUP_TOKEN');
 

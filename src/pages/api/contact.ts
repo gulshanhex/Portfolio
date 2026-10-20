@@ -1,3 +1,4 @@
+import { getEnv } from '../../lib/env';
 import type { APIRoute } from 'astro';
 import { addSubmission, checkContactRateLimit, getAllSettings } from '../../lib/db';
 import { badRequest, getClientIp, jsonResponse, serverError, tooManyRequests } from '../../lib/response';
@@ -6,7 +7,7 @@ import { t } from '../../lib/ui-strings';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    const db = locals.runtime?.env?.DB;
+    const db = getEnv()?.DB;
     if (!db) {
       return serverError('Database binding (DB) is not configured.');
     }

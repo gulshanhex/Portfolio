@@ -1,3 +1,4 @@
+import { getEnv } from '../../lib/env';
 import type { APIRoute } from 'astro';
 import {
   checkLoginLockout,
@@ -13,7 +14,7 @@ import { getEnvSecret } from '../../lib/env';
 import { getClientIp, redirect } from '../../lib/response';
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const env = locals.runtime?.env;
+  const env = getEnv();
   const db = env?.DB;
   if (!db) {
     return redirect('/admin?error=' + encodeURIComponent('D1 database binding (DB) not configured.'));

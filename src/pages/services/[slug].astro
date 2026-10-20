@@ -1,4 +1,5 @@
 ---
+import { getEnv } from '../../lib/env';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/ui/Button.astro';
 import Card from '../../components/ui/Card.astro';
@@ -7,7 +8,7 @@ import { getServiceBySlug, getAllSettings, getServices, sanitizeBasicHtml } from
 import { t } from '../../lib/ui-strings';
 
 const { slug } = Astro.params;
-const db = Astro.locals.runtime?.env?.DB;
+const db = getEnv()?.DB;
 
 if (!slug) {
   return Astro.redirect('/#services');

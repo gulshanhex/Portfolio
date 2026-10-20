@@ -1,4 +1,5 @@
 ---
+import { getEnv } from '../lib/env';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import BottomNav from '../components/ui/BottomNav.astro';
@@ -17,7 +18,7 @@ import ClientScripts from '../components/ClientScripts.astro';
 import { getSiteData } from '../lib/db';
 import { buildJsonLdGraph } from '../lib/seo';
 
-const db = Astro.locals.runtime?.env?.DB;
+const db = getEnv()?.DB;
 const data = await getSiteData(db);
 
 const { settings, sections, skills, services, experiences, education, projects, proof, faqs } = data;

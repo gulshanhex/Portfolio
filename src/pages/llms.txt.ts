@@ -1,3 +1,4 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { getSiteData, stripHtml } from '../lib/db';
 
@@ -7,7 +8,7 @@ import { getSiteData, stripHtml } from '../lib/db';
  * Perplexity, Claude, Gemini) can accurately index and cite the portfolio owner.
  */
 export const GET: APIRoute = async ({ locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   const data = await getSiteData(db);
   const g = data.settings.global || {};
   const contact = data.settings.contact || {};

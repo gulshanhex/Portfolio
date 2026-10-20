@@ -14,14 +14,14 @@ import {
   validateSession,
   verifyAdminGateCookie,
 } from './lib/auth';
-import { getEnvSecret } from './lib/env';
+import { getEnv, getEnvSecret } from './lib/env';
 import { forbidden, redirect, SECURITY_HEADERS, unauthorized } from './lib/response';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, url, locals } = context;
   const pathname = url.pathname;
   const method = request.method.toUpperCase();
-  const env = locals.runtime?.env;
+  const env = getEnv();
   const db = env?.DB;
   const sessionSecret = getEnvSecret(env, 'SESSION_SECRET');
   const adminAccessKey = getEnvSecret(env, 'ADMIN_ACCESS_KEY');

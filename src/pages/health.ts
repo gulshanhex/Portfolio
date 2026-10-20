@@ -1,8 +1,9 @@
+import { getEnv } from '../lib/env';
 import type { APIRoute } from 'astro';
 import { jsonResponse } from '../lib/response';
 
 export const GET: APIRoute = async ({ locals }) => {
-  const db = locals.runtime?.env?.DB;
+  const db = getEnv()?.DB;
   if (!db) {
     return jsonResponse(
       {

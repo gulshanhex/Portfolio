@@ -1,10 +1,11 @@
 ---
+import { getEnv } from '../lib/env';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
 import '../styles/docs.css';
 import { getAllSettings } from '../lib/db';
 
-const db = Astro.locals.runtime?.env?.DB;
+const db = getEnv()?.DB;
 const settings = await getAllSettings(db);
 const g = settings.global || {};
 const theme = settings.theme || {};
