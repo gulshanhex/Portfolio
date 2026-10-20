@@ -7,7 +7,8 @@ import cloudflare from '@astrojs/cloudflare';
  * Documentation: https://docs.astro.build/en/guides/integrations-guide/cloudflare/
  */
 export default defineConfig({
-  site: 'https://portfolio.gulshan-kumar.me',
+  // Set SITE_URL at build time (Cloudflare build variable) for forks; falls back to the owner's domain.
+  site: process.env.SITE_URL || 'https://portfolio.gulshan-kumar.me',
   output: 'server',
   adapter: cloudflare({
     platformProxy: {

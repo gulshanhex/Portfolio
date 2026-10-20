@@ -1284,7 +1284,8 @@ for (const item of UI_STRINGS) {
             if (panel) panel.classList.add('active');
             const btn = document.querySelector('[data-p="' + id + '"]');
             if (btn) btn.classList.add('active');
-            document.getElementById('tb-title').textContent = id.replace(/-/g, ' ').toUpperCase();
+            const TB_TITLES = { ui: 'Interface Text', copy: 'Section Copy', faqs: 'FAQs', seo: 'SEO', global: 'Global Settings', hero: 'Hero & About' };
+            document.getElementById('tb-title').textContent = (TB_TITLES[id] || id.replace(/-/g, ' ')).toUpperCase();
             const loaders = {
               dashboard: loadDash,
               inbox: loadInbox,
