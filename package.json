@@ -48,7 +48,7 @@
     "db:migrate:remote": "wrangler d1 execute portfolio-cms-db --remote --file=./migrations/0001_phase4_slugs_and_details.sql"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.0",
+    "@astrojs/cloudflare": "^14.4.0",
     "astro": "^5.12.0"
   },
   "devDependencies": {
