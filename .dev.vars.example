@@ -4,5 +4,8 @@
 
 SESSION_SECRET="<replace-with-32-byte-random-hex-secret>"
 ADMIN_SETUP_TOKEN="<replace-with-admin-setup-token>"
+# ADMIN_ACCESS_KEY="<optional-stealth-key-for-admin-url>"
+# SITE_URL="https://portfolio.example.com"
 # ADMIN_TOTP_SECRET="<optional-base32-totp-secret>"
 # TURNSTILE_SECRET_KEY="<optional-cloudflare-turnstile-secret>"
+# D1_DATABASE_ID="<optional-d1-database-uuid-override>"

@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { sanitizeBasicHtml } from '../../lib/db';
 
 interface Props {
   icon?: string;
@@ -53,7 +54,7 @@ const {
     {bulletPoints.length > 0 && (
       <ul class="timeline-bullets">
         {bulletPoints.map((pt) => (
-          <li>{pt}</li>
+          <li set:html={sanitizeBasicHtml(pt)} />
         ))}
       </ul>
     )}
@@ -187,6 +188,16 @@ const {
     font-size: var(--fs-sm);
     color: var(--muted);
     line-height: 1.6;
+  }
+
+  .timeline-bullets :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .timeline-bullets :global(em) {
+    color: var(--accent);
+    font-style: normal;
   }
 
   .timeline-tags {

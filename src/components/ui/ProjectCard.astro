@@ -1,6 +1,8 @@
 ---
 import Icon from './Icon.astro';
 import Pill from './Pill.astro';
+import { sanitizeBasicHtml } from '../../lib/db';
+import { t } from '../../lib/ui-strings';
 
 interface Props {
   id?: number | string;
@@ -16,11 +18,12 @@ interface Props {
   slug?: string;
   featured?: boolean;
   class?: string;
+  settings?: Record<string, any>;
 }
 
 const {
   title,
-  category = 'Project',
+  category = '',
   categoryIcon = 'folder',
   summary,
   tags = [],
@@ -31,10 +34,18 @@ const {
   slug,
   featured = false,
   class: className = '',
+  settings = {},
 } = Astro.props;
 
 const detailUrl = slug ? `/work/${slug}` : (demoUrl || externalUrl || githubUrl);
 const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0, 5);
+
+const featuredBadge = t(settings, 'projects.featured_badge');
+const caseStudyLabel = t(settings, 'projects.case_study_link');
+const liveDemoLabel = t(settings, 'projects.live_demo_link');
+const exploreLabel = t(settings, 'projects.explore_link');
+const githubLabel = t(settings, 'projects.github_link');
+const githubAria = `${t(settings, 'projects.github_aria')}: ${title}`;
 ---
 
 <article class={`project-card ${featured ? 'project-card-featured' : ''} ${className}`} data-cat={category.toLowerCase()}>
@@ -43,7 +54,7 @@ const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0
       <Icon name={categoryIcon || 'folder'} size={14} />
       <span>{category}</span>
     </div>
-    {featured && <Pill variant="accent" size="sm">Featured</Pill>}
+    {featured && <Pill variant="accent" size="sm">{featuredBadge}</Pill>}
   </div>
 
   <h3 class="project-title">
@@ -57,12 +68,12 @@ const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0
     )}
   </h3>
 
-  <p class="project-summary">{summary}</p>
+  <p class="project-summary" set:html={sanitizeBasicHtml(summary)} />
 
   {allTags.length > 0 && (
     <div class="project-tags">
-      {allTags.map((t) => (
-        <span class="project-tag">{t}</span>
+      {allTags.map((tagItem) => (
+        <span class="project-tag">{tagItem}</span>
       ))}
     </div>
   )}
@@ -71,25 +82,25 @@ const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0
     <div class="project-links">
       {slug && (
         <a href={`/work/${slug}`} class="project-action-link primary-action">
-          <span>Case study</span>
+          <span>{caseStudyLabel}</span>
           <span aria-hidden="true">→</span>
         </a>
       )}
       {demoUrl && (
         <a href={demoUrl} target="_blank" rel="noopener noreferrer" class="project-action-link">
-          <span>Live demo</span>
+          <span>{liveDemoLabel}</span>
           <span aria-hidden="true">↗</span>
         </a>
       )}
       {externalUrl && !demoUrl && (
         <a href={externalUrl} target="_blank" rel="noopener noreferrer" class="project-action-link">
-          <span>Explore</span>
+          <span>{exploreLabel}</span>
           <span aria-hidden="true">↗</span>
         </a>
       )}
       {githubUrl && (
-        <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="project-action-link" aria-label={`View ${title} source on GitHub`}>
-          <span>GitHub</span>
+        <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="project-action-link" aria-label={githubAria}>
+          <span>{githubLabel}</span>
           <span aria-hidden="true">↗</span>
         </a>
       )}
@@ -187,6 +198,11 @@ const allTags = Array.from(new Set([...(tags || []), ...(stack || [])])).slice(0
     line-height: 1.6;
     margin-bottom: var(--sp-4);
     flex-grow: 1;
+  }
+
+  .project-summary :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
   }
 
   .project-tags {

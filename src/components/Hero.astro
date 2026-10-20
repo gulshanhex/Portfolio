@@ -4,65 +4,77 @@ import Pill from './ui/Pill.astro';
 import StatRow from './ui/StatRow.astro';
 import HeroVisual from './ui/HeroVisual.astro';
 import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 interface Props {
   globalCfg: Record<string, any>;
   hero: Record<string, any>;
   contact: Record<string, any>;
   hasProjects?: boolean;
+  settings?: Record<string, any>;
 }
 
-const { globalCfg = {}, hero = {}, contact = {}, hasProjects = true } = Astro.props;
+const { globalCfg = {}, hero = {}, contact = {}, hasProjects = true, settings = {} } = Astro.props;
 
-const name = globalCfg.name || 'Gulshan Kumar';
+const name = globalCfg.name || 'Your Name';
 const tagline = globalCfg.tagline || 'Automation & AI Systems Engineer';
 
 // Headline logic: new headline key with fallback to headline_line1 + headline_line2
-const headlineText = hero.headline || `${hero.headline_line1 || 'GULSHAN'} ${hero.headline_line2 || 'KUMAR'}`.trim() || 'I build bots & automation that run your business';
+const line12 = `${hero.headline_line1 || ''} ${hero.headline_line2 || ''}`.trim();
+const headlineText = hero.headline || line12 || t(settings, 'hero.headline_default');
 
-// Subheadline logic: new subheadline with fallback to role_text
-const subheadlineRaw = hero.subheadline || hero.role_text || 'From custom AI workflows to automated scaling—I architect system integrations that eliminate manual work.';
+// Subheadline logic: new subheadline with fallback to role_text (rendered via sanitizeBasicHtml)
+const subheadlineRaw = hero.subheadline || hero.role_text || t(settings, 'hero.subheadline_default');
 const subheadlineHtml = sanitizeBasicHtml(subheadlineRaw);
 
 const showAvailability = contact.availability_visible !== false;
-const statusLabel = hero.status_label || 'Available for projects';
+const statusLabel = contact.availability_badge || hero.status_label || t(settings, 'hero.status_default');
 
 // CTAs logic with target section safety
-let primaryLabel = hero.cta_primary_label || 'Start a project';
+let primaryLabel = hero.cta_primary_label || t(settings, 'hero.cta_primary_default');
 let primaryUrl = hero.cta_primary_url || '#contact';
 
-let secondaryLabel = hero.cta_secondary_label || (hasProjects ? 'View work' : 'See services');
+let secondaryLabel =
+  hero.cta_secondary_label || (hasProjects ? t(settings, 'hero.cta_secondary_work') : t(settings, 'hero.cta_secondary_services'));
 let secondaryUrl = hero.cta_secondary_url || (hasProjects ? '#projects' : '#services');
 
 // If target is #projects but no projects exist, redirect to #services
 if (secondaryUrl === '#projects' && !hasProjects) {
   secondaryUrl = '#services';
-  if (!hero.cta_secondary_label) secondaryLabel = 'See services';
+  if (!hero.cta_secondary_label || hero.cta_secondary_label === 'View work') {
+    secondaryLabel = t(settings, 'hero.cta_secondary_services');
+  }
 }
 if (primaryUrl === '#projects' && !hasProjects) {
   primaryUrl = '#services';
-  if (!hero.cta_primary_label) primaryLabel = 'See services';
+  if (!hero.cta_primary_label) primaryLabel = t(settings, 'hero.cta_secondary_services');
 }
 
 // Avoid duplicate CTA buttons if both point to the same destination
 const showSecondary = secondaryUrl !== primaryUrl;
 
-const showVisual = hero.show_visual !== false;
+const visualVariant: 'chat+chart' | 'chart' | 'none' =
+  hero.visual_variant === 'chart' || hero.visual_variant === 'none' ? hero.visual_variant : 'chat+chart';
+const showVisual = hero.show_visual !== false && visualVariant !== 'none';
 const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
+const heroSectionAria = t(settings, 'hero.section_aria');
 ---
 
-<section id="hero" class="hero-section" aria-label="Introduction">
+<section id="hero" class="hero-section" aria-label={heroSectionAria}>
   <div class="hero-container">
     <div class="hero-content">
       <!-- Eyebrow & Status Pill -->
       <div class="hero-top-meta">
-        <span class="hero-eyebrow">// {name} · {tagline}</span>
+        <span class="hero-eyebrow">// {tagline}</span>
         {showAvailability && (
           <Pill variant="status" pulse={true} size="sm">
             {statusLabel}
           </Pill>
         )}
       </div>
+
+      <!-- Part A.6: Show the owner's name (global.name) as a clear line above the headline -->
+      <div class="hero-owner-name">{name}</div>
 
       <!-- Exactly one h1 -->
       <h1 class="hero-headline">{headlineText}</h1>
@@ -91,7 +103,7 @@ const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
     <!-- Hero Visual Artifact (Telegram Bot + Automation API) -->
     {showVisual && (
       <div class="hero-visual-wrapper">
-        <HeroVisual />
+        <HeroVisual settings={settings} variant={visualVariant} />
       </div>
     )}
   </div>
@@ -129,7 +141,7 @@ const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: var(--sp-4);
+    margin-bottom: var(--sp-3);
   }
 
   .hero-eyebrow {
@@ -138,6 +150,16 @@ const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
     font-weight: 500;
     color: var(--muted);
     letter-spacing: 0.03em;
+  }
+
+  .hero-owner-name {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    margin-bottom: var(--sp-2);
+    line-height: 1.25;
   }
 
   .hero-headline {
@@ -158,6 +180,16 @@ const quickStats = Array.isArray(hero.quick_stats) ? hero.quick_stats : [];
     color: var(--muted);
     margin-bottom: var(--sp-5);
     max-width: 54ch;
+  }
+
+  .hero-subheadline :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .hero-subheadline :global(em) {
+    color: var(--accent);
+    font-style: normal;
   }
 
   .hero-actions {

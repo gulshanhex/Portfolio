@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { t } from '../../lib/ui-strings';
 
 interface SectionItem {
   id: string;
@@ -13,6 +14,7 @@ interface Props {
   contact?: Record<string, any>;
   nav?: Record<string, any>;
   hasProjects?: boolean;
+  settings?: Record<string, any>;
 }
 
 const {
@@ -20,6 +22,7 @@ const {
   contact = {},
   nav = {},
   hasProjects = true,
+  settings = {},
 } = Astro.props;
 
 const visibleSections = sections
@@ -27,21 +30,33 @@ const visibleSections = sections
   .sort((a, b) => (a.order_idx ?? 0) - (b.order_idx ?? 0));
 
 const workHref = hasProjects ? '#projects' : '#about';
-const workLabel = hasProjects ? 'Work' : 'About';
+const workLabel = hasProjects ? t(settings, 'nav.work_label') : t(settings, 'nav.about_label');
 const showResume = Boolean(contact.resume_url && nav.show_resume !== false);
-const resumeLabel = nav.resume_label || 'Resume';
+const resumeLabel = nav.resume_label || t(settings, 'nav.resume_label');
+const resumePdfSuffix = t(settings, 'nav.resume_pdf_suffix');
+
+const bottomAria = t(settings, 'nav.mobile_bottom_aria');
+const homeLabel = t(settings, 'nav.home_label');
+const servicesLabel = t(settings, 'nav.services_label');
+const moreLabel = t(settings, 'nav.more_label');
+const contactLabel = t(settings, 'nav.contact_label');
+const sheetDialogAria = t(settings, 'nav.sheet_dialog_aria');
+const sheetTitle = t(settings, 'nav.sheet_title');
+const sheetCloseAria = t(settings, 'nav.sheet_close_aria');
+const installAppLabel = t(settings, 'nav.install_app_label');
+const installAria = t(settings, 'nav.install_aria');
 ---
 
-<nav id="bottom-tab-bar" class="bottom-tab-bar" aria-label="Mobile bottom navigation">
+<nav id="bottom-tab-bar" class="bottom-tab-bar" aria-label={bottomAria}>
   <div class="bottom-tab-inner">
     <a href="#hero" class="tab-item active" data-tab="hero">
       <span class="tab-icon"><Icon name="home" size={20} /></span>
-      <span class="tab-label">Home</span>
+      <span class="tab-label">{homeLabel}</span>
     </a>
 
     <a href="#services" class="tab-item" data-tab="services">
       <span class="tab-icon"><Icon name="hub" size={20} /></span>
-      <span class="tab-label">Services</span>
+      <span class="tab-label">{servicesLabel}</span>
     </a>
 
     <a href={workHref} class="tab-item" data-tab={hasProjects ? 'projects' : 'about'}>
@@ -51,22 +66,22 @@ const resumeLabel = nav.resume_label || 'Resume';
 
     <button type="button" class="tab-item tab-more-btn" id="bottom-more-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="bottom-sheet-modal">
       <span class="tab-icon"><Icon name="more_horiz" size={20} /></span>
-      <span class="tab-label">More</span>
+      <span class="tab-label">{moreLabel}</span>
     </button>
 
     <a href="#contact" class="tab-item tab-contact-cta" data-tab="contact">
-      <span class="contact-pill-btn">Contact</span>
+      <span class="contact-pill-btn">{contactLabel}</span>
     </a>
   </div>
 </nav>
 
 <!-- Mobile Slide-Up Bottom Sheet Drawer -->
-<div id="bottom-sheet-modal" class="bottom-sheet-backdrop" role="dialog" aria-modal="true" aria-label="All portfolio sections" hidden>
+<div id="bottom-sheet-modal" class="bottom-sheet-backdrop" role="dialog" aria-modal="true" aria-label={sheetDialogAria} hidden>
   <div class="bottom-sheet-panel">
     <div class="sheet-drag-handle" aria-hidden="true"></div>
     <div class="sheet-header">
-      <h3 class="sheet-title">Portfolio Navigation</h3>
-      <button type="button" class="sheet-close-btn" id="sheet-close-btn" aria-label="Close navigation sheet">✕</button>
+      <h3 class="sheet-title">{sheetTitle}</h3>
+      <button type="button" class="sheet-close-btn" id="sheet-close-btn" aria-label={sheetCloseAria}>✕</button>
     </div>
     <div class="sheet-body">
       <div class="sheet-links">
@@ -78,10 +93,23 @@ const resumeLabel = nav.resume_label || 'Resume';
         ))}
         {showResume && (
           <a href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="sheet-nav-link sheet-resume-link">
-            <span>{resumeLabel} (PDF)</span>
+            <span>{resumeLabel} {resumePdfSuffix}</span>
             <span class="sheet-arrow">↗</span>
           </a>
         )}
+        <button
+          type="button"
+          id="pwa-sheet-install"
+          class="sheet-nav-link sheet-install-item"
+          aria-label={installAria}
+          style="display:none;"
+        >
+          <span class="sheet-install-label">
+            <Icon name="download" size={18} />
+            <span>{installAppLabel}</span>
+          </span>
+          <span class="sheet-arrow">↓</span>
+        </button>
       </div>
     </div>
   </div>
@@ -103,8 +131,8 @@ const resumeLabel = nav.resume_label || 'Resume';
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  [data-theme="light"] .bottom-tab-bar {
-    background: rgba(255, 255, 255, 0.95);
+  :global([data-theme="light"]) .bottom-tab-bar {
+    background: rgba(255, 255, 255, 0.96);
   }
 
   .bottom-tab-inner {
@@ -199,7 +227,7 @@ const resumeLabel = nav.resume_label || 'Resume';
     animation: slideUp var(--transition-smooth) forwards;
   }
 
-  [data-theme="light"] .bottom-sheet-panel {
+  :global([data-theme="light"]) .bottom-sheet-panel {
     background: #FFFFFF;
   }
 
@@ -247,13 +275,18 @@ const resumeLabel = nav.resume_label || 'Resume';
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     padding: 12px 14px;
     border-radius: var(--radius-btn);
     font-family: var(--ff-sans);
     font-size: var(--fs-base);
     font-weight: 600;
     color: var(--text);
+    background: transparent;
+    border: none;
+    text-align: left;
     text-decoration: none;
+    cursor: pointer;
     transition: background var(--transition-fast), color var(--transition-fast);
   }
 
@@ -261,6 +294,18 @@ const resumeLabel = nav.resume_label || 'Resume';
   .sheet-nav-link:active {
     background: var(--surface-hover);
     color: var(--accent);
+  }
+
+  .sheet-install-item {
+    margin-top: 4px;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--accent);
+  }
+
+  .sheet-install-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .sheet-arrow {
@@ -281,6 +326,12 @@ const resumeLabel = nav.resume_label || 'Resume';
   @media (min-width: 768px) {
     .bottom-tab-bar,
     .bottom-sheet-backdrop {
+      display: none !important;
+    }
+  }
+
+  @media (display-mode: standalone) {
+    .sheet-install-item {
       display: none !important;
     }
   }

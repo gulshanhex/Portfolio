@@ -1,36 +1,50 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
-import { getSetting } from '../lib/db';
+import { getAllSettings } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 const db = Astro.locals.runtime?.env?.DB;
-const theme = (await getSetting(db, 'theme')) || {};
+const settings = await getAllSettings(db);
+const g = settings.global || {};
+const theme = settings.theme || {};
+const name = g.name || 'Your Name';
 const defaultTheme = theme.default || 'dark';
 const accent = theme.accent || 'emerald';
+const glowIntensity = theme.glow_intensity || theme.neon_intensity || 'subtle';
+
+const errorCode = t(settings, 'error404.code');
+const errorEyebrow = t(settings, 'error404.eyebrow');
+const errorTitle = t(settings, 'error404.title');
+const errorDesc = t(settings, 'error404.description');
+const backHomeBtn = t(settings, 'error404.back_home_btn');
+const goBackBtn = t(settings, 'error404.go_back_btn');
+
 Astro.response.status = 404;
 ---
 
 <BaseLayout
-  title="404 — Page Not Found · GK Portfolio"
-  description="The requested page could not be found on Gulshan Kumar's portfolio."
+  title={`${errorCode} — ${errorTitle} · ${name}`}
+  description={errorDesc}
   robots="noindex, nofollow"
+  authorName={name}
   defaultTheme={defaultTheme}
   accent={accent}
+  glowIntensity={glowIntensity}
+  settings={settings}
 >
   <main id="main-content" class="error-container">
-    <div class="error-bg-code" aria-hidden="true">404</div>
-    <div class="error-eyebrow">// ERROR_404</div>
-    <h1 class="error-title">Page not found</h1>
-    <p class="error-desc">
-      The route you requested doesn't exist. You may have followed an outdated link or typed the address incorrectly.
-    </p>
+    <div class="error-bg-code" aria-hidden="true">{errorCode}</div>
+    <div class="error-eyebrow">{errorEyebrow}</div>
+    <h1 class="error-title">{errorTitle}</h1>
+    <p class="error-desc">{errorDesc}</p>
     <div class="error-actions">
       <Button variant="primary" size="md" href="/">
-        <span>Back to Portfolio</span>
+        <span>{backHomeBtn}</span>
         <span aria-hidden="true">→</span>
       </Button>
       <Button variant="secondary" size="md" href="javascript:history.back()">
-        <span>Go Back</span>
+        <span>{goBackBtn}</span>
       </Button>
     </div>
   </main>

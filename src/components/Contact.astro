@@ -3,20 +3,49 @@ import SectionHeader from './ui/SectionHeader.astro';
 import Button from './ui/Button.astro';
 import Card from './ui/Card.astro';
 import Icon from './ui/Icon.astro';
+import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 interface Props {
   contact?: Record<string, any>;
   nav?: Record<string, any>;
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { contact = {}, nav = {}, copy = {} } = Astro.props;
+const { contact = {}, nav = {}, copy = {}, settings = {} } = Astro.props;
 const formEnabled = contact.form_enabled !== false;
 
-const eyebrow = copy.contact_eyebrow || "// LET'S CONNECT";
-const title = copy.contact_title || 'Get in touch.';
-const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open to automation workflows, backend architecture, and custom bots.";
+const eyebrow = copy.contact_eyebrow || t(settings, 'contact.eyebrow_default');
+const title = copy.contact_title || t(settings, 'contact.title_default');
+const subtitle = copy.contact_subtitle || t(settings, 'contact.subtitle_default');
+const introText = contact.intro_text || t(settings, 'contact.intro_default');
+
+const emailLabel = t(settings, 'contact.channel_email_label');
+const linkedinLabel = t(settings, 'contact.channel_linkedin_label');
+const githubLabel = t(settings, 'contact.channel_github_label');
+const websiteLabel = t(settings, 'contact.channel_website_label');
+const resumeLabel = t(settings, 'contact.channel_resume_label');
+const resumeVal = nav.resume_label || t(settings, 'contact.channel_resume_default');
+
+const formAria = t(settings, 'contact.form_aria');
+const honeypotLabel = t(settings, 'contact.honeypot_label');
+const nameLabel = t(settings, 'contact.field_name_label');
+const namePlaceholder = t(settings, 'contact.field_name_placeholder');
+const fieldEmailLabel = t(settings, 'contact.field_email_label');
+const fieldEmailPlaceholder = t(settings, 'contact.field_email_placeholder');
+const subjectLabel = t(settings, 'contact.field_subject_label');
+const subjectPlaceholder = t(settings, 'contact.field_subject_placeholder');
+const messageLabel = t(settings, 'contact.field_message_label');
+const messagePlaceholder = t(settings, 'contact.field_message_placeholder');
+const submitBtnText = t(settings, 'contact.submit_btn');
+const sendingBtnText = t(settings, 'contact.sending_btn');
+const msgRequiredErr = t(settings, 'contact.msg_required_err');
+const msgSuccess = t(settings, 'contact.msg_success');
+const msgError = t(settings, 'contact.msg_error');
+const msgNetworkErr = t(settings, 'contact.msg_network_err');
+const formDisabledText = t(settings, 'contact.form_disabled_text');
 ---
 
 <section id="contact" class="contact-section" aria-labelledby="contact-title">
@@ -26,9 +55,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
     <div class="contact-grid">
       <!-- Contact Direct Channels Column -->
       <div class="contact-channels rv">
-        <p class="channels-intro">
-          {contact.intro_text || 'Reach out directly for automation projects, freelance builds, or technical collaborations.'}
-        </p>
+        <p class="channels-intro" set:html={sanitizeBasicHtml(introText)} />
 
         <div class="channels-list">
           {contact.email && (
@@ -38,7 +65,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                   <Icon name="mail" size={20} />
                 </div>
                 <div class="channel-text">
-                  <span class="channel-label">Email</span>
+                  <span class="channel-label">{emailLabel}</span>
                   <span class="channel-val">{contact.email}</span>
                 </div>
                 <span class="channel-arrow" aria-hidden="true">→</span>
@@ -53,7 +80,7 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                   <Icon name="work" size={20} />
                 </div>
                 <div class="channel-text">
-                  <span class="channel-label">LinkedIn</span>
+                  <span class="channel-label">{linkedinLabel}</span>
                   <span class="channel-val">{contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '/in/')}</span>
                 </div>
                 <span class="channel-arrow" aria-hidden="true">↗</span>
@@ -68,8 +95,23 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                   <Icon name="code" size={20} />
                 </div>
                 <div class="channel-text">
-                  <span class="channel-label">GitHub</span>
+                  <span class="channel-label">{githubLabel}</span>
                   <span class="channel-val">{contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, 'github.com/')}</span>
+                </div>
+                <span class="channel-arrow" aria-hidden="true">↗</span>
+              </div>
+            </Card>
+          )}
+
+          {contact.main_site && (
+            <Card as="a" href={contact.main_site} target="_blank" rel="noopener noreferrer" class="channel-card" interactive={true}>
+              <div class="channel-card-inner">
+                <div class="channel-icon" aria-hidden="true">
+                  <Icon name="hub" size={20} />
+                </div>
+                <div class="channel-text">
+                  <span class="channel-label">{websiteLabel}</span>
+                  <span class="channel-val">{contact.main_site.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</span>
                 </div>
                 <span class="channel-arrow" aria-hidden="true">↗</span>
               </div>
@@ -83,8 +125,8 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                   <Icon name="school" size={20} />
                 </div>
                 <div class="channel-text">
-                  <span class="channel-label">Resume</span>
-                  <span class="channel-val">{nav.resume_label || 'Download CV'}</span>
+                  <span class="channel-label">{resumeLabel}</span>
+                  <span class="channel-val">{resumeVal}</span>
                 </div>
                 <span class="channel-arrow" aria-hidden="true">↗</span>
               </div>
@@ -97,21 +139,32 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
       <div class="contact-form-wrap rv" style="transition-delay: 0.12s">
         {formEnabled ? (
           <Card class="form-card">
-            <form id="ct-form" class="ct-form" novalidate aria-label="Direct message form">
+            <form
+              id="ct-form"
+              class="ct-form"
+              novalidate
+              aria-label={formAria}
+              data-msg-required={msgRequiredErr}
+              data-msg-success={msgSuccess}
+              data-msg-error={msgError}
+              data-msg-network={msgNetworkErr}
+              data-btn-send={submitBtnText}
+              data-btn-sending={sendingBtnText}
+            >
               <!-- Honeypot field (hidden from humans, catches bots) -->
               <div class="hp-field" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;height:0;overflow:hidden" aria-hidden="true">
-                <label for="ct-hp">Leave this field blank</label>
+                <label for="ct-hp">{honeypotLabel}</label>
                 <input type="text" id="ct-hp" name="_hp" tabindex="-1" autocomplete="off" />
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label for="ct-name" class="field-label">Name <span class="req">*</span></label>
+                  <label for="ct-name" class="field-label">{nameLabel} <span class="req">*</span></label>
                   <input
                     type="text"
                     id="ct-name"
                     name="name"
-                    placeholder="Your name"
+                    placeholder={namePlaceholder}
                     required
                     autocomplete="name"
                     maxlength="100"
@@ -119,12 +172,12 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
                   />
                 </div>
                 <div class="form-field">
-                  <label for="ct-email" class="field-label">Email <span class="req">*</span></label>
+                  <label for="ct-email" class="field-label">{fieldEmailLabel} <span class="req">*</span></label>
                   <input
                     type="email"
                     id="ct-email"
                     name="email"
-                    placeholder="you@domain.com"
+                    placeholder={fieldEmailPlaceholder}
                     required
                     autocomplete="email"
                     maxlength="200"
@@ -134,23 +187,23 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
               </div>
 
               <div class="form-field">
-                <label for="ct-subject" class="field-label">Subject</label>
+                <label for="ct-subject" class="field-label">{subjectLabel}</label>
                 <input
                   type="text"
                   id="ct-subject"
                   name="subject"
-                  placeholder="Bot build, workflow automation, inquiry..."
+                  placeholder={subjectPlaceholder}
                   maxlength="200"
                   class="field-input"
                 />
               </div>
 
               <div class="form-field">
-                <label for="ct-message" class="field-label">Message <span class="req">*</span></label>
+                <label for="ct-message" class="field-label">{messageLabel} <span class="req">*</span></label>
                 <textarea
                   id="ct-message"
                   name="message"
-                  placeholder="Briefly describe your systems, workflow requirements, or project scope..."
+                  placeholder={messagePlaceholder}
                   required
                   rows="4"
                   maxlength="5000"
@@ -161,14 +214,14 @@ const subtitle = copy.contact_subtitle || "Tell me what you're working on. Open 
               <div id="ct-msg" role="status" aria-live="polite" class="form-feedback" style="display:none"></div>
 
               <Button type="submit" variant="primary" size="lg" class="submit-btn">
-                <span id="ct-btn-txt">Send Message</span>
+                <span id="ct-btn-txt">{submitBtnText}</span>
                 <span aria-hidden="true">→</span>
               </Button>
             </form>
           </Card>
         ) : (
           <Card class="form-disabled-card">
-            <p>The web message form is currently unavailable. Please send an email directly to <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
+            <p>{formDisabledText} <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
           </Card>
         )}
       </div>

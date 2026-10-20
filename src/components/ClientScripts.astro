@@ -1,14 +1,41 @@
 ---
+import { t } from '../lib/ui-strings';
+
 interface Props {
   userToggleEnabled?: boolean;
+  settings?: Record<string, any>;
 }
 
-const { userToggleEnabled = true } = Astro.props;
+const { userToggleEnabled = true, settings = {} } = Astro.props;
+
+const pwaCopy = {
+  updateAvailable: t(settings, 'pwa.update_available'),
+  refreshBtn: t(settings, 'pwa.refresh_btn'),
+  installTitle: t(settings, 'pwa.install_title'),
+  installDesc: t(settings, 'pwa.install_desc'),
+  installBtn: t(settings, 'pwa.install_btn'),
+  dismissAria: t(settings, 'pwa.dismiss_aria'),
+  iosTitle: t(settings, 'pwa.ios_title'),
+  iosDesc: t(settings, 'pwa.ios_desc'),
+};
+
+const offlineCopy = {
+  eyebrow: t(settings, 'offline.eyebrow'),
+  title: t(settings, 'offline.title'),
+  description: t(settings, 'offline.description'),
+  retryBtn: t(settings, 'offline.retry_btn'),
+  homeBtn: t(settings, 'offline.home_btn'),
+};
 ---
 
-<script is:inline define:vars={{ userToggleEnabled }}>
+<script is:inline define:vars={{ userToggleEnabled, pwaCopy, offlineCopy }}>
   (function () {
     const root = document.documentElement;
+
+    // Persist admin-editable offline strings for public/offline.html
+    try {
+      localStorage.setItem('gk-offline-copy', JSON.stringify(offlineCopy));
+    } catch (e) {}
 
     // ── Theme Toggle ───────────────────────────────────
     const themeIcon = document.getElementById('theme-icon');
@@ -177,6 +204,13 @@ const { userToggleEnabled = true } = Astro.props;
     const formInitTime = performance.now();
 
     if (ctForm && ctMsg) {
+      const msgReq = ctForm.getAttribute('data-msg-required') || '';
+      const msgOk = ctForm.getAttribute('data-msg-success') || '';
+      const msgErr = ctForm.getAttribute('data-msg-error') || '';
+      const msgNet = ctForm.getAttribute('data-msg-network') || '';
+      const btnSendTxt = ctForm.getAttribute('data-btn-send') || '';
+      const btnSendingTxt = ctForm.getAttribute('data-btn-sending') || '';
+
       ctForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(ctForm);
@@ -192,13 +226,13 @@ const { userToggleEnabled = true } = Astro.props;
 
         if (!body.name || !body.email || !body.message) {
           ctMsg.className = 'form-msg err';
-          ctMsg.textContent = 'Please fill in all required fields.';
+          ctMsg.textContent = msgReq;
           ctMsg.style.display = 'block';
           return;
         }
 
         const btn = ctForm.querySelector('button[type="submit"]');
-        if (ctBtnTxt) ctBtnTxt.textContent = 'Sending...';
+        if (ctBtnTxt && btnSendingTxt) ctBtnTxt.textContent = btnSendingTxt;
         if (btn) btn.disabled = true;
 
         try {
@@ -210,21 +244,21 @@ const { userToggleEnabled = true } = Astro.props;
           const data = await res.json();
           if (res.ok) {
             ctMsg.className = 'form-msg ok';
-            ctMsg.textContent = data.message || "Message sent! I'll get back to you soon.";
+            ctMsg.textContent = data.message || msgOk;
             ctMsg.style.display = 'block';
             ctForm.reset();
           } else {
             ctMsg.className = 'form-msg err';
-            ctMsg.textContent = data.error || 'Something went wrong. Please try again.';
+            ctMsg.textContent = data.error || msgErr;
             ctMsg.style.display = 'block';
           }
         } catch {
           ctMsg.className = 'form-msg err';
-          ctMsg.textContent = 'Network error. Please try again.';
+          ctMsg.textContent = msgNet;
           ctMsg.style.display = 'block';
         }
 
-        if (ctBtnTxt) ctBtnTxt.textContent = 'Send Message';
+        if (ctBtnTxt && btnSendTxt) ctBtnTxt.textContent = btnSendTxt;
         if (btn) btn.disabled = false;
       });
     }
@@ -269,8 +303,8 @@ const { userToggleEnabled = true } = Astro.props;
         toast.className = 'pwa-toast';
         toast.innerHTML = `
           <div class="pwa-toast-inner">
-            <span>A new version is available.</span>
-            <button type="button" id="pwa-refresh-btn" class="pwa-toast-btn">Refresh</button>
+            <span>${pwaCopy.updateAvailable}</span>
+            <button type="button" id="pwa-refresh-btn" class="pwa-toast-btn">${pwaCopy.refreshBtn}</button>
           </div>
         `;
         document.body.appendChild(toast);
@@ -280,21 +314,35 @@ const { userToggleEnabled = true } = Astro.props;
       }
 
       let deferredPrompt = null;
+      const installButtons = [
+        document.getElementById('pwa-desktop-install'),
+        document.getElementById('pwa-sheet-install'),
+        document.getElementById('pwa-footer-install'),
+      ].filter(Boolean);
+
+      async function handleInstallClick() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installButtons.forEach((b) => {
+          if (b) b.style.display = 'none';
+        });
+        document.getElementById('pwa-install-banner')?.remove();
+        closeBottomSheet();
+      }
+
+      installButtons.forEach((b) => {
+        b?.addEventListener('click', handleInstallClick);
+      });
+
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
 
-        const deskBtn = document.getElementById('pwa-desktop-install');
-        if (deskBtn) {
-          deskBtn.style.display = 'inline-flex';
-          deskBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            deskBtn.style.display = 'none';
-          });
-        }
+        installButtons.forEach((b) => {
+          if (b) b.style.display = b.id === 'pwa-sheet-install' ? 'flex' : 'inline-flex';
+        });
 
         const isDismissed = localStorage.getItem('pwa_install_dismissed') === 'true';
         if (!isDismissed) {
@@ -306,24 +354,18 @@ const { userToggleEnabled = true } = Astro.props;
             banner.innerHTML = `
               <div class="pwa-banner-inner">
                 <div class="pwa-banner-text">
-                  <strong>Install GK Portfolio</strong>
-                  <p>Install on your home screen for quick offline access</p>
+                  <strong>${pwaCopy.installTitle}</strong>
+                  <p>${pwaCopy.installDesc}</p>
                 </div>
                 <div class="pwa-banner-actions">
-                  <button type="button" id="pwa-install-action" class="pwa-action-btn">Install</button>
-                  <button type="button" id="pwa-dismiss-action" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+                  <button type="button" id="pwa-install-action" class="pwa-action-btn">${pwaCopy.installBtn}</button>
+                  <button type="button" id="pwa-dismiss-action" class="pwa-dismiss-btn" aria-label="${pwaCopy.dismissAria}">&times;</button>
                 </div>
               </div>
             `;
             document.body.appendChild(banner);
 
-            document.getElementById('pwa-install-action')?.addEventListener('click', async () => {
-              if (!deferredPrompt) return;
-              deferredPrompt.prompt();
-              await deferredPrompt.userChoice;
-              deferredPrompt = null;
-              banner.remove();
-            });
+            document.getElementById('pwa-install-action')?.addEventListener('click', handleInstallClick);
 
             document.getElementById('pwa-dismiss-action')?.addEventListener('click', () => {
               banner.remove();
@@ -351,10 +393,10 @@ const { userToggleEnabled = true } = Astro.props;
           hint.innerHTML = `
             <div class="pwa-banner-inner">
               <div class="pwa-banner-text">
-                <strong>Add to Home Screen</strong>
-                <p>Tap <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <em>'Add to Home Screen'</em> for full offline app experience.</p>
+                <strong>${pwaCopy.iosTitle}</strong>
+                <p>${pwaCopy.iosDesc}</p>
               </div>
-              <button type="button" id="pwa-ios-dismiss" class="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+              <button type="button" id="pwa-ios-dismiss" class="pwa-dismiss-btn" aria-label="${pwaCopy.dismissAria}">&times;</button>
             </div>
           `;
           document.body.appendChild(hint);
@@ -475,6 +517,8 @@ const { userToggleEnabled = true } = Astro.props;
   @media (display-mode: standalone) {
     #pwa-install-banner,
     #pwa-desktop-install,
+    #pwa-sheet-install,
+    #pwa-footer-install,
     #pwa-ios-hint {
       display: none !important;
     }

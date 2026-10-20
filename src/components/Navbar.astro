@@ -8,6 +8,7 @@ interface Props {
   theme: Record<string, any>;
   sections: Array<{ id: string; label: string; order_idx: number; visible: number }>;
   hasProjects?: boolean;
+  settings?: Record<string, any>;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   theme = {},
   sections = [],
   hasProjects = true,
+  settings = {},
 } = Astro.props;
 ---
 
@@ -27,4 +29,5 @@ const {
   theme={theme}
   sections={sections}
   hasProjects={hasProjects}
+  settings={settings}
 />

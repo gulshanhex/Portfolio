@@ -18,6 +18,7 @@ import {
   getProofItems,
   getSections,
   getServices,
+  getSetting,
   getSkills,
   getSubmissions,
   logAction,
@@ -81,7 +82,7 @@ export const ALL: APIRoute = async ({ request, locals }) => {
     }
     if (path === '/settings' && method === 'POST') {
       const body = (await request.json()) as Record<string, any>;
-      const allowed = ['global', 'hero', 'about', 'contact', 'seo', 'theme', 'nav', 'proof_section', 'copy'];
+      const allowed = ['global', 'hero', 'about', 'contact', 'seo', 'theme', 'nav', 'proof_section', 'copy', 'ui'];
       const savedKeys: string[] = [];
 
       // Handle both formats: { key: 'copy', value: ... } and { copy: { ... } }
@@ -100,25 +101,51 @@ export const ALL: APIRoute = async ({ request, locals }) => {
       } else {
         for (const key of Object.keys(body)) {
           if (!allowed.includes(key)) continue;
-          const valObj = body[key];
+          let valObj = body[key];
           if (valObj && typeof valObj === 'object') {
             if (key === 'global') {
               if (valObj.domain) valObj.domain = sanitizeUrl(valObj.domain) || '';
               if (valObj.portfolio) valObj.portfolio = sanitizeUrl(valObj.portfolio) || '';
               if (valObj.projects_subdomain) valObj.projects_subdomain = sanitizeUrl(valObj.projects_subdomain) || '';
+              if (Array.isArray(valObj.footer_links)) {
+                valObj.footer_links = valObj.footer_links
+                  .map((item: any) => ({
+                    label: String(item?.label || '').trim().slice(0, 80),
+                    url: sanitizeUrl(item?.url) || '#',
+                  }))
+                  .filter((item: any) => item.label);
+              }
             }
             if (key === 'contact') {
               if (valObj.linkedin) valObj.linkedin = sanitizeUrl(valObj.linkedin) || '';
               if (valObj.github) valObj.github = sanitizeUrl(valObj.github) || '';
+              if (valObj.main_site) valObj.main_site = sanitizeUrl(valObj.main_site) || '';
+              if (valObj.portfolio) valObj.portfolio = sanitizeUrl(valObj.portfolio) || '';
               if (valObj.resume_url) valObj.resume_url = sanitizeUrl(valObj.resume_url) || '';
             }
             if (key === 'hero') {
-              if (valObj.cta_primary_url) valObj.cta_primary_url = sanitizeUrl(valObj.cta_primary_url) || '#projects';
-              if (valObj.cta_secondary_url) valObj.cta_secondary_url = sanitizeUrl(valObj.cta_secondary_url) || '#contact';
+              if (valObj.cta_primary_url) valObj.cta_primary_url = sanitizeUrl(valObj.cta_primary_url) || '#contact';
+              if (valObj.cta_secondary_url) valObj.cta_secondary_url = sanitizeUrl(valObj.cta_secondary_url) || '#projects';
             }
             if (key === 'seo') {
               if (valObj.canonical) valObj.canonical = sanitizeUrl(valObj.canonical) || '';
               if (valObj.og_image) valObj.og_image = sanitizeUrl(valObj.og_image) || '';
+            }
+            if (key === 'theme') {
+              // Preserve legacy stored values (stars_enabled, stars_count, noise_enabled, scanlines_enabled, neon_intensity)
+              const existingTheme = await getSetting(DB, 'theme');
+              if (existingTheme && typeof existingTheme === 'object') {
+                valObj = { ...existingTheme, ...valObj };
+              }
+            }
+            if (key === 'ui') {
+              const cleanedUi: Record<string, string> = {};
+              for (const [uiKey, uiVal] of Object.entries(valObj)) {
+                if (typeof uiVal === 'string' && uiVal.trim() !== '') {
+                  cleanedUi[String(uiKey).slice(0, 120)] = uiVal.slice(0, 5000);
+                }
+              }
+              valObj = cleanedUi;
             }
           }
           await setSetting(DB, key, valObj);
@@ -648,7 +675,7 @@ export const ALL: APIRoute = async ({ request, locals }) => {
       await DB.prepare('UPDATE admin_users SET totp_secret=?, totp_enabled=0 WHERE id=?')
         .bind(secret, session.user_id)
         .run();
-      const otpauthUri = buildOtpAuthUri(session.username, secret, 'GK Portfolio');
+      const otpauthUri = buildOtpAuthUri(session.username, secret, 'Portfolio Admin');
       return jsonResponse({ ok: true, secret, otpauth_uri: otpauthUri });
     }
 
@@ -717,7 +744,7 @@ export const ALL: APIRoute = async ({ request, locals }) => {
         return badRequest('Invalid backup file — missing settings key');
       }
 
-      const allowedSettings = ['global', 'hero', 'about', 'contact', 'seo', 'theme', 'nav', 'proof_section', 'copy'];
+      const allowedSettings = ['global', 'hero', 'about', 'contact', 'seo', 'theme', 'nav', 'proof_section', 'copy', 'ui'];
       for (const [k, v] of Object.entries(data.settings)) {
         if (allowedSettings.includes(k)) {
           await setSetting(DB, k, v);
@@ -807,7 +834,7 @@ export const ALL: APIRoute = async ({ request, locals }) => {
         await DB.prepare('DELETE FROM education').run();
         for (const e of data.education) {
           await DB.prepare(
-            'INSERT INTO education (id, period, degree, stream, school, grade, items, pills, order_idx, visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO education (id, period, degree, stream, school, grade, items, pills, order_idx, visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
           )
             .bind(
               e.id,

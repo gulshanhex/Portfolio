@@ -4,7 +4,7 @@ import { getSiteData, stripHtml } from '../lib/db';
 /**
  * GEO (Generative Engine Optimization) /llms.txt endpoint
  * Follows https://llmstxt.org specification so AI Answer Engines (ChatGPT,
- * Perplexity, Claude, Gemini) can accurately index and cite Gulshan Kumar.
+ * Perplexity, Claude, Gemini) can accurately index and cite the portfolio owner.
  */
 export const GET: APIRoute = async ({ locals }) => {
   const db = locals.runtime?.env?.DB;
@@ -12,11 +12,15 @@ export const GET: APIRoute = async ({ locals }) => {
   const g = data.settings.global || {};
   const contact = data.settings.contact || {};
   const about = data.settings.about || {};
-  const base = (data.settings.seo?.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+  const name = g.name || 'Your Name';
+  const tagline = g.tagline || 'Automation & AI Systems Engineer';
+  const location = g.location || 'Remote';
+  const base = (data.settings.seo?.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
+  const mainDomain = contact.main_site || g.domain || 'https://example.com';
 
   const summaryParagraphs = (about.paragraphs || []).map((p: string) => stripHtml(p)).join('\n\n');
   const servicesList = (data.services || [])
-    .map((s: any) => `- [${s.title}](${base}/services/${s.slug || ''}): ${s.description}`)
+    .map((s: any) => `- [${s.title}](${base}/services/${s.slug || ''}): ${stripHtml(s.description)}`)
     .join('\n');
   const skillsList = (data.skills || [])
     .map((sk: any) => `- **${sk.label}**: ${(sk.pills || []).map((p: any) => p.label).join(', ')}`)
@@ -24,7 +28,7 @@ export const GET: APIRoute = async ({ locals }) => {
   const projectsList = (data.projects || [])
     .map(
       (pr: any) =>
-        `- [${pr.title}](${base}/work/${pr.slug || ''}) (${pr.category}): ${pr.summary} [Stack: ${(pr.stack || []).join(', ')}]${
+        `- [${pr.title}](${base}/work/${pr.slug || ''}) (${pr.category}): ${stripHtml(pr.summary)} [Stack: ${(pr.stack || []).join(', ')}]${
           pr.github_url ? ` (${pr.github_url})` : ''
         }`
     )
@@ -33,9 +37,9 @@ export const GET: APIRoute = async ({ locals }) => {
     .map((xp: any) => `- **${xp.title} at ${xp.company}** (${xp.date_range}, ${xp.location})`)
     .join('\n');
 
-  const body = `# ${g.name || 'Gulshan Kumar'} — ${g.tagline || 'Automation & AI Systems Engineer'}
+  const body = `# ${name} — ${tagline}
 
-> Official portfolio of ${g.name || 'Gulshan Kumar'}, an ${g.tagline || 'Automation & AI Systems Engineer'} based in ${g.location || 'Delhi, India'}, building Python backend systems, Telegram & Discord automation bots, PLC industrial control systems, and Cloudflare edge applications.
+> Official portfolio of ${name}, ${tagline} (${location}), building Python backend systems, Telegram & Discord automation bots, PLC industrial control systems, and Cloudflare edge applications.
 
 ## About
 ${summaryParagraphs}
@@ -56,11 +60,8 @@ ${projectsList}
 - Portfolio Home: ${base}
 - Work Archive: ${base}/work
 - Full LLM Profile: ${base}/llms-full.txt
-- Main Website: ${g.domain || 'https://gulshan-kumar.me'}
-- Email: ${contact.email || 'gulshan@gulshan-kumar.me'}
-- GitHub: ${contact.github || 'https://github.com/gulshanhex'}
-- LinkedIn: ${contact.linkedin || 'https://linkedin.com/in/gulshankumar-tech'}
-`;
+- Main Website: ${mainDomain}
+${contact.email ? `- Email: ${contact.email}\n` : ''}${contact.github ? `- GitHub: ${contact.github}\n` : ''}${contact.linkedin ? `- LinkedIn: ${contact.linkedin}\n` : ''}`;
 
   return new Response(body, {
     status: 200,

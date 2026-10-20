@@ -17,10 +17,10 @@ export function getEnvSecret(env: any, name: string): string {
   return String(raw).trim();
 }
 
-export function getSiteUrl(env: any, fallbackOrigin = 'https://portfolio.gulshan-kumar.me'): string {
+export function getSiteUrl(env: any, fallbackOrigin = 'https://portfolio.example.com'): string {
   const fromSecret = getEnvSecret(env, 'SITE_URL');
   if (fromSecret && fromSecret.startsWith('http')) {
     return fromSecret.replace(/\/$/, '');
   }
-  return (fallbackOrigin || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+  return (fallbackOrigin || 'https://portfolio.example.com').replace(/\/$/, '');
 }

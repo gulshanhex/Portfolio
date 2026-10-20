@@ -1,13 +1,42 @@
 {
   "name": "gk-portfolio-astro",
   "type": "module",
-  "version": "2.1.0",
-  "description": "Modular Astro SSR + Cloudflare Workers & D1 Portfolio for Gulshan Kumar",
-  "private": true,
+  "version": "3.0.0",
+  "description": "Edge-native, database-driven engineering portfolio & CMS built with Astro 5 SSR, Cloudflare Workers, and Cloudflare D1.",
+  "license": "MIT",
+  "author": {
+    "name": "Gulshan Kumar",
+    "url": "https://github.com/gulshanhex"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gulshanhex/portfolio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gulshanhex/portfolio/issues"
+  },
+  "homepage": "https://github.com/gulshanhex/portfolio#readme",
+  "keywords": [
+    "astro",
+    "cloudflare-workers",
+    "cloudflare-d1",
+    "portfolio",
+    "cms",
+    "pwa",
+    "edge-ssr",
+    "typescript",
+    "aeo",
+    "llms-txt"
+  ],
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "node scripts/check-assets.mjs && node scripts/prepare-wrangler.mjs",
+    "check:admin": "node scripts/check-admin.mjs",
+    "check:settings": "node scripts/check-settings-usage.mjs",
+    "check:strings": "node scripts/check-hardcoded-strings.mjs",
+    "check:assets": "node scripts/check-assets.mjs",
+    "check": "node scripts/check-admin.mjs && node scripts/check-settings-usage.mjs && node scripts/check-hardcoded-strings.mjs && node scripts/check-assets.mjs",
+    "prebuild": "node scripts/check-admin.mjs && node scripts/check-settings-usage.mjs && node scripts/check-hardcoded-strings.mjs && node scripts/check-assets.mjs && node scripts/prepare-wrangler.mjs",
     "build": "astro build",
     "preview": "astro build && wrangler dev",
     "deploy": "astro build && wrangler deploy --keep-vars",
@@ -28,6 +57,7 @@
     "wrangler": "^4.30.0"
   },
   "engines": {
-    "node": ">=18.17.1"
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }

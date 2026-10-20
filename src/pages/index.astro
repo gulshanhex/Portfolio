@@ -31,10 +31,12 @@ const nav = settings.nav || {};
 const proofCfg = settings.proof_section || {};
 const copy = settings.copy || {};
 
-const name = g.name || 'Gulshan Kumar';
+const name = g.name || 'Your Name';
 const tagline = g.tagline || 'Automation & AI Systems Engineer';
 const defaultTheme = theme.default || 'dark';
 const accent = theme.accent || 'emerald';
+const glowIntensity = theme.glow_intensity || theme.neon_intensity || 'subtle';
+const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
 
 const jsonLd = seo.json_ld_enabled !== false ? buildJsonLdGraph(data) : null;
 const hasProjects = Array.isArray(projects) && projects.length > 0;
@@ -59,17 +61,19 @@ const nextSectionNum = () => {
 
 <BaseLayout
   title={seo.title || `${name} — ${tagline}`}
-  description={seo.description || `Portfolio of ${name} — ${tagline} | Delhi, India`}
+  description={seo.description || `Portfolio of ${name} — ${tagline}`}
   keywords={seo.keywords}
-  canonical={seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me'}
+  canonical={canonicalBase}
   ogTitle={seo.og_title || seo.title || `${name} — ${tagline}`}
   ogDescription={seo.og_description || seo.description}
-  ogImage={seo.og_image || 'https://portfolio.gulshan-kumar.me/og-image.png'}
+  ogImage={seo.og_image || `${canonicalBase}/og-image.png`}
   robots={seo.robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
   authorName={name}
   defaultTheme={defaultTheme}
   accent={accent}
+  glowIntensity={glowIntensity}
   jsonLd={jsonLd}
+  settings={settings}
 >
   <Navbar
     name={name}
@@ -78,6 +82,7 @@ const nextSectionNum = () => {
     theme={theme}
     sections={sections}
     hasProjects={hasProjects}
+    settings={settings}
   />
 
   <main id="main-content">
@@ -87,6 +92,7 @@ const nextSectionNum = () => {
         hero={hero}
         contact={contact}
         hasProjects={hasProjects}
+        settings={settings}
       />
     )}
 
@@ -101,6 +107,7 @@ const nextSectionNum = () => {
               contact={contact}
               hero={hero}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -110,6 +117,7 @@ const nextSectionNum = () => {
               sectionNum={nextSectionNum()}
               services={services}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -119,6 +127,7 @@ const nextSectionNum = () => {
               sectionNum={nextSectionNum()}
               skills={skills}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -128,6 +137,7 @@ const nextSectionNum = () => {
               sectionNum={nextSectionNum()}
               experiences={experiences}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -137,6 +147,7 @@ const nextSectionNum = () => {
               sectionNum={nextSectionNum()}
               education={education}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -145,8 +156,9 @@ const nextSectionNum = () => {
             <Projects
               sectionNum={nextSectionNum()}
               projects={projects}
-              projectsSubdomain={g.projects_subdomain || 'https://projects.gulshan-kumar.me'}
+              projectsSubdomain={g.projects_subdomain || ''}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -157,6 +169,7 @@ const nextSectionNum = () => {
               proofCfg={proofCfg}
               proof={proof}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -166,6 +179,7 @@ const nextSectionNum = () => {
               sectionNum={nextSectionNum()}
               faqs={faqs}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -176,6 +190,7 @@ const nextSectionNum = () => {
               contact={contact}
               nav={nav}
               copy={copy}
+              settings={settings}
             />
           );
         }
@@ -184,12 +199,13 @@ const nextSectionNum = () => {
     }
   </main>
 
-  <Footer globalCfg={g} contact={contact} />
+  <Footer globalCfg={g} contact={contact} settings={settings} />
   <BottomNav
     sections={sections}
     contact={contact}
     nav={nav}
     hasProjects={hasProjects}
+    settings={settings}
   />
-  <ClientScripts userToggleEnabled={theme.user_toggle_enabled !== false} />
+  <ClientScripts userToggleEnabled={theme.user_toggle_enabled !== false} settings={settings} />
 </BaseLayout>

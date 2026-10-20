@@ -1,130 +1,165 @@
 ---
+import { t } from '../../lib/ui-strings';
+
 interface Props {
   class?: string;
+  settings?: Record<string, any>;
+  variant?: 'chat+chart' | 'chart' | 'none';
 }
 
-const { class: className = '' } = Astro.props;
+const {
+  class: className = '',
+  settings = {},
+  variant = 'chat+chart',
+} = Astro.props;
+
+const showChat = variant === 'chat+chart';
+const showChart = variant === 'chat+chart' || variant === 'chart';
+
+const ariaLabel = t(settings, 'hero_visual.aria_label');
+const apiTitle = t(settings, 'hero_visual.api_title');
+const apiBadge = t(settings, 'hero_visual.api_badge');
+const stat1Label = t(settings, 'hero_visual.stat1_label');
+const stat1Value = t(settings, 'hero_visual.stat1_value');
+const stat2Label = t(settings, 'hero_visual.stat2_label');
+const stat2Value = t(settings, 'hero_visual.stat2_value');
+const stat3Label = t(settings, 'hero_visual.stat3_label');
+const stat3Value = t(settings, 'hero_visual.stat3_value');
+const connectorText = t(settings, 'hero_visual.connector_text');
+const botName = t(settings, 'hero_visual.bot_name');
+const botStatus = t(settings, 'hero_visual.bot_status');
+const botSender = t(settings, 'hero_visual.bot_sender');
+const botMsg1 = t(settings, 'hero_visual.bot_msg1');
+const codeSnippet = t(settings, 'hero_visual.code_snippet');
+const userMsg = t(settings, 'hero_visual.user_msg');
+const botReply = t(settings, 'hero_visual.bot_reply');
+const inputPlaceholder = t(settings, 'hero_visual.input_placeholder');
+const sendBtn = t(settings, 'hero_visual.send_btn');
+const caption = t(settings, 'hero_visual.caption');
 ---
 
-<div class={`hero-visual-container ${className}`} aria-label="Interactive automation workflow demonstration">
-  <!-- Subtle green background radial glow -->
-  <div class="hero-glow" aria-hidden="true"></div>
+{
+  showChart && (
+    <div class={`hero-visual-container ${className}`} aria-label={ariaLabel}>
+      <!-- Subtle background radial glow -->
+      <div class="hero-glow" aria-hidden="true"></div>
 
-  <!-- Top Layer: Automation API Telemetry Card -->
-  <div class="visual-card card-api" aria-hidden="true">
-    <div class="api-header">
-      <div class="api-title">
-        <span class="api-dot"></span>
-        <span>Automation API</span>
-      </div>
-      <span class="api-badge">Active</span>
-    </div>
+      <!-- Top Layer: Automation API Telemetry Card -->
+      <div class="visual-card card-api" aria-hidden="true">
+        <div class="api-header">
+          <div class="api-title">
+            <span class="api-dot"></span>
+            <span>{apiTitle}</span>
+          </div>
+          <span class="api-badge">{apiBadge}</span>
+        </div>
 
-    <!-- Sparkline Chart -->
-    <div class="api-chart">
-      <svg viewBox="0 0 300 72" class="sparkline-svg" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
-            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18 L300,72 L0,72 Z"
-          fill="url(#chartGrad)"
-        />
-        <path
-          d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18"
-          fill="none"
-          stroke="var(--accent)"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </div>
-
-    <!-- Dashboard Sub-metrics (Always fully visible, never covered) -->
-    <div class="api-stats">
-      <div class="api-stat">
-        <span class="api-stat-k">Workflows</span>
-        <span class="api-stat-v">24/7 Live</span>
-      </div>
-      <div class="api-stat">
-        <span class="api-stat-k">Execution</span>
-        <span class="api-stat-v">Edge Webhook</span>
-      </div>
-      <div class="api-stat">
-        <span class="api-stat-k">Status</span>
-        <span class="api-stat-v">Operational</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pipeline Connector Indicator -->
-  <div class="pipeline-connector" aria-hidden="true">
-    <span class="connector-line"></span>
-    <span class="connector-pill">webhook trigger &rarr; bot dispatch</span>
-    <span class="connector-line"></span>
-  </div>
-
-  <!-- Bottom Layer: Telegram-style Bot Chat Card -->
-  <div class="visual-card card-chat" aria-hidden="true">
-    <div class="chat-header">
-      <div class="chat-user">
-        <div class="chat-avatar">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+        <!-- Sparkline Chart -->
+        <div class="api-chart">
+          <svg viewBox="0 0 300 72" class="sparkline-svg" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18 L300,72 L0,72 Z"
+              fill="url(#chartGrad)"
+            />
+            <path
+              d="M0,54 Q40,58 70,38 T140,34 T210,16 T280,28 L300,18"
+              fill="none"
+              stroke="var(--accent)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
-        <div class="chat-info">
-          <span class="chat-name">Bot Engine</span>
-          <span class="chat-status">automated sequence</span>
+
+        <!-- Dashboard Sub-metrics -->
+        <div class="api-stats">
+          <div class="api-stat">
+            <span class="api-stat-k">{stat1Label}</span>
+            <span class="api-stat-v">{stat1Value}</span>
+          </div>
+          <div class="api-stat">
+            <span class="api-stat-k">{stat2Label}</span>
+            <span class="api-stat-v">{stat2Value}</span>
+          </div>
+          <div class="api-stat">
+            <span class="api-stat-k">{stat3Label}</span>
+            <span class="api-stat-v">{stat3Value}</span>
+          </div>
         </div>
       </div>
-      <div class="chat-dots">
-        <span></span><span></span><span></span>
+
+      {showChat && (
+        <>
+          <!-- Pipeline Connector Indicator -->
+          <div class="pipeline-connector" aria-hidden="true">
+            <span class="connector-line"></span>
+            <span class="connector-pill">{connectorText}</span>
+            <span class="connector-line"></span>
+          </div>
+
+          <!-- Bottom Layer: Telegram-style Bot Chat Card -->
+          <div class="visual-card card-chat" aria-hidden="true">
+            <div class="chat-header">
+              <div class="chat-user">
+                <div class="chat-avatar">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                  </svg>
+                </div>
+                <div class="chat-info">
+                  <span class="chat-name">{botName}</span>
+                  <span class="chat-status">{botStatus}</span>
+                </div>
+              </div>
+              <div class="chat-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <div class="chat-body">
+              <div class="chat-bubble bot-bubble">
+                <span class="bubble-sender">{botSender}</span>
+                <p>{botMsg1}</p>
+              </div>
+
+              <div class="chat-code">
+                <code>{codeSnippet}</code>
+              </div>
+
+              <div class="chat-bubble user-bubble">
+                <p>{userMsg}</p>
+              </div>
+
+              <div class="chat-bubble bot-bubble success-bubble">
+                <span class="check-icon">✓</span>
+                <span>{botReply}</span>
+              </div>
+            </div>
+
+            <div class="chat-footer">
+              <span class="chat-placeholder">{inputPlaceholder}</span>
+              <div class="chat-actions">
+                <span class="chat-action-btn">{sendBtn}</span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div class="visual-caption">
+        <span class="caption-dot"></span>
+        <span>{caption}</span>
       </div>
     </div>
-
-    <div class="chat-body">
-      <!-- Bot Message -->
-      <div class="chat-bubble bot-bubble">
-        <span class="bubble-sender">System Bot</span>
-        <p>Triggered scheduled operational cycle.</p>
-      </div>
-
-      <!-- Code Trigger Snippet -->
-      <div class="chat-code">
-        <code>schedule.every().day.at("09:00").do(run_audit)</code>
-      </div>
-
-      <!-- User Command -->
-      <div class="chat-bubble user-bubble">
-        <p>Scale resources to 2x.</p>
-      </div>
-
-      <!-- Bot Success Response -->
-      <div class="chat-bubble bot-bubble success-bubble">
-        <span class="check-icon">✓</span>
-        <span>Allocated 2x capacity in 1.4s</span>
-      </div>
-    </div>
-
-    <!-- Chat Footer Input Simulation -->
-    <div class="chat-footer">
-      <span class="chat-placeholder">Write a command...</span>
-      <div class="chat-actions">
-        <span class="chat-action-btn">↵</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="visual-caption">
-    <span class="caption-dot"></span>
-    <span>Sample automated orchestration workflow</span>
-  </div>
-</div>
+  )
+}
 
 <style>
   .hero-visual-container {
@@ -143,14 +178,14 @@ const { class: className = '' } = Astro.props;
     right: 5%;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--accent-glow, var(--accent-subtle)) 0%, transparent 70%);
     filter: blur(48px);
     pointer-events: none;
     z-index: 0;
-    opacity: 0.6;
+    opacity: 0.7;
   }
 
-  [data-theme="light"] .hero-glow {
+  :global([data-theme="light"]) .hero-glow {
     opacity: 0.25;
     background: radial-gradient(circle, rgba(23, 128, 74, 0.12) 0%, transparent 70%);
   }
@@ -287,7 +322,7 @@ const { class: className = '' } = Astro.props;
     box-shadow: var(--shadow-md);
   }
 
-  [data-theme="light"] .card-chat {
+  :global([data-theme="light"]) .card-chat {
     background: #FFFFFF;
   }
 

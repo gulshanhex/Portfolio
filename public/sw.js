@@ -1,12 +1,12 @@
 /**
- * Autonomous Hand-Crafted Service Worker for Gulshan Kumar Portfolio
+ * Autonomous Hand-Crafted Service Worker for Portfolio PWA
  * Precaches core assets via Promise.allSettled (never fails install)
  * Guaranteed non-redirected offline navigation response
  * Dynamic runtime caching for static assets
  * Direct network-bypass for /admin*, /api*, /setup*, and /health
  */
 
-const CACHE_NAME = 'gk-portfolio-v2';
+const CACHE_NAME = 'gk-portfolio-v3';
 
 const PRECACHE_ASSETS = [
   '/offline.html',

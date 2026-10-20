@@ -2,6 +2,8 @@
 // Provides SQL schema initialization, safe migrations for existing D1 DBs,
 // and default fallback data (used ONLY when DB binding is undefined in local dev).
 
+import { DEFAULT_UI_MAP } from './ui-strings';
+
 export const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS admin_users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -162,22 +164,28 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug) WHERE slug
 
 export const DEFAULT_SETTINGS: Record<string, any> = {
   global: {
-    name: 'Gulshan Kumar',
-    site_name: 'GK Portfolio',
+    name: 'Your Name',
+    site_name: 'Portfolio',
     tagline: 'Automation & AI Systems Engineer',
-    domain: 'https://gulshan-kumar.me',
-    portfolio: 'https://portfolio.gulshan-kumar.me',
-    projects_subdomain: 'https://projects.gulshan-kumar.me',
-    location: 'Delhi, India',
-    footer_text: 'Built by <strong>Gulshan Kumar</strong> · Delhi, India',
+    domain: 'https://example.com',
+    portfolio: 'https://portfolio.example.com',
+    projects_subdomain: 'https://projects.example.com',
+    location: 'Remote',
+    footer_text: 'Built by <strong>Your Name</strong>',
+    footer_links: [
+      { label: 'Work Archive', url: '/work' },
+      { label: 'LLMs.txt', url: '/llms.txt' },
+      { label: 'Sitemap', url: '/sitemap.xml' },
+    ],
   },
   hero: {
     headline: 'I build bots & automation that run your business',
     subheadline:
       'From custom AI workflows to automated scaling—I architect system integrations that eliminate manual work.',
     show_visual: true,
-    headline_line1: 'GULSHAN',
-    headline_line2: 'KUMAR',
+    visual_variant: 'chat+chart',
+    headline_line1: 'YOUR',
+    headline_line2: 'NAME',
     role_text:
       '<strong>Automation & AI Systems</strong> engineer crafting intelligent backends, bots & <em>real-world control systems</em>',
     status_label: 'Available for projects',
@@ -188,7 +196,7 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     cta_secondary_url: '#projects',
     resume_label: 'Resume',
     quick_stats: [
-      { value: '2+', label: 'Internships', desc: 'Hands-on at real production environments in Delhi' },
+      { value: '2+', label: 'Internships', desc: 'Hands-on in real production environments' },
       { value: '20+', label: 'Technical Skills', desc: 'Python, bots, PLC, cloud, web, and more' },
       { value: '3 mo', label: 'Field Experience', desc: 'Solving real engineering problems in industrial environments' },
     ],
@@ -208,30 +216,30 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     services_eyebrow: '// SERVICES',
     services_title: 'What I can do for you.',
     services_subtitle: 'Tailored automation, integration, and intelligence for your business.',
-    skills_eyebrow: '// TECH ARSENAL',
+    skills_eyebrow: '// SKILLS',
     skills_title: 'What I work with.',
     skills_subtitle: 'A curated set of tools, languages, and systems built through production environments and hands-on engineering.',
-    experience_eyebrow: '// WORK HISTORY',
+    experience_eyebrow: '// EXPERIENCE',
     experience_title: "Where I've engineered.",
     education_eyebrow: '// EDUCATION',
     education_title: 'Where I learned.',
     projects_eyebrow: '// SELECTED WORK',
     projects_title: 'What I built.',
     projects_subtitle: 'Production bots, monitoring dashboards, and automation toolkits.',
-    proof_eyebrow: '// PROOF & CONTEXT',
+    proof_eyebrow: '// TESTIMONIALS',
     faq_eyebrow: '// QUICK ANSWERS',
     faq_title: 'Frequently asked questions.',
-    faq_subtitle: 'Direct answers regarding my engineering background, industrial automation experience, and availability.',
+    faq_subtitle: 'Direct answers regarding engineering background, automation experience, and availability.',
     contact_eyebrow: "// LET'S CONNECT",
     contact_title: 'Get in touch.',
     contact_subtitle: "Tell me what you're working on. Open to automation workflows, backend architecture, and custom bots.",
   },
   contact: {
-    email: 'gulshan@gulshan-kumar.me',
-    linkedin: 'https://linkedin.com/in/gulshankumar-tech',
-    github: 'https://github.com/gulshanhex',
-    main_site: 'https://gulshan-kumar.me',
-    portfolio: 'https://portfolio.gulshan-kumar.me',
+    email: 'hello@example.com',
+    linkedin: 'https://linkedin.com',
+    github: 'https://github.com',
+    main_site: 'https://example.com',
+    portfolio: 'https://portfolio.example.com',
     resume_url: '',
     intro_text:
       "Open to internships, freelance projects, collaborations, and anything interesting. If you are building something with automation, AI, or backend systems — let's talk.",
@@ -240,16 +248,16 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     availability_visible: true,
   },
   seo: {
-    title: 'Gulshan Kumar — Automation & AI Systems Engineer | Python, Bots, PLC & Cloud',
+    title: 'Your Name — Automation & AI Systems Engineer | Python, Bots, PLC & Cloud',
     description:
-      'Official portfolio of Gulshan Kumar, an Automation & AI Systems Engineer in Delhi, India specializing in Python backends, Telegram & Discord bots, PLC industrial automation, and Cloudflare edge systems.',
+      'Official portfolio of an Automation & AI Systems Engineer specializing in Python backends, Telegram & Discord bots, PLC industrial automation, and Cloudflare edge systems.',
     keywords:
-      'Gulshan Kumar, Automation Engineer, AI Systems Engineer, Python Developer Delhi, Telegram Bot Developer, Discord Bot Developer, PLC Systems, Industrial Automation, Cloudflare Workers, Backend Engineer India',
-    og_title: 'Gulshan Kumar — Automation & AI Systems Engineer',
+      'Automation Engineer, AI Systems Engineer, Python Developer, Telegram Bot Developer, Discord Bot Developer, PLC Systems, Industrial Automation, Cloudflare Workers, Backend Engineer',
+    og_title: 'Your Name — Automation & AI Systems Engineer',
     og_description:
-      'Explore projects, industrial automation internships, Python bots, and cloud systems built by Gulshan Kumar in Delhi, India.',
-    og_image: 'https://portfolio.gulshan-kumar.me/og-image.png',
-    canonical: 'https://portfolio.gulshan-kumar.me',
+      'Explore projects, industrial automation experience, Python bots, and cloud systems.',
+    og_image: 'https://portfolio.example.com/og-image.png',
+    canonical: 'https://portfolio.example.com',
     robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     json_ld_enabled: true,
     reviews_jsonld: false,
@@ -258,6 +266,7 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     default: 'dark',
     accent: 'emerald',
     user_toggle_enabled: true,
+    glow_intensity: 'subtle',
     stars_enabled: false,
     stars_count: 80,
     noise_enabled: false,
@@ -270,13 +279,14 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     items: ['about', 'services', 'skills', 'experience', 'education', 'projects', 'proof', 'faq', 'contact'],
   },
   proof_section: {
-    section_title: 'Proof & Context',
-    orgs_title: "WHO I'VE WORKED WITH",
+    section_title: 'Testimonials',
+    orgs_title: "Who I've worked with",
     orgs_subtitle: 'Organizations and environments that shaped my work.',
     testimonials_title: 'What People Say',
     show_orgs: true,
     show_testimonials: true,
   },
+  ui: { ...DEFAULT_UI_MAP },
 };
 
 export const DEFAULT_SECTIONS = [
@@ -287,7 +297,7 @@ export const DEFAULT_SECTIONS = [
   { id: 'experience', label: 'Experience', order_idx: 5, visible: 1 },
   { id: 'education', label: 'Education', order_idx: 6, visible: 1 },
   { id: 'projects', label: 'Work', order_idx: 7, visible: 1 },
-  { id: 'proof', label: 'Proof', order_idx: 8, visible: 1 },
+  { id: 'proof', label: 'Testimonials', order_idx: 8, visible: 1 },
   { id: 'faq', label: 'FAQ', order_idx: 9, visible: 1 },
   { id: 'contact', label: 'Contact', order_idx: 10, visible: 1 },
 ];
@@ -391,6 +401,8 @@ export const DEFAULT_SERVICES = [
     description: 'Telegram, Discord, and custom API bots for notifications, task queues, and workflow automation.',
     long_description: 'Custom, high-reliability bots designed for real-time dispatch, webhook processing, task queues, and system alerts. Architected with asynchronous event handling and edge persistence.',
     features: ['Webhook-driven command handling', 'Queue and alert dispatching', 'Role-based access permissions', 'Cloudflare Workers & D1 persistence'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 1,
     visible: 1,
   },
@@ -402,6 +414,8 @@ export const DEFAULT_SERVICES = [
     description: 'Python and Node.js backends with clean APIs, D1/SQL persistence, and solid integration patterns.',
     long_description: 'Robust backend architectures engineered for performance, structured data persistence, and secure communication across microservices and external APIs.',
     features: ['RESTful & serverless API design', 'D1 & SQLite schema modeling', 'Secure authentication & token validation', 'Structured error handling & logging'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 2,
     visible: 1,
   },
@@ -413,6 +427,8 @@ export const DEFAULT_SERVICES = [
     description: 'Cloudflare Workers/Pages deployments, CI/CD pipelines, and reliable cloud-native architectures.',
     long_description: 'Modern edge deployments that eliminate infrastructure management overhead. Global edge delivery with sub-second response times and automated deployment scripts.',
     features: ['Serverless Cloudflare Worker setups', 'D1 database binding & migrations', 'Edge asset routing & caching', 'Environment secrets management'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 3,
     visible: 1,
   },
@@ -424,6 +440,8 @@ export const DEFAULT_SERVICES = [
     description: 'Full-stack web systems — from landing pages to admin panels — built clean and mobile-first.',
     long_description: 'High-performance web applications focused on semantic HTML, accessible UI components, zero layout shifts, and fast loading across mobile and desktop devices.',
     features: ['Responsive mobile-first interfaces', 'Theme customization & WCAG AA standards', 'Progressive enhancement & offline support', 'Clean administrative management panels'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 4,
     visible: 1,
   },
@@ -435,6 +453,8 @@ export const DEFAULT_SERVICES = [
     description: 'Rapid prototypes for automation ideas, hardware-software interfaces, and proof-of-concept systems.',
     long_description: 'Hands-on technical proof-of-concept development bridging digital software with physical hardware, telemetry sensors, and control system logic.',
     features: ['Hardware-to-software integration', 'PLC ladder logic visual testing', 'Telemetry monitor mockups', 'Rapid iterative proof-of-concept validation'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 5,
     visible: 1,
   },
@@ -446,6 +466,8 @@ export const DEFAULT_SERVICES = [
     description: 'Connecting third-party services, building webhooks, and integrating complex APIs into clean backends.',
     long_description: 'Unified integration layers connecting payment webhooks, messaging APIs, databases, and third-party SaaS platforms with exponential retry mechanisms.',
     features: ['Custom webhook receivers', 'Data transformation & serialization', 'Rate limiting & exponential backoff', 'Audit logging & telemetry tracking'],
+    cta_label: null,
+    cta_url: null,
     order_idx: 6,
     visible: 1,
   },
@@ -458,10 +480,10 @@ export const DEFAULT_EXPERIENCES = [
     badge_type: 'lime',
     icon: 'precision_manufacturing',
     title: 'Automation Intern',
-    company: 'Losung Automation Pvt. Ltd.',
+    company: 'Industrial Automation Lab',
     date_range: 'May 2025 – Jun 2025',
     duration: '2 Months',
-    location: 'Mahipalpur, New Delhi · On-site',
+    location: 'On-site',
     bullet_points: [
       'Worked in an industrial environment with <strong>electrical control panels</strong> and <strong>PLC-based systems</strong> on live production floors.',
       'Observed and documented <strong>system integration and testing workflows</strong> for complex automation setups.',
@@ -478,10 +500,10 @@ export const DEFAULT_EXPERIENCES = [
     badge_type: 'ember',
     icon: 'electrical_services',
     title: 'Electronics Intern',
-    company: 'Elent Electronics Private Limited',
+    company: 'Electronics Manufacturing Division',
     date_range: 'Jan 2025 – Jan 2025',
     duration: '1 Month',
-    location: 'New Delhi · On-site',
+    location: 'On-site',
     bullet_points: [
       'Industrial training focused on <strong>transformers and voltage stabilizers</strong> — from assembly to output testing.',
       'Observed <strong>wiring, assembly, and component testing</strong> processes in a manufacturing environment.',
@@ -496,13 +518,13 @@ export const DEFAULT_EXPERIENCES = [
 export const DEFAULT_EDUCATION = [
   {
     id: 1,
-    period: 'Apr 2025 – Apr 2026',
+    period: '2025 – 2026',
     degree: 'Senior Secondary (Class 12)',
     stream: 'PCM + Computer Science',
-    school: 'SBV Sarojini Nagar, Delhi',
+    school: 'Senior Secondary School',
     grade: 'In Progress',
     items: [
-      'Industrial Automation Internship (May–Jun 2025) at Losung Automation Pvt. Ltd.',
+      'Industrial Automation Internship (May–Jun 2025)',
       'Electrical Systems Internship completed in Class 11',
       'PCM with Computer Science and Electronics Technology curriculum',
       'Real-world internship exposure through both Class 11 & 12',
@@ -513,17 +535,16 @@ export const DEFAULT_EDUCATION = [
   },
   {
     id: 2,
-    period: 'Apr 2023 – Mar 2024',
+    period: '2023 – 2024',
     degree: 'Secondary (SSC — Class 10)',
     stream: 'General Education',
-    school: 'Atal Adarsh Vidyalaya Laxmi Bai Nagar, Delhi',
-    grade: '70.8%',
+    school: 'Secondary School',
+    grade: 'Completed',
     items: [
       'Completed Secondary Education (Class X) successfully',
-      'Best Five Subjects Percentage: 70.8%',
       'Foundational studies in Mathematics, Science, and Technology',
     ],
-    pills: ['HTML5', 'JavaScript', 'RDBMS', 'Microsoft Office', 'Problem Solving'],
+    pills: ['HTML5', 'JavaScript', 'RDBMS', 'Problem Solving'],
     order_idx: 2,
     visible: 1,
   },
@@ -534,9 +555,9 @@ export const DEFAULT_PROJECTS = [
     id: 1,
     title: 'Telegram Automation Bot',
     slug: 'telegram-automation-bot',
-    problem: 'Manual operational notifications and command dispatch required continuous human monitoring.',
-    solution: 'Engineered an asynchronous Telegram bot that connects to webhooks and executes automated task triggers.',
-    result: 'Delivered uninterrupted real-time alert dispatch with zero manual oversight.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Bot Development',
     category_icon: 'smart_toy',
     summary:
@@ -546,7 +567,7 @@ export const DEFAULT_PROJECTS = [
     status: 'completed',
     featured: 1,
     external_url: null,
-    github_url: 'https://github.com/gulshanhex',
+    github_url: null,
     demo_url: null,
     image_url: null,
     order_idx: 1,
@@ -556,9 +577,9 @@ export const DEFAULT_PROJECTS = [
     id: 2,
     title: 'Discord Notification System',
     slug: 'discord-notification-system',
-    problem: 'Team status alerts and deployment notices were fragmented across disparate communication channels.',
-    solution: 'Built a webhook-driven Discord automation bot with scheduled task dispatchers and status monitoring.',
-    result: 'Unified critical alerts into structured Discord channels with automated retry handling.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Bot Development',
     category_icon: 'notifications_active',
     summary:
@@ -568,7 +589,7 @@ export const DEFAULT_PROJECTS = [
     status: 'completed',
     featured: 1,
     external_url: null,
-    github_url: 'https://github.com/gulshanhex',
+    github_url: null,
     demo_url: null,
     image_url: null,
     order_idx: 2,
@@ -578,9 +599,9 @@ export const DEFAULT_PROJECTS = [
     id: 3,
     title: 'Industrial Dashboard Monitor',
     slug: 'industrial-dashboard-monitor',
-    problem: 'Industrial floor telemetry was siloed and difficult to observe remotely in real time.',
-    solution: 'Designed a lightweight responsive dashboard showing sensor status, alerts, and system health metrics.',
-    result: 'Provided unified single-pane operational visibility for industrial setups.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Web Application',
     category_icon: 'dashboard',
     summary:
@@ -600,9 +621,9 @@ export const DEFAULT_PROJECTS = [
     id: 4,
     title: 'Cloud Automation Pipeline',
     slug: 'cloud-automation-pipeline',
-    problem: 'Recurring deployment verification steps consumed unnecessary engineering time.',
-    solution: 'Scripted a modular Python execution pipeline for automated task scheduling and deployment checks.',
-    result: 'Automated recurring validation steps and standardized deployment routines.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Cloud & Backend',
     category_icon: 'cloud_sync',
     summary:
@@ -622,13 +643,13 @@ export const DEFAULT_PROJECTS = [
     id: 5,
     title: 'PLC Logic Visualizer',
     slug: 'plc-logic-visualizer',
-    problem: 'Testing ladder logic sequences on physical hardware risked operational disruptions.',
-    solution: 'Created an offline software visualizer to test control logic states before hardware commissioning.',
-    result: 'Accelerated troubleshooting and logic validation during internship projects.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Industrial Automation',
     category_icon: 'memory',
     summary:
-      'Software interface for visualizing and testing PLC ladder logic sequences — developed during the Losung Automation internship.',
+      'Software interface for visualizing and testing PLC ladder logic sequences during industrial automation training.',
     tags: ['Industrial', 'PLC', 'Tools'],
     stack: ['Python', 'PLC Systems', 'Control Systems', 'Industrial'],
     status: 'completed',
@@ -644,9 +665,9 @@ export const DEFAULT_PROJECTS = [
     id: 6,
     title: 'API Integration Toolkit',
     slug: 'api-integration-toolkit',
-    problem: 'Writing bespoke authentication and retry logic for third-party APIs was redundant.',
-    solution: 'Developed a robust Python toolkit with unified rate limiting, exponential backoff, and JSON parsing.',
-    result: 'Standardized reliable API client creation across multiple projects.',
+    problem: '',
+    solution: '',
+    result: '',
     category: 'Backend Development',
     category_icon: 'integration_instructions',
     summary:
@@ -668,9 +689,9 @@ export const DEFAULT_PROOF = [
   {
     id: 1,
     type: 'org',
-    name: 'Losung Automation Pvt. Ltd.',
+    name: 'Industrial Automation Lab',
     subtitle: 'Industrial Automation',
-    logo_url: 'https://ui-avatars.com/api/?name=LA&background=111513&color=2FBF71&size=64&bold=true',
+    logo_url: null,
     url: '#',
     testimonial_text: null,
     testimonial_rating: 5,
@@ -680,9 +701,9 @@ export const DEFAULT_PROOF = [
   {
     id: 2,
     type: 'org',
-    name: 'Elent Electronics Pvt. Ltd.',
-    subtitle: 'Electronics Manufacturing',
-    logo_url: 'https://ui-avatars.com/api/?name=EE&background=111513&color=2FBF71&size=64&bold=true',
+    name: 'Electronics Manufacturing',
+    subtitle: 'Power & Control Systems',
+    logo_url: null,
     url: '#',
     testimonial_text: null,
     testimonial_rating: 5,
@@ -692,51 +713,13 @@ export const DEFAULT_PROOF = [
   {
     id: 3,
     type: 'org',
-    name: 'SBV Sarojini Nagar',
+    name: 'Computer Science Academy',
     subtitle: 'Education Institution',
-    logo_url: 'https://ui-avatars.com/api/?name=SBV&background=111513&color=2FBF71&size=64&bold=true',
+    logo_url: null,
     url: '#',
     testimonial_text: null,
     testimonial_rating: 5,
     order_idx: 3,
-    visible: 1,
-  },
-  {
-    id: 4,
-    type: 'org',
-    name: 'Atal Adarsh Vidyalaya',
-    subtitle: 'Education Institution',
-    logo_url: 'https://ui-avatars.com/api/?name=AAV&background=111513&color=2FBF71&size=64&bold=true',
-    url: '#',
-    testimonial_text: null,
-    testimonial_rating: 5,
-    order_idx: 4,
-    visible: 1,
-  },
-  {
-    id: 5,
-    type: 'testimonial',
-    name: 'Rajiv Sharma',
-    subtitle: 'Senior Engineer · Losung Automation Pvt. Ltd.',
-    logo_url: 'https://ui-avatars.com/api/?name=Rajiv+Sharma&background=111513&color=2FBF71&size=80&bold=true',
-    url: null,
-    testimonial_text:
-      'Gulshan showed exceptional curiosity and discipline during his internship. He quickly adapted to our industrial environment and asked the right questions — a rare quality in someone so early in their career.',
-    testimonial_rating: 5,
-    order_idx: 5,
-    visible: 1,
-  },
-  {
-    id: 6,
-    type: 'testimonial',
-    name: 'Priya Nair',
-    subtitle: 'Technical Trainer · Elent Electronics Pvt. Ltd.',
-    logo_url: 'https://ui-avatars.com/api/?name=Priya+Nair&background=111513&color=2FBF71&size=80&bold=true',
-    url: null,
-    testimonial_text:
-      'In just one month, Gulshan demonstrated a strong grasp of transformer assembly and electrical troubleshooting. He was methodical, safety-conscious, and always willing to understand the why behind each process.',
-    testimonial_rating: 5,
-    order_idx: 6,
     visible: 1,
   },
 ];
@@ -744,37 +727,181 @@ export const DEFAULT_PROOF = [
 export const DEFAULT_FAQS = [
   {
     id: 1,
-    question: 'Who is Gulshan Kumar and what does he specialize in?',
+    question: 'What areas of engineering do you specialize in?',
     answer:
-      'Gulshan Kumar is an Automation & AI Systems Engineer based in Delhi, India. He specializes in building Python backend systems, Telegram and Discord automation bots, REST API integrations, Cloudflare Workers edge applications, and industrial PLC control systems.',
+      'I specialize in building <strong>Python backend systems</strong>, Telegram and Discord automation bots, REST API integrations, Cloudflare Workers edge applications, and industrial PLC control systems.',
     order_idx: 1,
     visible: 1,
   },
   {
     id: 2,
-    question: 'What real-world industrial and engineering experience does Gulshan Kumar have?',
+    question: 'What hands-on industrial and engineering experience do you have?',
     answer:
-      'Gulshan completed two hands-on engineering internships in New Delhi: an Automation Internship at Losung Automation Pvt. Ltd. (working with PLC-based systems, electrical control panels, and system testing on live production floors) and an Electronics Internship at Elent Electronics Pvt. Ltd. (focusing on transformers, voltage stabilizers, wiring assembly, and troubleshooting).',
+      'I have completed hands-on engineering internships working with <strong>PLC-based systems</strong>, electrical control panels, system testing on live production floors, transformers, voltage stabilizers, and electrical troubleshooting.',
     order_idx: 2,
     visible: 1,
   },
   {
     id: 3,
-    question: 'What software and automation services does Gulshan offer?',
+    question: 'What software and automation services do you offer?',
     answer:
-      'He builds custom Telegram and Discord bots, backend APIs with Python/JavaScript and SQL/D1 databases, cloud-native deployments on Cloudflare Workers, full-stack web dashboards, and rapid hardware-software technical prototypes.',
+      'I build custom Telegram and Discord bots, backend APIs with Python/JavaScript and SQL/D1 databases, cloud-native deployments on Cloudflare Workers, full-stack web dashboards, and rapid hardware-software technical prototypes.',
     order_idx: 3,
     visible: 1,
   },
   {
     id: 4,
-    question: 'Is Gulshan Kumar available for internships, freelance projects, or collaborations?',
+    question: 'Are you available for internships, freelance projects, or collaborations?',
     answer:
-      'Yes, Gulshan is actively open to internships, freelance automation and backend projects, and technical collaborations. You can reach him directly at gulshan@gulshan-kumar.me or via the contact form on portfolio.gulshan-kumar.me.',
+      'Yes, I am actively open to internships, freelance automation and backend projects, and technical collaborations. Use the contact section below to get in touch directly.',
     order_idx: 4,
     visible: 1,
   },
 ];
+
+/**
+ * One-time, lazy, idempotent label & copy migration behind a settings flag.
+ * Replaces ONLY values that still equal the old v1/v2 defaults; never overwrites user edits.
+ */
+export async function runLazyLabelMigrations(db: D1Database): Promise<void> {
+  try {
+    const flagRow = await db
+      .prepare("SELECT value FROM site_settings WHERE key = '_migrations'")
+      .first<{ value: string }>()
+      .catch(() => null);
+    if (flagRow?.value) {
+      try {
+        const parsed = JSON.parse(flagRow.value);
+        if (parsed?.v3_labels_v1) return;
+      } catch {}
+    }
+
+    // 1. Section labels migration (ONLY when equal to old defaults)
+    const sectionReplacements: Array<[string, string, string]> = [
+      ['services', 'What I Do', 'Services'],
+      ['skills', 'Tech Arsenal', 'Skills'],
+      ['projects', 'Projects', 'Work'],
+      ['proof', 'Proof & Context', 'Testimonials'],
+    ];
+    for (const [secId, oldLabel, newLabel] of sectionReplacements) {
+      await db
+        .prepare('UPDATE sections SET label = ? WHERE id = ? AND label = ?')
+        .bind(newLabel, secId, oldLabel)
+        .run()
+        .catch(() => {});
+    }
+
+    // Check if there are visible projects
+    const projCountRow = await db
+      .prepare('SELECT COUNT(*) as n FROM projects WHERE visible = 1')
+      .first<{ n: number }>()
+      .catch(() => ({ n: 1 }));
+    const hasVisibleProjects = (projCountRow?.n ?? 1) > 0;
+
+    // 2. Hero settings migration (ONLY when equal to old defaults)
+    const heroSettingRow = await db
+      .prepare("SELECT value FROM site_settings WHERE key = 'hero'")
+      .first<{ value: string }>()
+      .catch(() => null);
+    if (heroSettingRow?.value) {
+      try {
+        const heroVal = JSON.parse(heroSettingRow.value);
+        let changed = false;
+        if (heroVal.cta_primary_label === 'View Projects' && heroVal.cta_primary_url === '#projects') {
+          heroVal.cta_primary_label = 'Start a project';
+          heroVal.cta_primary_url = '#contact';
+          changed = true;
+        }
+        if (heroVal.cta_secondary_label === 'Get In Touch') {
+          heroVal.cta_secondary_label = hasVisibleProjects ? 'View work' : 'See services';
+          if (heroVal.cta_secondary_url === '#contact') {
+            heroVal.cta_secondary_url = hasVisibleProjects ? '#projects' : '#services';
+          }
+          changed = true;
+        }
+        if (heroVal.status_label === 'Available for Opportunities') {
+          heroVal.status_label = 'Available for projects';
+          changed = true;
+        }
+        if (changed) {
+          await db
+            .prepare("UPDATE site_settings SET value = ?, updated_at = datetime('now') WHERE key = 'hero'")
+            .bind(JSON.stringify(heroVal))
+            .run()
+            .catch(() => {});
+        }
+      } catch {}
+    }
+
+    // 3. Copy eyebrows migration (ONLY when equal to old defaults)
+    const copySettingRow = await db
+      .prepare("SELECT value FROM site_settings WHERE key = 'copy'")
+      .first<{ value: string }>()
+      .catch(() => null);
+    if (copySettingRow?.value) {
+      try {
+        const copyVal = JSON.parse(copySettingRow.value);
+        let changed = false;
+        if (copyVal.skills_eyebrow === '// TECH ARSENAL') {
+          copyVal.skills_eyebrow = '// SKILLS';
+          changed = true;
+        }
+        if (copyVal.proof_eyebrow === '// PROOF & CONTEXT') {
+          copyVal.proof_eyebrow = '// TESTIMONIALS';
+          changed = true;
+        }
+        if (copyVal.experience_eyebrow === '// WORK HISTORY') {
+          copyVal.experience_eyebrow = '// EXPERIENCE';
+          changed = true;
+        }
+        if (changed) {
+          await db
+            .prepare("UPDATE site_settings SET value = ?, updated_at = datetime('now') WHERE key = 'copy'")
+            .bind(JSON.stringify(copyVal))
+            .run()
+            .catch(() => {});
+        }
+      } catch {}
+    }
+
+    // 4. Proof section heading case migration (ONLY when equal to old defaults)
+    const proofSettingRow = await db
+      .prepare("SELECT value FROM site_settings WHERE key = 'proof_section'")
+      .first<{ value: string }>()
+      .catch(() => null);
+    if (proofSettingRow?.value) {
+      try {
+        const proofVal = JSON.parse(proofSettingRow.value);
+        let changed = false;
+        if (proofVal.orgs_title === "WHO I'VE WORKED WITH") {
+          proofVal.orgs_title = "Who I've worked with";
+          changed = true;
+        }
+        if (proofVal.section_title === 'Proof & Context') {
+          proofVal.section_title = 'Testimonials';
+          changed = true;
+        }
+        if (changed) {
+          await db
+            .prepare("UPDATE site_settings SET value = ?, updated_at = datetime('now') WHERE key = 'proof_section'")
+            .bind(JSON.stringify(proofVal))
+            .run()
+            .catch(() => {});
+        }
+      } catch {}
+    }
+
+    // Mark migration complete
+    await db
+      .prepare(
+        `INSERT INTO site_settings (key, value, updated_at)
+         VALUES ('_migrations', '{"v3_labels_v1":true}', datetime('now'))
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+      )
+      .run()
+      .catch(() => {});
+  } catch {}
+}
 
 /**
  * Ensures all tables, columns, and indexes exist.
@@ -814,38 +941,8 @@ export async function ensureDatabaseSchema(db: D1Database): Promise<void> {
     .run()
     .catch(() => {});
 
-  // Idempotently update hero settings ONLY when still equal to old defaults
-  const heroSettingRow = await db
-    .prepare("SELECT value FROM site_settings WHERE key = 'hero'")
-    .first<{ value: string }>()
-    .catch(() => null);
-  if (heroSettingRow?.value) {
-    try {
-      const heroVal = JSON.parse(heroSettingRow.value);
-      let changed = false;
-      if (heroVal.cta_primary_label === 'View Projects' && heroVal.cta_primary_url === '#projects') {
-        heroVal.cta_primary_label = 'Start a project';
-        heroVal.cta_primary_url = '#contact';
-        changed = true;
-      }
-      if (heroVal.cta_secondary_label === 'Get In Touch' && heroVal.cta_secondary_url === '#contact') {
-        heroVal.cta_secondary_label = 'View work';
-        heroVal.cta_secondary_url = '#projects';
-        changed = true;
-      }
-      if (heroVal.status_label === 'Available for Opportunities') {
-        heroVal.status_label = 'Available for projects';
-        changed = true;
-      }
-      if (changed) {
-        await db
-          .prepare("UPDATE site_settings SET value = ? WHERE key = 'hero'")
-          .bind(JSON.stringify(heroVal))
-          .run()
-          .catch(() => {});
-      }
-    } catch {}
-  }
+  // Run one-time lazy label and copy migrations behind flag
+  await runLazyLabelMigrations(db);
 
   // Idempotently backfill missing slugs for services
   try {

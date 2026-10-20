@@ -1,6 +1,7 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import ServiceCard from './ui/ServiceCard.astro';
+import { t } from '../lib/ui-strings';
 
 interface ServiceItem {
   id: number;
@@ -16,13 +17,14 @@ interface Props {
   services: ServiceItem[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { services = [], copy = {} } = Astro.props;
+const { services = [], copy = {}, settings = {} } = Astro.props;
 
-const eyebrow = copy.services_eyebrow || '// SERVICES';
-const title = copy.services_title || 'What I can do for you.';
-const subtitle = copy.services_subtitle || 'Tailored automation, integration, and intelligence for your business.';
+const eyebrow = copy.services_eyebrow || t(settings, 'services.eyebrow_default');
+const title = copy.services_title || t(settings, 'services.title_default');
+const subtitle = copy.services_subtitle || t(settings, 'services.subtitle_default');
 ---
 
 {
@@ -41,6 +43,7 @@ const subtitle = copy.services_subtitle || 'Tailored automation, integration, an
                 ctaLabel={s.cta_label || undefined}
                 ctaUrl={s.cta_url || undefined}
                 slug={s.slug || undefined}
+                settings={settings}
               />
             </div>
           ))}

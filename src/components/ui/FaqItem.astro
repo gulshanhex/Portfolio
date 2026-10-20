@@ -1,4 +1,6 @@
 ---
+import { sanitizeBasicHtml } from '../../lib/db';
+
 interface Props {
   question: string;
   answer: string;
@@ -14,7 +16,7 @@ const { question, answer, class: className = '' } = Astro.props;
     <span class="faq-toggle-icon" aria-hidden="true">+</span>
   </summary>
   <div class="faq-content">
-    <p>{answer}</p>
+    <p set:html={sanitizeBasicHtml(answer)} />
   </div>
 </details>
 
@@ -75,6 +77,16 @@ const { question, answer, class: className = '' } = Astro.props;
     color: var(--muted);
     line-height: 1.65;
     border-top: 1px solid transparent;
+  }
+
+  .faq-content :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .faq-content :global(em) {
+    color: var(--accent);
+    font-style: normal;
   }
 
   .faq-item-details[open] .faq-content {

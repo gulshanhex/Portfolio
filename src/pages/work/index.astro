@@ -4,6 +4,7 @@ import SectionHeader from '../../components/ui/SectionHeader.astro';
 import ProjectCard from '../../components/ui/ProjectCard.astro';
 import Button from '../../components/ui/Button.astro';
 import { getProjects, getAllSettings } from '../../lib/db';
+import { t } from '../../lib/ui-strings';
 
 const db = Astro.locals.runtime?.env?.DB;
 const projects = await getProjects(db, true);
@@ -13,45 +14,64 @@ const g = settings.global || {};
 const theme = settings.theme || {};
 const seo = settings.seo || {};
 
-const name = g.name || 'Gulshan Kumar';
+const name = g.name || 'Your Name';
+const location = g.location || 'Remote';
 const defaultTheme = theme.default || 'dark';
 const accent = theme.accent || 'emerald';
-const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+const glowIntensity = theme.glow_intensity || theme.neon_intensity || 'subtle';
+const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
 
 const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+
+const brandMark = t(settings, 'a11y.brand_mark');
+const brandHomeAria = `${name} ${t(settings, 'a11y.brand_home_aria')}`;
+const homeLabel = t(settings, 'nav.home_label');
+const workLabel = t(settings, 'nav.work_label');
+const ctaLabel = t(settings, 'nav.cta_label');
+const archiveEyebrow = t(settings, 'work.archive_eyebrow');
+const archiveTitle = t(settings, 'work.archive_title');
+const archiveSubtitle = t(settings, 'work.archive_subtitle');
+const filterAria = t(settings, 'projects.filter_aria');
+const filterAllLabel = t(settings, 'projects.filter_all');
+const emptyStateText = t(settings, 'work.empty_state');
+const returnHomeBtn = t(settings, 'work.not_found_home_btn');
+const footerCta = t(settings, 'work.footer_cta');
 
 const breadcrumbLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: `${canonicalBase}/` },
-    { '@type': 'ListItem', position: 2, name: 'Work', item: `${canonicalBase}/work` },
+    { '@type': 'ListItem', position: 1, name: homeLabel, item: `${canonicalBase}/` },
+    { '@type': 'ListItem', position: 2, name: workLabel, item: `${canonicalBase}/work` },
   ],
 };
 ---
 
 <BaseLayout
-  title={`Selected Work & Engineering Case Studies · ${name}`}
-  description={`Production bots, industrial control systems, and automation projects engineered by ${name}.`}
+  title={`${archiveTitle} · ${name}`}
+  description={archiveSubtitle}
   canonical={`${canonicalBase}/work`}
-  ogTitle={`Selected Work · ${name}`}
-  ogDescription="Production bots, industrial control systems, and automation projects."
+  ogTitle={`${archiveTitle} · ${name}`}
+  ogDescription={archiveSubtitle}
+  authorName={name}
   defaultTheme={defaultTheme}
   accent={accent}
+  glowIntensity={glowIntensity}
   jsonLd={breadcrumbLd}
+  settings={settings}
 >
   <header class="work-header">
     <div class="work-header-inner">
-      <a href="/" class="brand-logo" aria-label={`${name} Home`}>
-        <span class="logo-text">GK</span><span class="logo-dot">.</span>
+      <a href="/" class="brand-logo" aria-label={brandHomeAria}>
+        <span class="logo-text">{brandMark}</span><span class="logo-dot">.</span>
       </a>
-      <nav class="work-nav-links">
+      <nav class="work-nav-links" aria-label={workLabel}>
         <a href="/" class="back-link">
           <span aria-hidden="true">←</span>
-          <span>Home</span>
+          <span>{homeLabel}</span>
         </a>
         <Button variant="primary" size="sm" href="/#contact">
-          Let's talk
+          {ctaLabel}
         </Button>
       </nav>
     </div>
@@ -60,16 +80,16 @@ const breadcrumbLd = {
   <main id="main-content" class="work-main">
     <div class="work-container">
       <SectionHeader
-        eyebrow="// SELECTED WORK & ARCHIVE"
-        title="Engineering projects & case studies."
-        subtitle="A complete catalog of automation bots, telemetry dashboards, and cloud workflows built for real production environments."
+        eyebrow={archiveEyebrow}
+        title={archiveTitle}
+        subtitle={archiveSubtitle}
       />
 
       <!-- Category Filter Pills -->
       {categories.length > 1 && (
-        <div class="work-filters" role="group" aria-label="Filter projects by category">
+        <div class="work-filters" role="group" aria-label={filterAria}>
           <button class="proj-filter-btn active" type="button" data-cat="all">
-            <span>All Projects ({projects.length})</span>
+            <span>{filterAllLabel} ({projects.length})</span>
           </button>
           {categories.map((cat) => (
             <button class="proj-filter-btn" type="button" data-cat={cat.toLowerCase()}>
@@ -97,15 +117,16 @@ const breadcrumbLd = {
                 githubUrl={p.github_url || undefined}
                 demoUrl={p.demo_url || undefined}
                 slug={p.slug || undefined}
+                settings={settings}
               />
             </div>
           ))}
         </div>
       ) : (
         <div class="no-projects-box">
-          <p>No published projects found currently. Check back soon!</p>
+          <p>{emptyStateText}</p>
           <Button variant="primary" size="md" href="/" class="mt-4">
-            Return Home
+            {returnHomeBtn}
           </Button>
         </div>
       )}
@@ -114,8 +135,8 @@ const breadcrumbLd = {
 
   <footer class="work-footer">
     <div class="work-footer-inner">
-      <span>{name} · {g.location || 'Delhi, India'}</span>
-      <a href="/#contact">Start a project inquiry →</a>
+      <span>{name} · {location}</span>
+      <a href="/#contact">{footerCta}</a>
     </div>
   </footer>
 
@@ -149,8 +170,8 @@ const breadcrumbLd = {
     border-bottom: 1px solid var(--border);
   }
 
-  [data-theme="light"] .work-header {
-    background: rgba(246, 247, 244, 0.9);
+  :global([data-theme="light"]) .work-header {
+    background: rgba(246, 247, 244, 0.94);
   }
 
   .work-header-inner {

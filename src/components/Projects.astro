@@ -1,6 +1,7 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import ProjectCard from './ui/ProjectCard.astro';
+import { t } from '../lib/ui-strings';
 
 interface ProjectItem {
   id: number;
@@ -26,30 +27,37 @@ interface Props {
   projectsSubdomain?: string;
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
 const {
   projects = [],
+  projectsSubdomain = '',
   copy = {},
+  settings = {},
 } = Astro.props;
 
 const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
-const eyebrow = copy.projects_eyebrow || '// SELECTED WORK';
-const title = copy.projects_title || 'What I built.';
-const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboards, and automation toolkits.';
+const eyebrow = copy.projects_eyebrow || t(settings, 'projects.eyebrow_default');
+const title = copy.projects_title || t(settings, 'projects.title_default');
+const subtitle = copy.projects_subtitle || t(settings, 'projects.subtitle_default');
+const filterAria = t(settings, 'projects.filter_aria');
+const filterAllLabel = t(settings, 'projects.filter_all');
+const archiveCtaLabel = t(settings, 'projects.archive_cta');
+const archiveHref = '/work';
 ---
 
 {
   projects.length > 0 && (
-    <section id="projects" class="projects-section" aria-labelledby="proj-title">
+    <section id="projects" class="projects-section" aria-labelledby="proj-title" data-subdomain={projectsSubdomain || undefined}>
       <div class="projects-container">
         <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
 
         <!-- Category Filters -->
         {categories.length > 1 && (
-          <div class="proj-filters" role="group" aria-label="Filter projects by category">
+          <div class="proj-filters" role="group" aria-label={filterAria}>
             <button class="proj-filter-btn active" type="button" data-cat="all">
-              <span>All Projects</span>
+              <span>{filterAllLabel}</span>
             </button>
             {categories.map((cat) => (
               <button class="proj-filter-btn" type="button" data-cat={cat.toLowerCase()}>
@@ -76,14 +84,15 @@ const subtitle = copy.projects_subtitle || 'Production bots, monitoring dashboar
                 githubUrl={p.github_url || undefined}
                 demoUrl={p.demo_url || undefined}
                 slug={p.slug || undefined}
+                settings={settings}
               />
             </div>
           ))}
         </div>
 
         <div class="projects-archive-cta">
-          <a href="/work" class="archive-btn">
-            <span>Explore all projects &amp; case studies in archive</span>
+          <a href={archiveHref} class="archive-btn">
+            <span>{archiveCtaLabel}</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
         </div>

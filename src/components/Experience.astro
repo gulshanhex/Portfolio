@@ -1,6 +1,7 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import TimelineItem from './ui/TimelineItem.astro';
+import { t } from '../lib/ui-strings';
 
 interface ExperienceItem {
   id: number;
@@ -20,13 +21,14 @@ interface Props {
   experiences: ExperienceItem[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { experiences = [], copy = {} } = Astro.props;
+const { experiences = [], copy = {}, settings = {} } = Astro.props;
 
-const eyebrow = copy.experience_eyebrow || '// WORK HISTORY';
-const title = copy.experience_title || "Where I've engineered.";
-const subtitle = copy.experience_subtitle || 'Hands-on production environments, industrial automation, and software engineering roles.';
+const eyebrow = copy.experience_eyebrow || t(settings, 'experience.eyebrow_default');
+const title = copy.experience_title || t(settings, 'experience.title_default');
+const subtitle = copy.experience_subtitle || t(settings, 'experience.subtitle_default');
 ---
 
 {

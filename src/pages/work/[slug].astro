@@ -4,7 +4,8 @@ import Button from '../../components/ui/Button.astro';
 import Card from '../../components/ui/Card.astro';
 import Pill from '../../components/ui/Pill.astro';
 import Icon from '../../components/ui/Icon.astro';
-import { getProjectBySlug, getAllSettings, getProjects } from '../../lib/db';
+import { getProjectBySlug, getAllSettings, getProjects, sanitizeBasicHtml } from '../../lib/db';
+import { t } from '../../lib/ui-strings';
 
 const { slug } = Astro.params;
 const db = Astro.locals.runtime?.env?.DB;
@@ -24,14 +25,51 @@ const g = settings.global || {};
 const theme = settings.theme || {};
 const seo = settings.seo || {};
 
-const name = g.name || 'Gulshan Kumar';
+const name = g.name || 'Your Name';
+const location = g.location || 'Remote';
 const defaultTheme = theme.default || 'dark';
 const accent = theme.accent || 'emerald';
-const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+const glowIntensity = theme.glow_intensity || theme.neon_intensity || 'subtle';
+const canonicalBase = (seo.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
 
 // Related projects
 const allProjects = await getProjects(db, true);
 const relatedProjects = allProjects.filter((p) => p.slug !== slug).slice(0, 3);
+
+// UI strings
+const brandMark = t(settings, 'a11y.brand_mark');
+const brandHomeAria = `${name} ${t(settings, 'a11y.brand_home_aria')}`;
+const homeLabel = t(settings, 'nav.home_label');
+const workLabel = t(settings, 'nav.work_label');
+const allWorkLabel = t(settings, 'work.detail_all_work');
+const discussBtnLabel = t(settings, 'work.detail_discuss_btn');
+const breadcrumbAria = t(settings, 'services.detail_breadcrumb_aria');
+const featuredPill = t(settings, 'work.detail_featured_pill');
+const liveDemoBtn = t(settings, 'work.detail_live_demo_btn');
+const exploreBtn = t(settings, 'work.detail_explore_btn');
+const githubBtn = t(settings, 'work.detail_github_btn');
+const stackLabel = t(settings, 'work.detail_stack_label');
+const probBadge = t(settings, 'work.detail_prob_badge');
+const probHeading = t(settings, 'work.detail_prob_heading');
+const probFallback = t(settings, 'work.detail_prob_fallback');
+const solBadge = t(settings, 'work.detail_sol_badge');
+const solHeading = t(settings, 'work.detail_sol_heading');
+const solFallback = t(settings, 'work.detail_sol_fallback');
+const resBadge = t(settings, 'work.detail_res_badge');
+const resHeading = t(settings, 'work.detail_res_heading');
+const resFallback = t(settings, 'work.detail_res_fallback');
+const ctaTitle = t(settings, 'work.detail_cta_title');
+const ctaDesc = t(settings, 'work.detail_cta_desc');
+const ctaBtn = t(settings, 'work.detail_cta_btn');
+const relatedTitle = t(settings, 'work.detail_related_title');
+const readCaseStudy = t(settings, 'work.detail_read_case_study');
+const backWorkLabel = t(settings, 'work.detail_back_work');
+
+const nfEyebrow = t(settings, 'work.not_found_eyebrow');
+const nfTitle = t(settings, 'work.not_found_title');
+const nfDesc = t(settings, 'work.not_found_desc');
+const nfAllBtn = t(settings, 'work.not_found_all_btn');
+const nfHomeBtn = t(settings, 'work.not_found_home_btn');
 
 // Breadcrumbs and SoftwareSourceCode JSON-LD
 const schemaGraph = project ? {
@@ -40,8 +78,8 @@ const schemaGraph = project ? {
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: `${canonicalBase}/` },
-        { '@type': 'ListItem', position: 2, name: 'Work', item: `${canonicalBase}/work` },
+        { '@type': 'ListItem', position: 1, name: homeLabel, item: `${canonicalBase}/` },
+        { '@type': 'ListItem', position: 2, name: workLabel, item: `${canonicalBase}/work` },
         { '@type': 'ListItem', position: 3, name: project.title, item: `${canonicalBase}/work/${slug}` },
       ],
     },
@@ -67,51 +105,57 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
 {
   !project ? (
     <BaseLayout
-      title={`Project Not Found · ${name}`}
-      description="The requested project case study could not be located."
+      title={`${nfTitle} · ${name}`}
+      description={nfDesc}
       robots="noindex, nofollow"
+      authorName={name}
       defaultTheme={defaultTheme}
       accent={accent}
+      glowIntensity={glowIntensity}
+      settings={settings}
     >
       <main id="main-content" class="not-found-wrap">
-        <div class="nf-eyebrow">// 404 ERROR</div>
-        <h1 class="nf-title">Project Not Found</h1>
-        <p class="nf-desc">The project case study "{slug}" doesn't exist or is currently unpublished.</p>
+        <div class="nf-eyebrow">{nfEyebrow}</div>
+        <h1 class="nf-title">{nfTitle}</h1>
+        <p class="nf-desc">{nfDesc}</p>
         <div class="nf-actions">
           <Button variant="primary" size="md" href="/work">
-            <span>View All Work</span>
+            <span>{nfAllBtn}</span>
             <span aria-hidden="true">→</span>
           </Button>
           <Button variant="secondary" size="md" href="/">
-            <span>Return Home</span>
+            <span>{nfHomeBtn}</span>
           </Button>
         </div>
       </main>
     </BaseLayout>
   ) : (
     <BaseLayout
-      title={`${project.title} — Case Study · ${name}`}
-      description={project.summary || `Engineering architecture and implementation details for ${project.title}.`}
+      title={`${project.title} — ${name}`}
+      description={project.summary || `${project.title} — ${name}`}
       canonical={`${canonicalBase}/work/${slug}`}
       ogTitle={`${project.title} — ${name}`}
       ogDescription={project.summary}
+      authorName={name}
       defaultTheme={defaultTheme}
       accent={accent}
+      glowIntensity={glowIntensity}
       jsonLd={schemaGraph}
+      settings={settings}
     >
       <!-- Detail Header Navigation -->
       <header class="detail-header">
         <div class="detail-header-inner">
-          <a href="/" class="brand-logo" aria-label={`${name} Home`}>
-            <span class="logo-text">GK</span><span class="logo-dot">.</span>
+          <a href="/" class="brand-logo" aria-label={brandHomeAria}>
+            <span class="logo-text">{brandMark}</span><span class="logo-dot">.</span>
           </a>
-          <nav class="detail-nav-links">
+          <nav class="detail-nav-links" aria-label={breadcrumbAria}>
             <a href="/work" class="back-link">
               <span aria-hidden="true">←</span>
-              <span>All Work</span>
+              <span>{allWorkLabel}</span>
             </a>
             <Button variant="primary" size="sm" href="/#contact">
-              Discuss Build
+              {discussBtnLabel}
             </Button>
           </nav>
         </div>
@@ -120,10 +164,10 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
       <main id="main-content" class="project-detail-main">
         <div class="project-detail-container">
           <!-- Breadcrumb Trail -->
-          <nav class="breadcrumb-trail" aria-label="Breadcrumb navigation">
-            <a href="/">Home</a>
+          <nav class="breadcrumb-trail" aria-label={breadcrumbAria}>
+            <a href="/">{homeLabel}</a>
             <span class="crumb-sep">/</span>
-            <a href="/work">Work</a>
+            <a href="/work">{workLabel}</a>
             <span class="crumb-sep">/</span>
             <span class="crumb-current">{project.title}</span>
           </nav>
@@ -135,30 +179,30 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
                 <Icon name={project.category_icon || 'folder'} size={16} />
                 <span>{project.category}</span>
               </div>
-              {project.featured && <Pill variant="accent" size="sm">Featured Project</Pill>}
+              {project.featured && <Pill variant="accent" size="sm">{featuredPill}</Pill>}
             </div>
 
             <h1 class="case-study-title">{project.title}</h1>
-            <p class="case-study-summary">{project.summary}</p>
+            <p class="case-study-summary" set:html={sanitizeBasicHtml(project.summary)} />
 
             <!-- Links & Repository Actions -->
             <div class="case-study-actions">
               {project.demo_url && (
                 <Button variant="primary" size="md" href={project.demo_url} target="_blank">
-                  <span>Live Demo</span>
+                  <span>{liveDemoBtn}</span>
                   <span aria-hidden="true">↗</span>
                 </Button>
               )}
               {project.external_url && !project.demo_url && (
                 <Button variant="primary" size="md" href={project.external_url} target="_blank">
-                  <span>Explore Project</span>
+                  <span>{exploreBtn}</span>
                   <span aria-hidden="true">↗</span>
                 </Button>
               )}
               {project.github_url && (
                 <Button variant="secondary" size="md" href={project.github_url} target="_blank">
                   <Icon name="code" size={16} />
-                  <span>GitHub Repository</span>
+                  <span>{githubBtn}</span>
                   <span aria-hidden="true">↗</span>
                 </Button>
               )}
@@ -167,7 +211,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
             <!-- Tech Stack Tags -->
             {allTags.length > 0 && (
               <div class="tech-pills-row">
-                <span class="tech-label">Stack &amp; Technologies:</span>
+                <span class="tech-label">{stackLabel}</span>
                 <div class="tech-pills-list">
                   {allTags.map((tag) => (
                     <span class="tech-pill">{tag}</span>
@@ -181,62 +225,49 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
           <div class="case-study-content">
             <!-- 1. The Challenge -->
             <section class="cs-section">
-              <div class="cs-badge">// 01. THE PROBLEM</div>
-              <h2 class="cs-heading">The Challenge &amp; Scope</h2>
+              <div class="cs-badge">{probBadge}</div>
+              <h2 class="cs-heading">{probHeading}</h2>
               <div class="cs-body">
                 {project.problem ? (
-                  <p>{project.problem}</p>
+                  <p set:html={sanitizeBasicHtml(project.problem)} />
                 ) : (
-                  <p>
-                    Operational bottlenecks often occur when systems require manual synchronization across
-                    distributed APIs or disconnected hardware endpoints. The objective was to design a scalable,
-                    autonomous workflow that operates reliably without requiring constant human intervention.
-                  </p>
+                  <p set:html={sanitizeBasicHtml(probFallback)} />
                 )}
               </div>
             </section>
 
             <!-- 2. The Solution -->
             <section class="cs-section">
-              <div class="cs-badge">// 02. ARCHITECTURE</div>
-              <h2 class="cs-heading">Engineering &amp; Technical Solution</h2>
+              <div class="cs-badge">{solBadge}</div>
+              <h2 class="cs-heading">{solHeading}</h2>
               <div class="cs-body">
                 {project.solution ? (
-                  <p>{project.solution}</p>
+                  <p set:html={sanitizeBasicHtml(project.solution)} />
                 ) : (
-                  <p>
-                    Engineered an asynchronous architecture using modular event hooks and strict typing.
-                    Implemented robust error retry handling, telemetry status logging, and secure edge data
-                    persistence to deliver deterministic execution under varying network loads.
-                  </p>
+                  <p set:html={sanitizeBasicHtml(solFallback)} />
                 )}
               </div>
             </section>
 
             <!-- 3. Key Results -->
             <section class="cs-section">
-              <div class="cs-badge">// 03. OUTCOME</div>
-              <h2 class="cs-heading">Results &amp; Key Takeaways</h2>
+              <div class="cs-badge">{resBadge}</div>
+              <h2 class="cs-heading">{resHeading}</h2>
               <div class="cs-body">
                 {project.result ? (
-                  <p>{project.result}</p>
+                  <p set:html={sanitizeBasicHtml(project.result)} />
                 ) : (
-                  <p>
-                    Delivered a reliable, automated pipeline that operates continuously with minimal maintenance
-                    overhead. Validated through production testing and documented for straightforward extensibility.
-                  </p>
+                  <p set:html={sanitizeBasicHtml(resFallback)} />
                 )}
               </div>
             </section>
 
             <!-- Bottom CTA Card -->
             <Card class="cs-contact-card">
-              <h3 class="cs-contact-title">Interested in building something similar?</h3>
-              <p class="cs-contact-desc">
-                Whether you need a custom automation bot, full-stack monitoring system, or backend integration, I'm available for engineering collaborations.
-              </p>
+              <h3 class="cs-contact-title">{ctaTitle}</h3>
+              <p class="cs-contact-desc">{ctaDesc}</p>
               <Button variant="primary" size="lg" href="/#contact">
-                <span>Start a Project Discussion</span>
+                <span>{ctaBtn}</span>
                 <span aria-hidden="true">→</span>
               </Button>
             </Card>
@@ -245,7 +276,7 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
           <!-- Related Work -->
           {relatedProjects.length > 0 && (
             <div class="related-work-block">
-              <h3 class="related-work-title">More Selected Projects</h3>
+              <h3 class="related-work-title">{relatedTitle}</h3>
               <div class="related-work-grid">
                 {relatedProjects.map((rp) => (
                   <Card as="a" href={`/work/${rp.slug}`} class="related-proj-card" interactive={true}>
@@ -254,8 +285,8 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
                       <span>{rp.category}</span>
                     </div>
                     <h4 class="rp-title">{rp.title}</h4>
-                    <p class="rp-summary">{rp.summary}</p>
-                    <span class="rp-link">Read case study →</span>
+                    <p class="rp-summary" set:html={sanitizeBasicHtml(rp.summary)} />
+                    <span class="rp-link">{readCaseStudy}</span>
                   </Card>
                 ))}
               </div>
@@ -266,8 +297,8 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
 
       <footer class="detail-footer">
         <div class="detail-footer-inner">
-          <span>{name} · {g.location || 'Delhi, India'}</span>
-          <a href="/work">Back to all work ↑</a>
+          <span>{name} · {location}</span>
+          <a href="/work">{backWorkLabel}</a>
         </div>
       </footer>
     </BaseLayout>
@@ -286,8 +317,8 @@ const allTags = project ? Array.from(new Set([...(project.tags || []), ...(proje
     border-bottom: 1px solid var(--border);
   }
 
-  [data-theme="light"] .detail-header {
-    background: rgba(246, 247, 244, 0.9);
+  :global([data-theme="light"]) .detail-header {
+    background: rgba(246, 247, 244, 0.94);
   }
 
   .detail-header-inner {

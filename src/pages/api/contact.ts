@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { addSubmission, checkContactRateLimit, getSetting } from '../../lib/db';
+import { addSubmission, checkContactRateLimit, getAllSettings } from '../../lib/db';
 import { badRequest, getClientIp, jsonResponse, serverError, tooManyRequests } from '../../lib/response';
 import { initializeDatabaseSchemaAndSeed } from '../../lib/schema-sql';
+import { t } from '../../lib/ui-strings';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -10,9 +11,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return serverError('Database binding (DB) is not configured.');
     }
 
-    const contactCfg = (await getSetting(db, 'contact')) || {};
+    const settings = await getAllSettings(db);
+    const contactCfg = settings.contact || {};
     if (contactCfg.form_enabled === false) {
-      return jsonResponse({ error: 'Contact form is currently disabled.' }, 403);
+      return jsonResponse({ error: t(settings, 'contact.form_disabled_text') }, 403);
     }
 
     const ip = getClientIp(request);
@@ -27,10 +29,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const { name, email, subject, message, _hp, _elapsed } = body as Record<string, unknown>;
+    const successMessage = t(settings, 'contact.msg_success');
 
     // Honeypot validation
     if (_hp && String(_hp).trim().length > 0) {
-      return jsonResponse({ ok: true, message: "Message received! I'll get back to you soon." });
+      return jsonResponse({ ok: true, message: successMessage });
     }
 
     // Minimum fill-time validation using client-side elapsed time delta
@@ -75,7 +78,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    return jsonResponse({ ok: true, message: "Message received! I'll get back to you soon." });
+    return jsonResponse({ ok: true, message: successMessage });
   } catch (err) {
     console.error('Contact submit error:', err);
     return serverError('Failed to save message. Please try again.');

@@ -1,6 +1,7 @@
 ---
 import '../styles/tokens.css';
 import '../styles/global.css';
+import { t } from '../lib/ui-strings';
 
 interface Props {
   title?: string;
@@ -14,35 +15,45 @@ interface Props {
   authorName?: string;
   defaultTheme?: string;
   accent?: string;
+  glowIntensity?: string;
   jsonLd?: Record<string, any> | null;
-  starsEnabled?: boolean;
+  settings?: Record<string, any>;
 }
 
 const {
-  title = 'Gulshan Kumar — Automation & AI Systems Engineer | Python, Bots, PLC & Cloud',
-  description = 'Official portfolio of Gulshan Kumar, an Automation & AI Systems Engineer in Delhi, India specializing in Python backends, Telegram & Discord bots, PLC industrial automation, and Cloudflare edge systems.',
-  keywords = 'Gulshan Kumar, Automation Engineer, AI Systems Engineer, Python Developer Delhi, Telegram Bot Developer, Discord Bot Developer, PLC Systems, Industrial Automation, Cloudflare Workers',
-  canonical = 'https://portfolio.gulshan-kumar.me',
+  title = 'Your Name — Automation & AI Systems Engineer',
+  description = 'Official portfolio specializing in Python backends, automation bots, PLC industrial automation, and Cloudflare edge systems.',
+  keywords = 'Automation Engineer, AI Systems Engineer, Python Developer, Bot Developer, PLC Systems, Industrial Automation, Cloudflare Workers',
+  canonical = 'https://portfolio.example.com',
   ogTitle = title,
   ogDescription = description,
-  ogImage = 'https://portfolio.gulshan-kumar.me/og-image.png',
+  ogImage = 'https://portfolio.example.com/og-image.png',
   robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-  authorName = 'Gulshan Kumar',
+  authorName = 'Your Name',
   defaultTheme = 'dark',
   accent = 'emerald',
+  glowIntensity = 'subtle',
   jsonLd = null,
+  settings = {},
 } = Astro.props;
 
-const cleanCanonical = canonical.replace(/\/$/, '') || 'https://portfolio.gulshan-kumar.me';
+const cleanCanonical = canonical.replace(/\/$/, '') || 'https://portfolio.example.com';
 const resolvedOgImage = ogImage
   ? ogImage.startsWith('http')
     ? ogImage
     : `${cleanCanonical}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`
   : `${cleanCanonical}/og-image.png`;
+
+const siteName = settings?.global?.site_name || `${authorName} Portfolio`;
+const firstName = authorName.split(' ')[0] || authorName;
+const lastName = authorName.split(' ').slice(1).join(' ') || '';
+const skipLabel = t(settings, 'a11y.skip_link');
+const llmsSummaryTitle = t(settings, 'a11y.llms_summary_title');
+const llmsFullTitle = t(settings, 'a11y.llms_full_title');
 ---
 
 <!DOCTYPE html>
-<html lang="en-IN" data-theme={defaultTheme} data-accent={accent}>
+<html lang="en" data-theme={defaultTheme} data-accent={accent} data-glow={glowIntensity}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -60,13 +71,9 @@ const resolvedOgImage = ogImage
     <meta name="googlebot" content={robots} />
     <link rel="canonical" href={cleanCanonical} />
 
-    <!-- GEO & LLM Context Profiles -->
-    <meta name="geo.region" content="IN-DL" />
-    <meta name="geo.placename" content="New Delhi, Delhi, India" />
-    <meta name="geo.position" content="28.6139;77.2090" />
-    <meta name="ICBM" content="28.6139, 77.2090" />
-    <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM Context Summary" />
-    <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="LLM Full Context Profile" />
+    <!-- LLM Context Profiles -->
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title={llmsSummaryTitle} />
+    <link rel="alternate" type="text/markdown" href="/llms-full.txt" title={llmsFullTitle} />
 
     <!-- Favicons & PWA Manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -79,8 +86,8 @@ const resolvedOgImage = ogImage
 
     <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="profile" />
-    <meta property="og:site_name" content="GK Portfolio — Gulshan Kumar" />
-    <meta property="og:locale" content="en_IN" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content={cleanCanonical} />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={ogDescription} />
@@ -89,10 +96,9 @@ const resolvedOgImage = ogImage
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${authorName} — Automation & AI Systems Engineer Portfolio`} />
-    <meta property="profile:first_name" content="Gulshan" />
-    <meta property="profile:last_name" content="Kumar" />
-    <meta property="profile:username" content="gulshanhex" />
+    <meta property="og:image:alt" content={ogTitle} />
+    <meta property="profile:first_name" content={firstName} />
+    {lastName && <meta property="profile:last_name" content={lastName} />}
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -100,13 +106,13 @@ const resolvedOgImage = ogImage
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={resolvedOgImage} />
-    <meta name="twitter:image:alt" content={`${authorName} — Automation & AI Systems Engineer Portfolio`} />
+    <meta name="twitter:image:alt" content={ogTitle} />
 
     <!-- Preload Critical Self-Hosted Variable Font -->
     <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Early Theme Detection & Progressive Enhancement Bootstrap -->
-    <script is:inline define:vars={{ defaultTheme, accent }}>
+    <script is:inline define:vars={{ defaultTheme, accent, glowIntensity }}>
       (function () {
         try {
           document.documentElement.classList.add('js');
@@ -123,6 +129,9 @@ const resolvedOgImage = ogImage
           if (accent) {
             document.documentElement.setAttribute('data-accent', accent);
           }
+          if (glowIntensity) {
+            document.documentElement.setAttribute('data-glow', glowIntensity);
+          }
         } catch (e) {}
       })();
     </script>
@@ -133,7 +142,7 @@ const resolvedOgImage = ogImage
     <slot name="head" />
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-content" class="skip-link">{skipLabel}</a>
     <slot />
   </body>
 </html>

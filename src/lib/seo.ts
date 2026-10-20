@@ -21,14 +21,15 @@ export function buildJsonLdGraph(data: {
   const contact = settings.contact || {};
   const about = settings.about || {};
 
-  const canonical = (seo.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
-  const mainDomain = (g.domain || 'https://gulshan-kumar.me').replace(/\/$/, '');
-  const name = g.name || 'Gulshan Kumar';
+  const canonical = (seo.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
+  const mainDomain = (contact.main_site || g.domain || 'https://example.com').replace(/\/$/, '');
+  const name = g.name || 'Your Name';
   const tagline = g.tagline || 'Automation & AI Systems Engineer';
+  const location = g.location || 'Remote';
   const ogImage = seo.og_image || `${canonical}/og-image.png`;
   const description =
     seo.description ||
-    `Official portfolio of ${name} — ${tagline} based in ${g.location || 'Delhi, India'}, specializing in Python, Bot Development, PLC Industrial Automation, and Cloud Systems.`;
+    `Official portfolio of ${name} — ${tagline} (${location}), specializing in Python, Bot Development, PLC Industrial Automation, and Cloud Systems.`;
 
   // Collect all skill names for knowsAbout
   const knowsAbout: string[] = [];
@@ -67,8 +68,8 @@ export function buildJsonLdGraph(data: {
     '@type': 'Person',
     '@id': `${canonical}/#person`,
     name,
-    givenName: name.split(' ')[0] || 'Gulshan',
-    familyName: name.split(' ').slice(1).join(' ') || 'Kumar',
+    givenName: name.split(' ')[0] || name,
+    familyName: name.split(' ').slice(1).join(' ') || '',
     jobTitle: tagline,
     description:
       (about.paragraphs || []).map((p: string) => stripHtml(p)).join(' ') || description,
@@ -82,16 +83,10 @@ export function buildJsonLdGraph(data: {
       height: 630,
       caption: `${name} — ${tagline}`,
     },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'New Delhi',
-      addressRegion: 'Delhi',
-      addressCountry: 'IN',
-    },
     ...(contact.email ? { email: `mailto:${contact.email}` } : {}),
     sameAs,
     knowsAbout,
-    knowsLanguage: ['en', 'hi'],
+    knowsLanguage: ['en'],
     ...(alumniOf.length ? { alumniOf } : {}),
     ...(worksFor.length ? { affiliation: worksFor } : {}),
     hasOccupation: {
@@ -99,7 +94,7 @@ export function buildJsonLdGraph(data: {
       name: tagline,
       occupationLocation: {
         '@type': 'City',
-        name: 'New Delhi, India',
+        name: location,
       },
       skills: knowsAbout.slice(0, 20).join(', '),
     },
@@ -112,7 +107,7 @@ export function buildJsonLdGraph(data: {
     url: canonical,
     name: g.site_name || `${name} Portfolio`,
     description,
-    inLanguage: 'en-IN',
+    inLanguage: 'en-US',
     publisher: {
       '@id': `${canonical}/#person`,
     },
@@ -134,11 +129,11 @@ export function buildJsonLdGraph(data: {
     mainEntity: {
       '@id': `${canonical}/#person`,
     },
-    inLanguage: 'en-IN',
+    inLanguage: 'en-US',
     dateModified: new Date().toISOString(),
     speakable: {
       '@type': 'SpeakableSpecification',
-      cssSelector: ['#hero .h-name', '#hero .h-role', '#about .about-text', '#faq .faq-item'],
+      cssSelector: ['#hero .hero-headline', '#hero .hero-subheadline', '#about .about-narrative', '#faq .faq-item-details'],
     },
     ...(Boolean(seo.reviews_jsonld) && testimonials.length
       ? {
@@ -149,7 +144,7 @@ export function buildJsonLdGraph(data: {
               name: t.name,
               jobTitle: t.subtitle,
             },
-            reviewBody: t.testimonial_text,
+            reviewBody: stripHtml(t.testimonial_text),
             reviewRating: {
               '@type': 'Rating',
               ratingValue: t.testimonial_rating || 5,
@@ -173,7 +168,7 @@ export function buildJsonLdGraph(data: {
       item: {
         '@type': 'SoftwareSourceCode',
         name: p.title,
-        description: p.summary,
+        description: stripHtml(p.summary),
         programmingLanguage: p.stack || [],
         keywords: [...(p.tags || []), ...(p.stack || [])].join(', '),
         author: { '@id': `${canonical}/#person` },
@@ -189,7 +184,7 @@ export function buildJsonLdGraph(data: {
     '@id': `${canonical}/#services-catalog`,
     name: `Automation, Backend & Cloud Engineering Services by ${name}`,
     provider: { '@id': `${canonical}/#person` },
-    areaServed: ['IN', 'Worldwide'],
+    areaServed: ['Worldwide'],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Engineering & Automation Services',
@@ -199,7 +194,7 @@ export function buildJsonLdGraph(data: {
         itemOffered: {
           '@type': 'Service',
           name: s.title,
-          description: s.description,
+          description: stripHtml(s.description),
         },
       })),
     },
@@ -237,7 +232,7 @@ export function buildJsonLdGraph(data: {
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Projects',
+        name: 'Work',
         item: `${canonical}/#projects`,
       },
       {

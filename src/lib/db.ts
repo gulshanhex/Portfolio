@@ -13,6 +13,7 @@ import {
   DEFAULT_SERVICES,
   DEFAULT_SETTINGS,
   DEFAULT_SKILLS,
+  runLazyLabelMigrations,
 } from './schema-sql';
 
 export async function getSetting(db: D1Database | undefined, key: string): Promise<any> {
@@ -46,10 +47,17 @@ export async function getAllSettings(db: D1Database | undefined): Promise<Record
   const merged: Record<string, any> = structuredClone(DEFAULT_SETTINGS);
   if (!db) return merged;
   try {
+    await runLazyLabelMigrations(db);
     const { results } = await db.prepare('SELECT key, value FROM site_settings').all<{ key: string; value: string }>();
     for (const r of results || []) {
+      if (r.key === '_migrations') continue;
       try {
-        merged[r.key] = { ...(merged[r.key] || {}), ...JSON.parse(r.value) };
+        const parsed = JSON.parse(r.value);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          merged[r.key] = { ...(merged[r.key] || {}), ...parsed };
+        } else {
+          merged[r.key] = parsed;
+        }
       } catch {
         merged[r.key] = r.value;
       }
@@ -63,6 +71,7 @@ export async function getAllSettings(db: D1Database | undefined): Promise<Record
 export async function getSections(db: D1Database | undefined): Promise<any[]> {
   if (!db) return DEFAULT_SECTIONS;
   try {
+    await runLazyLabelMigrations(db);
     const { results } = await db.prepare('SELECT * FROM sections ORDER BY order_idx').all();
     if (!results || results.length === 0) return DEFAULT_SECTIONS;
     return results;
@@ -367,9 +376,11 @@ export function stripHtml(str: unknown): string {
 export function sanitizeBasicHtml(str: unknown): string {
   if (!str) return '';
   return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/&amp;(amp|lt|gt|quot|#39);/g, '&$1;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/&lt;(\/?(strong|em|br))\s*&gt;/gi, '<$1>');
+    .replace(/&lt;(\/?(strong|em|br))\s*\/?&gt;/gi, '<$1>');
 }
 
 export function sanitizeUrl(url: unknown): string | null {

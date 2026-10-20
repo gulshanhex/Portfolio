@@ -2,6 +2,8 @@
 import SectionHeader from './ui/SectionHeader.astro';
 import Card from './ui/Card.astro';
 import Icon from './ui/Icon.astro';
+import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 interface EducationItem {
   id: number;
@@ -18,13 +20,14 @@ interface Props {
   education: EducationItem[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { education = [], copy = {} } = Astro.props;
+const { education = [], copy = {}, settings = {} } = Astro.props;
 
-const eyebrow = copy.education_eyebrow || '// EDUCATION';
-const title = copy.education_title || 'Where I learned.';
-const subtitle = copy.education_subtitle || 'Academic background and practical technical foundations.';
+const eyebrow = copy.education_eyebrow || t(settings, 'education.eyebrow_default');
+const title = copy.education_title || t(settings, 'education.title_default');
+const subtitle = copy.education_subtitle || t(settings, 'education.subtitle_default');
 ---
 
 {
@@ -56,7 +59,7 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
                 {ed.items && ed.items.length > 0 && (
                   <ul class="edu-items-list">
                     {ed.items.map((it) => (
-                      <li>{it}</li>
+                      <li set:html={sanitizeBasicHtml(it)} />
                     ))}
                   </ul>
                 )}
@@ -191,6 +194,11 @@ const subtitle = copy.education_subtitle || 'Academic background and practical t
     color: var(--muted);
     line-height: 1.55;
     flex-grow: 1;
+  }
+
+  .edu-items-list :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
   }
 
   .edu-pills-wrap {

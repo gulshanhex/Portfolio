@@ -1,6 +1,7 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import FaqItem from './ui/FaqItem.astro';
+import { t } from '../lib/ui-strings';
 
 interface FaqEntry {
   id: number;
@@ -12,13 +13,14 @@ interface Props {
   faqs: FaqEntry[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { faqs = [], copy = {} } = Astro.props;
+const { faqs = [], copy = {}, settings = {} } = Astro.props;
 
-const eyebrow = copy.faq_eyebrow || '// QUICK ANSWERS';
-const title = copy.faq_title || 'Frequently asked questions.';
-const subtitle = copy.faq_subtitle || 'Direct answers regarding my engineering background, industrial automation experience, and availability.';
+const eyebrow = copy.faq_eyebrow || t(settings, 'faq.eyebrow_default');
+const title = copy.faq_title || t(settings, 'faq.title_default');
+const subtitle = copy.faq_subtitle || t(settings, 'faq.subtitle_default');
 ---
 
 {

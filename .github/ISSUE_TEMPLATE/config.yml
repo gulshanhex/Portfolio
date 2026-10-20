@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private Security Vulnerability Report
+    url: https://github.com/gulshanhex/portfolio/security/advisories/new
+    about: Please report security vulnerabilities privately via GitHub Security Advisories instead of public issues.
+  - name: Documentation & Architecture Guides
+    url: https://github.com/gulshanhex/portfolio/tree/main/docs
+    about: Read the Architecture, Admin Guide, Design System, Deployment, and PWA documentation.

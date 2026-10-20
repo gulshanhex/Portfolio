@@ -1,14 +1,26 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
+import { UI_STRINGS } from '../../lib/ui-strings';
 
 const session = Astro.locals.adminSession;
 const csrfToken = Astro.locals.csrfToken || '';
 const url = new URL(Astro.request.url);
 const loginError = url.searchParams.get('error') || '';
 const username = session?.username || 'admin';
+
+// Group UI_STRINGS by group name in order of appearance
+const uiGroups: Array<{ group: string; items: typeof UI_STRINGS }> = [];
+for (const item of UI_STRINGS) {
+  let g = uiGroups.find((x) => x.group === item.group);
+  if (!g) {
+    g = { group: item.group, items: [] };
+    uiGroups.push(g);
+  }
+  g.items.push(item);
+}
 ---
 
-<AdminLayout title={session ? 'Admin Dashboard · GK Portfolio' : 'Admin Login · GK Portfolio'}>
+<AdminLayout title={session ? 'Admin Dashboard · Portfolio' : 'Admin Login · Portfolio'}>
   {
     !session ? (
       <div class="login-screen">
@@ -59,7 +71,7 @@ const username = session?.username || 'admin';
     ) : (
       <>
         <div id="sb-overlay" onclick="closeSidebar()"></div>
-    <aside id="sb">
+        <aside id="sb">
           <div class="sb-logo">
             <div class="sb-mark">
               GK<span>.</span>
@@ -83,6 +95,12 @@ const username = session?.username || 'admin';
             </button>
             <button class="sbl" data-p="hero" type="button">
               <span class="material-icons-round mi">text_fields</span>Hero &amp; About
+            </button>
+            <button class="sbl" data-p="copy" type="button">
+              <span class="material-icons-round mi">edit_note</span>Section Copy
+            </button>
+            <button class="sbl" data-p="ui" type="button">
+              <span class="material-icons-round mi">translate</span>Interface Text
             </button>
             <button class="sbl" data-p="skills" type="button">
               <span class="material-icons-round mi">psychology</span>Skills
@@ -111,9 +129,6 @@ const username = session?.username || 'admin';
             </button>
             <button class="sbl" data-p="inbox" type="button">
               <span class="material-icons-round mi">inbox</span>Inbox<span id="ubadge" />
-            </button>
-            <button class="sbl" data-p="copy" type="button">
-              <span class="material-icons-round mi">edit_note</span>Section Copy
             </button>
             <button class="sbl" data-p="sections" type="button">
               <span class="material-icons-round mi">view_list</span>Sections &amp; Order
@@ -195,6 +210,9 @@ const username = session?.username || 'admin';
                     <button class="btn-o" type="button" onclick="go('projects')">
                       <span class="material-icons-round mi">folder_open</span>Manage Projects
                     </button>
+                    <button class="btn-o" type="button" onclick="go('ui')">
+                      <span class="material-icons-round mi">translate</span>Edit Interface Text
+                    </button>
                     <button class="btn-o" type="button" onclick="go('inbox')">
                       <span class="material-icons-round mi">inbox</span>View Inbox
                     </button>
@@ -221,7 +239,7 @@ const username = session?.username || 'admin';
             <div class="panel" id="p-global">
               <div class="ph">
                 <div class="ph-title">GLOBAL SETTINGS</div>
-                <div class="ph-sub">Identity, domains, resume, nav.</div>
+                <div class="ph-sub">Identity, domains, resume, navigation, and footer links.</div>
               </div>
               <div class="fs">
                 <div class="fs-title">
@@ -230,19 +248,23 @@ const username = session?.username || 'admin';
                 <div class="fgrid">
                   <div class="fg">
                     <label>Name</label>
-                    <input id="g-name" />
+                    <input id="g-name" placeholder="Your Name" />
+                  </div>
+                  <div class="fg">
+                    <label>Site Name</label>
+                    <input id="g-site-name" placeholder="Portfolio" />
                   </div>
                   <div class="fg">
                     <label>Tagline</label>
-                    <input id="g-tagline" />
+                    <input id="g-tagline" placeholder="Automation & AI Systems Engineer" />
                   </div>
                   <div class="fg">
                     <label>Location</label>
-                    <input id="g-location" />
+                    <input id="g-location" placeholder="Remote" />
                   </div>
                   <div class="fg full">
                     <label>Footer Text (supports &lt;strong&gt;)</label>
-                    <input id="g-footer" />
+                    <input id="g-footer" placeholder="Built by <strong>Your Name</strong>" />
                   </div>
                 </div>
               </div>
@@ -253,17 +275,26 @@ const username = session?.username || 'admin';
                 <div class="fgrid">
                   <div class="fg">
                     <label>Main Domain</label>
-                    <input id="g-domain" placeholder="https://gulshan-kumar.me" />
+                    <input id="g-domain" placeholder="https://example.com" />
                   </div>
                   <div class="fg">
                     <label>Portfolio URL</label>
-                    <input id="g-portfolio" placeholder="https://portfolio.gulshan-kumar.me" />
+                    <input id="g-portfolio" placeholder="https://portfolio.example.com" />
                   </div>
                   <div class="fg full">
                     <label>Projects Subdomain</label>
-                    <input id="g-proj-sub" placeholder="https://projects.gulshan-kumar.me" />
+                    <input id="g-proj-sub" placeholder="https://projects.example.com" />
                   </div>
                 </div>
+              </div>
+              <div class="fs">
+                <div class="fs-title">
+                  <span class="material-icons-round mi">list</span>Footer Links (Add / Remove / Reorder)
+                </div>
+                <div id="footer-links-ed" />
+                <button class="btn-o" type="button" style="margin-top:.7rem" onclick="addFooterLink()">
+                  <span class="material-icons-round mi">add</span>Add Footer Link
+                </button>
               </div>
               <div class="fs">
                 <div class="fs-title">
@@ -271,10 +302,10 @@ const username = session?.username || 'admin';
                 </div>
                 <div class="fgrid s1">
                   <div class="fg">
-                    <label>Resume Google Drive URL</label>
+                    <label>Resume URL</label>
                     <input id="g-resume" placeholder="https://drive.google.com/file/d/YOUR_ID/view?usp=sharing" />
                     <span class="hint">
-                      Paste a shareable Google Drive link. Used in hero CTA, nav, and contact section.
+                      Paste a shareable link. Used in top navigation, mobile drawer, about card, and contact section.
                     </span>
                   </div>
                 </div>
@@ -286,7 +317,7 @@ const username = session?.username || 'admin';
                 </div>
                 <div class="trow" style="margin-top:.8rem">
                   <div class="tlbl">
-                    Show Resume in Nav<small>Adds resume link to top navigation</small>
+                    Show Resume in Nav<small>Adds resume link to top navigation and mobile sheet</small>
                   </div>
                   <label class="tsw">
                     <input type="checkbox" id="g-resume-nav" />
@@ -305,7 +336,7 @@ const username = session?.username || 'admin';
             <div class="panel" id="p-hero">
               <div class="ph">
                 <div class="ph-title">HERO &amp; ABOUT</div>
-                <div class="ph-sub">Headline, role, status, CTAs, stats, about text.</div>
+                <div class="ph-sub">Headline, role, status, CTAs, hero visual card, quick stats, and about narrative.</div>
               </div>
               <div class="fs">
                 <div class="fs-title">
@@ -314,36 +345,27 @@ const username = session?.username || 'admin';
                 <div class="fgrid">
                   <div class="fg">
                     <label>Headline Line 1</label>
-                    <input id="h-ln1" placeholder="GULSHAN" />
+                    <input id="h-ln1" placeholder="YOUR" />
                   </div>
                   <div class="fg">
                     <label>Headline Line 2 (accent colour)</label>
-                    <input id="h-ln2" placeholder="KUMAR" />
-                  </div>
-                  <div class="fg">
-                    <label>Headline Title</label>
-                    <input id="h-headline" placeholder="Gulshan Kumar" />
-                  </div>
-                  <div class="fg">
-                    <label>Subheadline / Short Bio</label>
-                    <input id="h-subheadline" placeholder="Automation & AI Systems Engineer" />
-                  </div>
-                  <div class="fg" style="padding-top:1.1rem">
-                    <div class="trow">
-                      <div class="tlbl">Show Hero Visual (Aura Node)<small>Displays interactive telemetry node visual</small></div>
-                      <label class="tsw">
-                        <input type="checkbox" id="h-visual" checked />
-                        <span class="tsl"></span>
-                      </label>
-                    </div>
+                    <input id="h-ln2" placeholder="NAME" />
                   </div>
                   <div class="fg full">
-                    <label>Role Text (supports &lt;strong&gt; &lt;em&gt;)</label>
+                    <label>Primary Headline Title</label>
+                    <input id="h-headline" placeholder="I build bots & automation that run your business" />
+                  </div>
+                  <div class="fg full">
+                    <label>Subheadline / Short Bio (supports &lt;strong&gt; &lt;em&gt;)</label>
+                    <input id="h-subheadline" placeholder="From custom AI workflows to automated scaling—I architect system integrations that eliminate manual work." />
+                  </div>
+                  <div class="fg full">
+                    <label>Role Text Fallback (supports &lt;strong&gt; &lt;em&gt;)</label>
                     <input id="h-role" />
                   </div>
                   <div class="fg">
                     <label>Status Label</label>
-                    <input id="h-status" placeholder="Available for Opportunities" />
+                    <input id="h-status" placeholder="Available for projects" />
                   </div>
                   <div class="fg">
                     <label>Status Chip Text</label>
@@ -351,22 +373,125 @@ const username = session?.username || 'admin';
                   </div>
                   <div class="fg">
                     <label>Primary CTA Label</label>
-                    <input id="h-cta1l" placeholder="View Projects" />
+                    <input id="h-cta1l" placeholder="Start a project" />
                   </div>
                   <div class="fg">
                     <label>Primary CTA URL</label>
-                    <input id="h-cta1u" placeholder="#projects" />
+                    <input id="h-cta1u" placeholder="#contact" />
                   </div>
                   <div class="fg">
                     <label>Secondary CTA Label</label>
-                    <input id="h-cta2l" placeholder="Get In Touch" />
+                    <input id="h-cta2l" placeholder="View work" />
                   </div>
                   <div class="fg">
                     <label>Secondary CTA URL</label>
-                    <input id="h-cta2u" placeholder="#contact" />
+                    <input id="h-cta2u" placeholder="#projects" />
                   </div>
                 </div>
               </div>
+
+              <!-- Hero Visual Card -->
+              <div class="fs">
+                <div class="fs-title">
+                  <span class="material-icons-round mi">monitoring</span>Hero Visual Card
+                </div>
+                <div class="fgrid">
+                  <div class="fg">
+                    <div class="trow">
+                      <div class="tlbl">Show Hero Visual<small>Toggle the right-hand visual card in the hero section</small></div>
+                      <label class="tsw">
+                        <input type="checkbox" id="h-visual" checked />
+                        <span class="tsl"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="fg">
+                    <label>Visual Layout Variant</label>
+                    <select id="h-visual-variant">
+                      <option value="chat+chart">Chat + Telemetry Chart (Default)</option>
+                      <option value="chart">Telemetry Chart Only</option>
+                      <option value="none">None (Hidden)</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label>Chart Card Title</label>
+                    <input id="hv-api-title" placeholder="Automation API" />
+                  </div>
+                  <div class="fg">
+                    <label>Chart Status Badge</label>
+                    <input id="hv-api-badge" placeholder="Active" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 1 Label</label>
+                    <input id="hv-s1l" placeholder="Workflows" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 1 Value</label>
+                    <input id="hv-s1v" placeholder="Event-Driven" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 2 Label</label>
+                    <input id="hv-s2l" placeholder="Execution" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 2 Value</label>
+                    <input id="hv-s2v" placeholder="Edge Webhook" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 3 Label</label>
+                    <input id="hv-s3l" placeholder="Status" />
+                  </div>
+                  <div class="fg">
+                    <label>Metric 3 Value</label>
+                    <input id="hv-s3v" placeholder="Operational" />
+                  </div>
+                  <div class="fg full">
+                    <label>Pipeline Connector Pill</label>
+                    <input id="hv-conn" placeholder="webhook trigger → bot dispatch" />
+                  </div>
+                  <div class="fg">
+                    <label>Bot Name</label>
+                    <input id="hv-bot-name" placeholder="Bot Engine" />
+                  </div>
+                  <div class="fg">
+                    <label>Bot Status Subtitle</label>
+                    <input id="hv-bot-status" placeholder="automated sequence" />
+                  </div>
+                  <div class="fg">
+                    <label>Sender Label</label>
+                    <input id="hv-bot-sender" placeholder="System Bot" />
+                  </div>
+                  <div class="fg">
+                    <label>First Bot Message</label>
+                    <input id="hv-bot-msg1" placeholder="Triggered scheduled operational cycle." />
+                  </div>
+                  <div class="fg full">
+                    <label>Code Snippet Line</label>
+                    <input id="hv-code" placeholder='schedule.every().day.at("09:00").do(run_audit)' />
+                  </div>
+                  <div class="fg">
+                    <label>User Command Message</label>
+                    <input id="hv-user-msg" placeholder="Run status check." />
+                  </div>
+                  <div class="fg">
+                    <label>Bot Reply Message</label>
+                    <input id="hv-bot-reply" placeholder="Routine check completed" />
+                  </div>
+                  <div class="fg">
+                    <label>Input Placeholder</label>
+                    <input id="hv-input-ph" placeholder="Write a command..." />
+                  </div>
+                  <div class="fg">
+                    <label>Send Button Symbol</label>
+                    <input id="hv-send-btn" placeholder="↵" />
+                  </div>
+                  <div class="fg full">
+                    <label>Bottom Caption</label>
+                    <input id="hv-caption" placeholder="Sample automated orchestration workflow" />
+                  </div>
+                </div>
+              </div>
+
               <div class="fs">
                 <div class="fs-title">
                   <span class="material-icons-round mi">bar_chart</span>Quick Stats
@@ -396,6 +521,197 @@ const username = session?.username || 'admin';
               </div>
             </div>
 
+            <!-- Section Copy Panel -->
+            <div class="panel" id="p-copy">
+              <div class="ph">
+                <div class="ph-title">SECTION COPY &amp; HEADINGS</div>
+                <div class="ph-sub">Customize eyebrows, headings, and subtitle text across every public section.</div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">flag</span>About Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-about-eye" placeholder="// ABOUT ME" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-about-title" placeholder="Who am I?" /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-about-sub" placeholder="Engineering intelligent software that interfaces with the physical and digital world." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">build</span>Services Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-services-eye" placeholder="// SERVICES" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-services-title" placeholder="What I can do for you." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-services-sub" placeholder="Tailored automation, integration, and intelligence for your business." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">psychology</span>Skills Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-skills-eye" placeholder="// SKILLS" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-skills-title" placeholder="What I work with." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-skills-sub" placeholder="A curated set of tools, languages, and systems built through production environments and hands-on engineering." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">work</span>Experience Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-xp-eye" placeholder="// EXPERIENCE" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-xp-title" placeholder="Where I've engineered." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-xp-sub" placeholder="Hands-on production environments, industrial automation, and software engineering roles." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">school</span>Education Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-edu-eye" placeholder="// EDUCATION" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-edu-title" placeholder="Where I learned." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-edu-sub" placeholder="Academic background and practical technical foundations." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">folder_special</span>Projects Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-projects-eye" placeholder="// SELECTED WORK" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-projects-title" placeholder="What I built." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-projects-sub" placeholder="Production bots, monitoring dashboards, and automation toolkits." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">verified</span>Proof &amp; Testimonials</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-proof-eye" placeholder="// TESTIMONIALS" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-proof-title" placeholder="Testimonials" /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-proof-sub" placeholder="Organizations and environments that shaped my work." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">quiz</span>FAQ Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-faq-eye" placeholder="// QUICK ANSWERS" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-faq-title" placeholder="Frequently asked questions." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-faq-sub" placeholder="Direct answers regarding engineering background, automation experience, and availability." /></div>
+                </div>
+              </div>
+
+              <div class="fs">
+                <div class="fs-title"><span class="material-icons-round mi">mail</span>Contact Section</div>
+                <div class="fgrid">
+                  <div class="fg"><label>Eyebrow</label><input id="cp-contact-eye" placeholder="// LET'S CONNECT" /></div>
+                  <div class="fg"><label>Title</label><input id="cp-contact-title" placeholder="Get in touch." /></div>
+                  <div class="fg full"><label>Subtitle</label><input id="cp-contact-sub" placeholder="Tell me what you're working on. Open to automation workflows, backend architecture, and custom bots." /></div>
+                </div>
+              </div>
+
+              <div class="brow" style="margin-top:1.5rem">
+                <button class="btn-s" type="button" onclick="saveCopy()"><span class="material-icons-round mi">save</span>Save Section Copy</button>
+              </div>
+            </div>
+
+            <!-- Interface Text Panel (Automatically built from UI_STRINGS registry) -->
+            <div class="panel" id="p-ui">
+              <div class="ph">
+                <div class="ph-title">INTERFACE TEXT</div>
+                <div class="ph-sub">
+                  Every button caption, label, navigation string, placeholder, empty state, error message, and aria-label across the entire site. Leave a field blank or click Reset to use its default value.
+                </div>
+              </div>
+
+              <div class="fs" style="margin-bottom:1rem">
+                <div style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
+                  <div class="fg" style="flex:1;min-width:240px;margin:0">
+                    <label for="ui-search-in">Search Interface Strings (by label, key, or default text)</label>
+                    <input
+                      type="search"
+                      id="ui-search-in"
+                      placeholder="Type to filter strings (e.g. 'Install', 'hero_visual', '404', 'contact')..."
+                      oninput="filterUiStrings()"
+                    />
+                  </div>
+                  <div style="display:flex;gap:.5rem;align-items:center;padding-top:1.1rem">
+                    <button class="btn-o" type="button" onclick="resetAllUiStrings()">
+                      <span class="material-icons-round mi">restart_alt</span>Reset All to Defaults
+                    </button>
+                    <button class="btn-s" type="button" onclick="saveUiStrings()">
+                      <span class="material-icons-round mi">save</span>Save Interface Text
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="ui-groups-container">
+                {uiGroups.map((grp) => (
+                  <details class="fs ui-group-details" open data-ui-group={grp.group}>
+                    <summary class="fs-title" style="cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between">
+                      <span>
+                        <span class="material-icons-round mi">tune</span>
+                        {grp.group}
+                        <span style="font-size:.72rem;color:var(--text-faint);font-weight:400;margin-left:.4rem">
+                          ({grp.items.length})
+                        </span>
+                      </span>
+                      <span style="font-size:.75rem;color:var(--lime)">▾</span>
+                    </summary>
+                    <div class="fgrid" style="margin-top:.85rem">
+                      {grp.items.map((item) => (
+                        <div
+                          class={`fg ${item.multiline ? 'full' : ''}`}
+                          data-ui-row={item.key}
+                          data-ui-search={`${item.label} ${item.key} ${item.default} ${item.group}`.toLowerCase()}
+                        >
+                          <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.25rem">
+                            <label for={`ui-in-${item.key}`} style="margin:0">
+                              {item.label}{' '}
+                              <code style="font-size:.66rem;color:var(--text-faint);font-weight:400">{item.key}</code>
+                            </label>
+                            <button
+                              type="button"
+                              class="lbtn"
+                              style="padding:.15rem .45rem;font-size:.68rem"
+                              title="Reset to default"
+                              onclick={`resetUiField('${item.key}')`}
+                            >
+                              Reset
+                            </button>
+                          </div>
+                          {item.multiline ? (
+                            <textarea
+                              id={`ui-in-${item.key}`}
+                              data-ui-key={item.key}
+                              data-ui-default={item.default}
+                              placeholder={item.default}
+                              style="min-height:60px"
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              id={`ui-in-${item.key}`}
+                              data-ui-key={item.key}
+                              data-ui-default={item.default}
+                              placeholder={item.default}
+                            />
+                          )}
+                          {item.help && <span class="hint">{item.help}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+
+              <div class="brow" style="margin-top:1.25rem">
+                <button class="btn-s" type="button" onclick="saveUiStrings()">
+                  <span class="material-icons-round mi">save</span>Save Interface Text
+                </button>
+              </div>
+            </div>
+
             <!-- Skills -->
             <div class="panel" id="p-skills">
               <div class="ph">
@@ -414,7 +730,7 @@ const username = session?.username || 'admin';
             <div class="panel" id="p-services">
               <div class="ph">
                 <div class="ph-title">SERVICES</div>
-                <div class="ph-sub">"What I Do" cards with optional CTA links.</div>
+                <div class="ph-sub">Service cards and standalone /services/[slug] detail pages.</div>
               </div>
               <div id="svcs-list" />
               <div class="brow">
@@ -456,7 +772,7 @@ const username = session?.username || 'admin';
             <div class="panel" id="p-projects">
               <div class="ph">
                 <div class="ph-title">PROJECTS</div>
-                <div class="ph-sub">Showcase cards on the portfolio.</div>
+                <div class="ph-sub">Showcase cards and /work/[slug] engineering case studies.</div>
               </div>
               <div id="proj-list" />
               <div class="brow">
@@ -478,16 +794,16 @@ const username = session?.username || 'admin';
                 </div>
                 <div class="fgrid">
                   <div class="fg">
-                    <label>Section Eyebrow Title</label>
-                    <input id="proof-title" placeholder="Proof & Context" />
+                    <label>Section Heading Title</label>
+                    <input id="proof-title" placeholder="Testimonials" />
                   </div>
                   <div class="fg">
                     <label>Organizations Heading</label>
-                    <input id="proof-orgs-title" placeholder="WHO I'VE WORKED WITH" />
+                    <input id="proof-orgs-title" placeholder="Who I've worked with" />
                   </div>
                   <div class="fg">
                     <label>Orgs Subtitle</label>
-                    <input id="proof-orgs-sub" placeholder="Organizations that shaped my work." />
+                    <input id="proof-orgs-sub" placeholder="Organizations and environments that shaped my work." />
                   </div>
                   <div class="fg">
                     <label>Testimonials Title</label>
@@ -554,15 +870,19 @@ const username = session?.username || 'admin';
                 <div class="fgrid">
                   <div class="fg">
                     <label>Email</label>
-                    <input id="ct-email" type="email" />
+                    <input id="ct-email" type="email" placeholder="hello@example.com" />
                   </div>
                   <div class="fg">
                     <label>LinkedIn URL</label>
-                    <input id="ct-li" />
+                    <input id="ct-li" placeholder="https://linkedin.com/in/yourhandle" />
                   </div>
                   <div class="fg">
                     <label>GitHub URL</label>
-                    <input id="ct-gh" />
+                    <input id="ct-gh" placeholder="https://github.com/yourhandle" />
+                  </div>
+                  <div class="fg">
+                    <label>Main Website URL</label>
+                    <input id="ct-main-site" placeholder="https://example.com" />
                   </div>
                 </div>
               </div>
@@ -589,7 +909,7 @@ const username = session?.username || 'admin';
                 </div>
                 <div class="trow">
                   <div class="tlbl">
-                    Show Availability Bar<small>Top banner announcing availability</small>
+                    Show Availability Badge<small>Displays status pill in Hero and About profile card</small>
                   </div>
                   <label class="tsw">
                     <input type="checkbox" id="ct-avail" />
@@ -598,7 +918,7 @@ const username = session?.username || 'admin';
                 </div>
                 <div class="fg" style="margin-top:.8rem">
                   <label>Availability Badge Text</label>
-                  <input id="ct-avail-txt" placeholder="Open to Work" />
+                  <input id="ct-avail-txt" placeholder="Available for projects" />
                 </div>
               </div>
               <div class="brow">
@@ -620,99 +940,6 @@ const username = session?.username || 'admin';
             </div>
 
             <!-- Sections & Order -->
-            <!-- Section Copy Panel -->
-            <div class="panel" id="p-copy">
-              <div class="ph">
-                <div class="ph-title">SECTION COPY &amp; HEADINGS</div>
-                <div class="ph-sub">Customize eyebrows, headings, and subtitle text across every public section.</div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">flag</span>About Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-about-eye" placeholder="// ABOUT" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-about-title" placeholder="Engineer, builder, problem solver." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-about-sub" placeholder="Specializing in automation, edge applications, and backends." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">build</span>Services Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-services-eye" placeholder="// SERVICES" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-services-title" placeholder="What I can do for you." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-services-sub" placeholder="Tailored automation, integration, and intelligence." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">psychology</span>Skills Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-skills-eye" placeholder="// TECH STACK" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-skills-title" placeholder="Technologies I work with." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-skills-sub" placeholder="Tools, languages, and frameworks for production systems." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">work</span>Experience Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-xp-eye" placeholder="// TRACK RECORD" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-xp-title" placeholder="Where I've built." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-xp-sub" placeholder="Professional history and engineering internships." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">school</span>Education Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-edu-eye" placeholder="// BACKGROUND" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-edu-title" placeholder="Education &amp; Foundations." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-edu-sub" placeholder="Academic background and technical coursework." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">folder_special</span>Projects Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-projects-eye" placeholder="// SELECTED WORK" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-projects-title" placeholder="What I built." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-projects-sub" placeholder="Production bots, monitoring dashboards, and automation toolkits." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">verified</span>Proof &amp; Testimonials</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-proof-eye" placeholder="// SOCIAL PROOF" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-proof-title" placeholder="Endorsements &amp; metrics." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-proof-sub" placeholder="Direct words from colleagues, clients, and technical leads." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">quiz</span>FAQ Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-faq-eye" placeholder="// COMMON QUESTIONS" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-faq-title" placeholder="Frequently Asked Questions" /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-faq-sub" placeholder="Common queries about working together, timelines, and deliverables." /></div>
-                </div>
-              </div>
-
-              <div class="fs">
-                <div class="fs-title"><span class="material-icons-round mi">mail</span>Contact Section</div>
-                <div class="fgrid">
-                  <div class="fg"><label>Eyebrow</label><input id="cp-contact-eye" placeholder="// GET IN TOUCH" /></div>
-                  <div class="fg"><label>Title</label><input id="cp-contact-title" placeholder="Let's build something reliable." /></div>
-                  <div class="fg full"><label>Subtitle</label><input id="cp-contact-sub" placeholder="Available for select contract, freelance, and engineering roles." /></div>
-                </div>
-              </div>
-
-              <div class="brow" style="margin-top:1.5rem">
-                <button class="btn-s" type="button" onclick="saveCopy()"><span class="material-icons-round mi">save</span>Save Section Copy</button>
-              </div>
-            </div>
-
             <div class="panel" id="p-sections">
               <div class="ph">
                 <div class="ph-title">SECTIONS &amp; ORDER</div>
@@ -750,15 +977,15 @@ const username = session?.username || 'admin';
                     <input id="seo-keywords" />
                   </div>
                   <div class="trow" style="margin-top:.8rem">
-                  <div class="tlbl">
-                    Enable Review / Testimonial JSON-LD
-                    <small>Generates Schema.org AggregateRating for social proof</small>
+                    <div class="tlbl">
+                      Enable Review / Testimonial JSON-LD
+                      <small>Generates Schema.org Review nodes when real testimonials exist</small>
+                    </div>
+                    <label class="tsw">
+                      <input type="checkbox" id="seo-reviews-jsonld" />
+                      <span class="tsl"></span>
+                    </label>
                   </div>
-                  <label class="tsw">
-                    <input type="checkbox" id="seo-reviews-jsonld" checked />
-                    <span class="tsl"></span>
-                  </label>
-                </div>
                 </div>
               </div>
               <div class="fs">
@@ -772,7 +999,7 @@ const username = session?.username || 'admin';
                   </div>
                   <div class="fg">
                     <label>OG Image URL</label>
-                    <input id="seo-ogi" placeholder="https://portfolio.gulshan-kumar.me/og-image.png" />
+                    <input id="seo-ogi" placeholder="https://portfolio.example.com/og-image.png" />
                   </div>
                   <div class="fg full">
                     <label>OG Description</label>
@@ -787,7 +1014,7 @@ const username = session?.username || 'admin';
                 <div class="fgrid">
                   <div class="fg">
                     <label>Canonical URL</label>
-                    <input id="seo-can" />
+                    <input id="seo-can" placeholder="https://portfolio.example.com" />
                   </div>
                   <div class="fg">
                     <label>Robots</label>
@@ -819,11 +1046,11 @@ const username = session?.username || 'admin';
             <div class="panel" id="p-theme">
               <div class="ph">
                 <div class="ph-title">THEME</div>
-                <div class="ph-sub">Default theme and visual effects.</div>
+                <div class="ph-sub">Default color mode, WCAG AA accent preset, and ambient glow intensity.</div>
               </div>
               <div class="fs">
                 <div class="fs-title">
-                  <span class="material-icons-round mi">palette</span>Options
+                  <span class="material-icons-round mi">palette</span>Appearance &amp; Tokens
                 </div>
                 <div class="fgrid s3">
                   <div class="fg">
@@ -844,45 +1071,21 @@ const username = session?.username || 'admin';
                     </select>
                   </div>
                   <div class="fg">
-                    <label>Glow (Hero Aura)</label>
-                    <select id="th-neon">
-                      <option value="balanced">Balanced (recommended)</option>
+                    <label>Glow Intensity (--glow-opacity)</label>
+                    <select id="th-glow">
+                      <option value="none">None (0%)</option>
+                      <option value="subtle">Subtle (Recommended)</option>
+                      <option value="balanced">Balanced</option>
                       <option value="strong">Strong</option>
-                      <option value="subtle">Subtle</option>
                     </select>
-                  </div>
-                  <div class="fg">
-                    <label>Particle Count (20–200)</label>
-                    <input id="th-stars-count" type="number" min="20" max="200" value="80" />
                   </div>
                 </div>
                 <div class="trow" style="margin-top:.8rem">
                   <div class="tlbl">
-                    Allow User Theme Toggle<small>Visitors can switch between dark/light</small>
+                    Allow User Theme Toggle<small>Visitors can switch between dark and light mode in the header</small>
                   </div>
                   <label class="tsw">
                     <input type="checkbox" id="th-toggle" />
-                    <span class="tsl" />
-                  </label>
-                </div>
-                <div class="trow">
-                  <div class="tlbl">Particle Background (stars)</div>
-                  <label class="tsw">
-                    <input type="checkbox" id="th-stars" />
-                    <span class="tsl" />
-                  </label>
-                </div>
-                <div class="trow">
-                  <div class="tlbl">Noise Texture (dark mode)</div>
-                  <label class="tsw">
-                    <input type="checkbox" id="th-noise" />
-                    <span class="tsl" />
-                  </label>
-                </div>
-                <div class="trow">
-                  <div class="tlbl">Scanlines (dark mode)</div>
-                  <label class="tsw">
-                    <input type="checkbox" id="th-scan" />
                     <span class="tsl" />
                   </label>
                 </div>
@@ -974,7 +1177,7 @@ const username = session?.username || 'admin';
                     <span class="material-icons-round mi">download</span>Export Backup
                   </div>
                   <p style="font-size:.8rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.6">
-                    Download all settings, projects, skills, FAQs, and content as a single JSON file.
+                    Download all settings (including Interface Text overrides), projects, services, skills, FAQs, and content as a single JSON file.
                   </p>
                   <button class="btn-s" type="button" onclick="doExport()">
                     <span class="material-icons-round mi">download</span>Download JSON Backup
@@ -1012,20 +1215,24 @@ const username = session?.username || 'admin';
               </div>
               <div class="fs" style="font-size:.8rem;color:var(--text-dim);line-height:2">
                 <div>
-                  <strong style="color:var(--lime)">Global Settings</strong> — Name, resume link, social URLs, footer
-                  text, nav options
+                  <strong style="color:var(--lime)">Global Settings</strong> — Name, resume link, domains, footer text,
+                  editable footer links, and nav options
                 </div>
                 <div>
                   <strong style="color:var(--lime)">Hero &amp; About</strong> — Headline, role text, status chip, CTAs,
-                  quick stats, about paragraphs
+                  Hero Visual card content &amp; variant, quick stats, and about paragraphs
                 </div>
                 <div>
-                  <strong style="color:var(--lime)">Skills &amp; Services</strong> — Skill groups, hot pills, and service
-                  cards with optional CTAs
+                  <strong style="color:var(--lime)">Section Copy &amp; Interface Text</strong> — Every section eyebrow,
+                  title, subtitle, button caption, placeholder, empty state, and aria-label across the entire site
+                </div>
+                <div>
+                  <strong style="color:var(--lime)">Skills &amp; Services</strong> — Skill groups, highlighted pills, and
+                  service cards with standalone <code>/services/[slug]</code> pages
                 </div>
                 <div>
                   <strong style="color:var(--lime)">Experience, Education &amp; Projects</strong> — Timeline entries and
-                  filterable project showcase
+                  filterable project showcase with <code>/work/[slug]</code> case studies
                 </div>
                 <div>
                   <strong style="color:var(--lime)">Proof &amp; FAQs</strong> — Organizations, testimonials, and AEO FAQ
@@ -1033,8 +1240,7 @@ const username = session?.username || 'admin';
                 </div>
                 <div>
                   <strong style="color:var(--lime)">Security &amp; 2FA</strong> — Change password, enable TOTP 2FA, and
-                  configure optional <code>ADMIN_ACCESS_KEY</code> secret in Worker settings to hide <code>/admin</code>{' '}
-                  behind <code>/admin?key=YOUR_SECRET</code>
+                  configure optional <code>ADMIN_ACCESS_KEY</code> secret in Worker settings
                 </div>
               </div>
             </div>
@@ -1057,14 +1263,21 @@ const username = session?.username || 'admin';
           </div>
         </div>
 
-        <script is:inline define:vars={{ csrfToken }}>
+        <div id="gk-csrf" data-token={csrfToken} hidden></div>
+        <script is:inline>
+          // NOTE: no define:vars here. Astro wraps define:vars scripts in an IIFE, which hides every
+          // function from the inline onclick="..." handlers used throughout this panel.
           const A = '/api/admin';
-          const CSRF_TOKEN = csrfToken;
+          const CSRF_TOKEN = document.getElementById('gk-csrf').dataset.token;
           let ST = {};
 
-          function go(id) {
+          function closeSidebar() {
             document.getElementById('sb')?.classList.remove('open');
             document.getElementById('sb-overlay')?.classList.remove('open');
+          }
+
+          function go(id) {
+            closeSidebar();
             document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
             document.querySelectorAll('.sbl').forEach((l) => l.classList.remove('active'));
             const panel = document.getElementById('p-' + id);
@@ -1076,6 +1289,7 @@ const username = session?.username || 'admin';
               dashboard: loadDash,
               inbox: loadInbox,
               copy: loadCopy,
+              ui: loadUiStrings,
               sections: loadSections,
               skills: loadSkills,
               services: loadSvcs,
@@ -1092,7 +1306,6 @@ const username = session?.username || 'admin';
               security: load2FAStatus,
             };
             if (loaders[id]) loaders[id]();
-            document.getElementById('sb').classList.remove('open');
           }
 
           document.querySelectorAll('.sbl').forEach((b) => b.addEventListener('click', () => go(b.dataset.p)));
@@ -1100,10 +1313,7 @@ const username = session?.username || 'admin';
             document.getElementById('sb')?.classList.toggle('open');
             document.getElementById('sb-overlay')?.classList.toggle('open');
           });
-          document.getElementById('sb-overlay')?.addEventListener('click', () => {
-            document.getElementById('sb')?.classList.remove('open');
-            document.getElementById('sb-overlay')?.classList.remove('open');
-          });
+          document.getElementById('sb-overlay')?.addEventListener('click', closeSidebar);
 
           const $ = (id) => document.getElementById(id);
           const val = (id) => $(id)?.value?.trim() || '';
@@ -1182,6 +1392,7 @@ const username = session?.username || 'admin';
               }
               const g = settings.global || {};
               const c = settings.contact || {};
+              const th = settings.theme || {};
               $('dash-info').innerHTML =
                 '<div>Domain: <strong style="color:var(--text)">' +
                 esc(g.portfolio || 'not set') +
@@ -1190,10 +1401,12 @@ const username = session?.username || 'admin';
                 (c.resume_url ? 'Configured ✓' : 'Not set') +
                 '</strong></div>' +
                 '<div>Theme: <strong style="color:var(--text)">' +
-                esc(settings.theme?.default || 'dark') +
+                esc(th.default || 'dark') +
+                ' · ' +
+                esc(th.accent || 'emerald') +
                 ' (' +
-                esc(settings.theme?.neon_intensity || 'balanced') +
-                ')</strong></div>' +
+                esc(th.glow_intensity || th.neon_intensity || 'subtle') +
+                ' glow)</strong></div>' +
                 '<div>Contact Form: <strong style="color:var(--text)">' +
                 (c.form_enabled !== false ? 'Enabled' : 'Disabled') +
                 '</strong></div>';
@@ -1210,6 +1423,7 @@ const username = session?.username || 'admin';
                 nav = settings.nav || {},
                 c = settings.contact || {};
               setVal('g-name', g.name);
+              setVal('g-site-name', g.site_name);
               setVal('g-tagline', g.tagline);
               setVal('g-location', g.location);
               setVal('g-footer', g.footer_text);
@@ -1219,10 +1433,69 @@ const username = session?.username || 'admin';
               setVal('g-resume', c.resume_url);
               setVal('g-resume-lbl', nav.resume_label || 'Resume');
               setChk('g-resume-nav', nav.show_resume !== false);
+              ST.footerLinks = Array.isArray(g.footer_links) && g.footer_links.length
+                ? JSON.parse(JSON.stringify(g.footer_links))
+                : [
+                    { label: 'Work Archive', url: '/work' },
+                    { label: 'LLMs.txt', url: '/llms.txt' },
+                    { label: 'Sitemap', url: '/sitemap.xml' },
+                  ];
+              renderFooterLinks();
             } catch (e) {
               toast(e.message, true);
             }
           }
+
+          function renderFooterLinks() {
+            const box = $('footer-links-ed');
+            if (!box) return;
+            box.innerHTML = (ST.footerLinks || [])
+              .map(
+                (lnk, i) => `
+              <div class="fgrid" style="margin-bottom:.6rem;padding:.7rem;border:1px solid var(--bdr-s);align-items:end">
+                <div class="fg"><label>Label</label><input id="fl-lbl-${i}" value="${esc(lnk.label)}" placeholder="Work Archive"/></div>
+                <div class="fg"><label>URL</label><input id="fl-url-${i}" value="${esc(lnk.url)}" placeholder="/work"/></div>
+                <div class="fg full" style="display:flex;gap:.4rem;flex-direction:row">
+                  <button class="lbtn" type="button" onclick="moveFooterLink(${i},-1)" ${i === 0 ? 'disabled' : ''}>↑ Up</button>
+                  <button class="lbtn" type="button" onclick="moveFooterLink(${i},1)" ${i === (ST.footerLinks.length - 1) ? 'disabled' : ''}>↓ Down</button>
+                  <button class="btn-d" type="button" onclick="rmFooterLink(${i})" style="margin-left:auto"><span class="material-icons-round mi">delete</span>Remove</button>
+                </div>
+              </div>`
+              )
+              .join('');
+          }
+
+          function collectFooterLinks() {
+            return (ST.footerLinks || [])
+              .map((_, i) => ({
+                label: val('fl-lbl-' + i),
+                url: val('fl-url-' + i) || '#',
+              }))
+              .filter((x) => x.label);
+          }
+
+          function addFooterLink() {
+            ST.footerLinks = collectFooterLinks();
+            ST.footerLinks.push({ label: '', url: '/' });
+            renderFooterLinks();
+          }
+
+          function rmFooterLink(i) {
+            ST.footerLinks = collectFooterLinks();
+            ST.footerLinks.splice(i, 1);
+            renderFooterLinks();
+          }
+
+          function moveFooterLink(i, dir) {
+            ST.footerLinks = collectFooterLinks();
+            const target = i + dir;
+            if (target < 0 || target >= ST.footerLinks.length) return;
+            const tmp = ST.footerLinks[i];
+            ST.footerLinks[i] = ST.footerLinks[target];
+            ST.footerLinks[target] = tmp;
+            renderFooterLinks();
+          }
+
           async function saveGlobal() {
             try {
               const s = ST.settings || (await api('/settings')).settings || {};
@@ -1230,12 +1503,14 @@ const username = session?.username || 'admin';
                 global: {
                   ...(s.global || {}),
                   name: val('g-name'),
+                  site_name: val('g-site-name'),
                   tagline: val('g-tagline'),
                   location: val('g-location'),
                   footer_text: val('g-footer'),
                   domain: val('g-domain'),
                   portfolio: val('g-portfolio'),
                   projects_subdomain: val('g-proj-sub'),
+                  footer_links: collectFooterLinks(),
                 },
                 nav: {
                   ...(s.nav || {}),
@@ -1245,7 +1520,7 @@ const username = session?.username || 'admin';
                 contact: { ...(s.contact || {}), resume_url: val('g-resume') },
               };
               const res = await api('/settings', 'POST', payload);
-              if (res.ok && res.saved) {
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('global')) {
                 ST.settings = { ...s, ...payload };
                 toast('Global settings saved!');
               } else {
@@ -1256,44 +1531,51 @@ const username = session?.username || 'admin';
             }
           }
 
-          async 
-          function loadCopy() {
-            const cp = ST.settings.copy || {};
-            setVal('cp-about-eye', cp.about_eyebrow || '');
-            setVal('cp-about-title', cp.about_title || '');
-            setVal('cp-about-sub', cp.about_subtitle || '');
+          async function loadCopy() {
+            try {
+              if (!ST.settings) {
+                const { settings } = await api('/settings');
+                ST.settings = settings;
+              }
+              const cp = ST.settings.copy || {};
+              setVal('cp-about-eye', cp.about_eyebrow || '');
+              setVal('cp-about-title', cp.about_title || '');
+              setVal('cp-about-sub', cp.about_subtitle || '');
 
-            setVal('cp-services-eye', cp.services_eyebrow || '');
-            setVal('cp-services-title', cp.services_title || '');
-            setVal('cp-services-sub', cp.services_subtitle || '');
+              setVal('cp-services-eye', cp.services_eyebrow || '');
+              setVal('cp-services-title', cp.services_title || '');
+              setVal('cp-services-sub', cp.services_subtitle || '');
 
-            setVal('cp-skills-eye', cp.skills_eyebrow || '');
-            setVal('cp-skills-title', cp.skills_title || '');
-            setVal('cp-skills-sub', cp.skills_subtitle || '');
+              setVal('cp-skills-eye', cp.skills_eyebrow || '');
+              setVal('cp-skills-title', cp.skills_title || '');
+              setVal('cp-skills-sub', cp.skills_subtitle || '');
 
-            setVal('cp-xp-eye', cp.experience_eyebrow || '');
-            setVal('cp-xp-title', cp.experience_title || '');
-            setVal('cp-xp-sub', cp.experience_subtitle || '');
+              setVal('cp-xp-eye', cp.experience_eyebrow || '');
+              setVal('cp-xp-title', cp.experience_title || '');
+              setVal('cp-xp-sub', cp.experience_subtitle || '');
 
-            setVal('cp-edu-eye', cp.education_eyebrow || '');
-            setVal('cp-edu-title', cp.education_title || '');
-            setVal('cp-edu-sub', cp.education_subtitle || '');
+              setVal('cp-edu-eye', cp.education_eyebrow || '');
+              setVal('cp-edu-title', cp.education_title || '');
+              setVal('cp-edu-sub', cp.education_subtitle || '');
 
-            setVal('cp-projects-eye', cp.projects_eyebrow || '');
-            setVal('cp-projects-title', cp.projects_title || '');
-            setVal('cp-projects-sub', cp.projects_subtitle || '');
+              setVal('cp-projects-eye', cp.projects_eyebrow || '');
+              setVal('cp-projects-title', cp.projects_title || '');
+              setVal('cp-projects-sub', cp.projects_subtitle || '');
 
-            setVal('cp-proof-eye', cp.proof_eyebrow || '');
-            setVal('cp-proof-title', cp.proof_title || '');
-            setVal('cp-proof-sub', cp.proof_subtitle || '');
+              setVal('cp-proof-eye', cp.proof_eyebrow || '');
+              setVal('cp-proof-title', cp.proof_title || '');
+              setVal('cp-proof-sub', cp.proof_subtitle || '');
 
-            setVal('cp-faq-eye', cp.faq_eyebrow || '');
-            setVal('cp-faq-title', cp.faq_title || '');
-            setVal('cp-faq-sub', cp.faq_subtitle || '');
+              setVal('cp-faq-eye', cp.faq_eyebrow || '');
+              setVal('cp-faq-title', cp.faq_title || '');
+              setVal('cp-faq-sub', cp.faq_subtitle || '');
 
-            setVal('cp-contact-eye', cp.contact_eyebrow || '');
-            setVal('cp-contact-title', cp.contact_title || '');
-            setVal('cp-contact-sub', cp.contact_subtitle || '');
+              setVal('cp-contact-eye', cp.contact_eyebrow || '');
+              setVal('cp-contact-title', cp.contact_title || '');
+              setVal('cp-contact-sub', cp.contact_subtitle || '');
+            } catch (e) {
+              toast(e.message, true);
+            }
           }
 
           async function saveCopy() {
@@ -1337,7 +1619,7 @@ const username = session?.username || 'admin';
               };
 
               const res = await api('/settings', 'POST', { copy: body });
-              if (res.ok && res.saved && res.saved.includes('copy')) {
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('copy')) {
                 ST.settings = ST.settings || {};
                 ST.settings.copy = body;
                 toast('Section copy saved successfully');
@@ -1349,14 +1631,114 @@ const username = session?.username || 'admin';
             }
           }
 
-          function loadHero() {
+          // ── Interface Text Panel (Registry-Driven) ─────────────────────────────
+          async function loadUiStrings() {
+            try {
+              const { settings } = await api('/settings');
+              ST.settings = settings;
+              const ui = settings.ui || {};
+              document.querySelectorAll('[data-ui-key]').forEach((el) => {
+                const k = el.getAttribute('data-ui-key');
+                const defVal = el.getAttribute('data-ui-default') || '';
+                const cur = ui[k];
+                el.value = cur !== undefined && cur !== defVal ? cur : '';
+              });
+            } catch (e) {
+              toast(e.message, true);
+            }
+          }
+
+          function resetUiField(key) {
+            const el = document.getElementById('ui-in-' + key);
+            if (el) el.value = '';
+          }
+
+          function resetAllUiStrings() {
+            if (!confirm('Reset all interface text fields to their default values? Click Save Interface Text afterwards to persist.')) return;
+            document.querySelectorAll('[data-ui-key]').forEach((el) => {
+              el.value = '';
+            });
+            toast('All fields reset to defaults. Click Save to apply.');
+          }
+
+          function filterUiStrings() {
+            const q = ($('ui-search-in')?.value || '').trim().toLowerCase();
+            document.querySelectorAll('.ui-group-details').forEach((grp) => {
+              let visibleInGroup = 0;
+              grp.querySelectorAll('[data-ui-row]').forEach((row) => {
+                const hay = row.getAttribute('data-ui-search') || '';
+                const valText = (row.querySelector('[data-ui-key]')?.value || '').toLowerCase();
+                const match = !q || hay.includes(q) || valText.includes(q);
+                row.style.display = match ? '' : 'none';
+                if (match) visibleInGroup++;
+              });
+              grp.style.display = visibleInGroup > 0 ? '' : 'none';
+              if (q && visibleInGroup > 0) grp.open = true;
+            });
+          }
+
+          async function saveUiStrings() {
+            try {
+              const nonDefaultUi = {};
+              document.querySelectorAll('[data-ui-key]').forEach((el) => {
+                const k = el.getAttribute('data-ui-key');
+                const defVal = el.getAttribute('data-ui-default') || '';
+                const v = (el.value || '').trim();
+                if (k && v !== '' && v !== defVal) {
+                  nonDefaultUi[k] = v;
+                }
+              });
+              const res = await api('/settings', 'POST', { ui: nonDefaultUi });
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('ui')) {
+                ST.settings = ST.settings || {};
+                ST.settings.ui = nonDefaultUi;
+                toast('Interface text saved (' + Object.keys(nonDefaultUi).length + ' custom overrides)!');
+              } else {
+                toast(res.error || 'Server did not confirm interface text save', true);
+              }
+            } catch (e) {
+              toast(e.message, true);
+            }
+          }
+
+          const HERO_VISUAL_MAP = [
+            ['hv-api-title', 'hero_visual.api_title'],
+            ['hv-api-badge', 'hero_visual.api_badge'],
+            ['hv-s1l', 'hero_visual.stat1_label'],
+            ['hv-s1v', 'hero_visual.stat1_value'],
+            ['hv-s2l', 'hero_visual.stat2_label'],
+            ['hv-s2v', 'hero_visual.stat2_value'],
+            ['hv-s3l', 'hero_visual.stat3_label'],
+            ['hv-s3v', 'hero_visual.stat3_value'],
+            ['hv-conn', 'hero_visual.connector_text'],
+            ['hv-bot-name', 'hero_visual.bot_name'],
+            ['hv-bot-status', 'hero_visual.bot_status'],
+            ['hv-bot-sender', 'hero_visual.bot_sender'],
+            ['hv-bot-msg1', 'hero_visual.bot_msg1'],
+            ['hv-code', 'hero_visual.code_snippet'],
+            ['hv-user-msg', 'hero_visual.user_msg'],
+            ['hv-bot-reply', 'hero_visual.bot_reply'],
+            ['hv-input-ph', 'hero_visual.input_placeholder'],
+            ['hv-send-btn', 'hero_visual.send_btn'],
+            ['hv-caption', 'hero_visual.caption'],
+          ];
+
+          async function loadHero() {
             try {
               const { settings } = await api('/settings');
               ST.settings = settings;
               const h = settings.hero || {},
-                a = settings.about || {};
+                a = settings.about || {},
+                ui = settings.ui || {};
               setVal('h-ln1', h.headline_line1);
               setVal('h-ln2', h.headline_line2);
+              setVal('h-headline', h.headline);
+              setVal('h-subheadline', h.subheadline);
+              setChk('h-visual', h.show_visual !== false);
+              const vSel = $('h-visual-variant');
+              if (vSel) {
+                [...vSel.options].forEach((o) => (o.selected = o.value === (h.visual_variant || 'chat+chart')));
+              }
               setVal('h-role', h.role_text);
               setVal('h-status', h.status_label);
               setVal('h-chip', h.status_chip);
@@ -1364,6 +1746,9 @@ const username = session?.username || 'admin';
               setVal('h-cta1u', h.cta_primary_url);
               setVal('h-cta2l', h.cta_secondary_label);
               setVal('h-cta2u', h.cta_secondary_url);
+              for (const [inputId, uiKey] of HERO_VISUAL_MAP) {
+                setVal(inputId, ui[uiKey] || '');
+              }
               ST.stats = JSON.parse(JSON.stringify(h.quick_stats || []));
               ST.paras = JSON.parse(JSON.stringify(a.paragraphs || []));
               setVal('h-quote', a.quote);
@@ -1376,11 +1761,26 @@ const username = session?.username || 'admin';
           async function saveHero() {
             try {
               const s = ST.settings || (await api('/settings')).settings || {};
+              const nextUi = { ...(s.ui || {}) };
+              for (const [inputId, uiKey] of HERO_VISUAL_MAP) {
+                const v = val(inputId);
+                const regEl = document.getElementById('ui-in-' + uiKey);
+                const defVal = regEl ? regEl.getAttribute('data-ui-default') || '' : '';
+                if (v && v !== defVal) {
+                  nextUi[uiKey] = v;
+                } else {
+                  delete nextUi[uiKey];
+                }
+              }
               const payload = {
                 hero: {
                   ...(s.hero || {}),
                   headline_line1: val('h-ln1'),
                   headline_line2: val('h-ln2'),
+                  headline: val('h-headline'),
+                  subheadline: val('h-subheadline'),
+                  show_visual: chk('h-visual'),
+                  visual_variant: val('h-visual-variant') || 'chat+chart',
                   role_text: val('h-role'),
                   status_label: val('h-status'),
                   status_chip: val('h-chip'),
@@ -1395,10 +1795,15 @@ const username = session?.username || 'admin';
                   paragraphs: collectParas(),
                   quote: val('h-quote'),
                 },
+                ui: nextUi,
               };
-              await api('/settings', 'POST', payload);
-              ST.settings = { ...s, ...payload };
-              toast('Hero & About saved!');
+              const res = await api('/settings', 'POST', payload);
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('hero')) {
+                ST.settings = { ...s, ...payload };
+                toast('Hero, Visual & About saved!');
+              } else {
+                toast(res.error || 'Server did not confirm save', true);
+              }
             } catch (e) {
               toast(e.message, true);
             }
@@ -1565,7 +1970,7 @@ const username = session?.username || 'admin';
                 <div class="fg full"><label>Short Description (card summary)</label><textarea id="m-desc">${esc(s?.description || '')}</textarea></div>
                 <div class="fg full"><label>Long Description (deep-dive for /services/[slug])</label><textarea id="m-longdesc" style="min-height:70px">${esc(s?.long_description || '')}</textarea></div>
                 <div class="fg full"><label>Key Features &amp; Capabilities (one per line)</label><textarea id="m-features" style="min-height:70px">${esc(Array.isArray(s?.features) ? s.features.join('\n') : (s?.features || ''))}</textarea></div>
-                <div class="fg"><label>CTA Label (optional)</label><input id="m-ctal" value="${esc(s?.cta_label || '')}" placeholder="Learn More"/></div>
+                <div class="fg"><label>CTA Label (optional)</label><input id="m-ctal" value="${esc(s?.cta_label || '')}" placeholder="Learn more"/></div>
                 <div class="fg"><label>CTA URL (optional)</label><input id="m-ctau" value="${esc(s?.cta_url || '')}" placeholder="#contact"/></div>
                 <div class="fg"><label>Order</label><input id="m-ord" type="number" value="${s?.order_idx || 0}"/></div>
                 <div class="fg" style="padding-top:1.1rem"><div class="trow"><div class="tlbl">Visible</div><label class="tsw"><input type="checkbox" id="m-vis" ${s?.visible !== false ? 'checked' : ''}/><span class="tsl"></span></label></div></div>
@@ -1726,7 +2131,7 @@ const username = session?.username || 'admin';
                 <div class="fg"><label>Grade / Status</label><input id="m-grade" value="${esc(e?.grade || 'In Progress')}"/></div>
                 <div class="fg"><label>Order</label><input id="m-ord" type="number" value="${e?.order_idx || 0}"/></div>
                 <div class="fg" style="padding-top:1rem"><div class="trow"><div class="tlbl">Visible</div><label class="tsw"><input type="checkbox" id="m-vis" ${e?.visible !== false ? 'checked' : ''}/><span class="tsl"></span></label></div></div>
-                <div class="fg full"><label>Bullet Items (one per line)</label><textarea id="m-items" style="min-height:80px">${esc(items)}</textarea></div>
+                <div class="fg full"><label>Bullet Items (one per line; supports &lt;strong&gt;&lt;em&gt;)</label><textarea id="m-items" style="min-height:80px">${esc(items)}</textarea></div>
                 <div class="fg full"><label>Skill Pills (comma-separated)</label><input id="m-pills" value="${esc(pills)}"/></div>
               </div>
               <div class="brow"><button class="btn-s" type="button" onclick="saveEdu(${id || 'null'})"><span class="material-icons-round mi">save</span>Save</button><button class="btn-o" type="button" onclick="closeModal()">Cancel</button></div>`;
@@ -1876,8 +2281,8 @@ const username = session?.username || 'admin';
               ST.proof = items;
               ST.settings = settings;
               const cfg = settings?.proof_section || {};
-              setVal('proof-title', cfg.section_title || 'Proof & Context');
-              setVal('proof-orgs-title', cfg.orgs_title || "WHO I'VE WORKED WITH");
+              setVal('proof-title', cfg.section_title || 'Testimonials');
+              setVal('proof-orgs-title', cfg.orgs_title || "Who I've worked with");
               setVal('proof-orgs-sub', cfg.orgs_subtitle || '');
               setVal('proof-rv-title', cfg.testimonials_title || 'What People Say');
               setChk('proof-show-orgs', cfg.show_orgs !== false);
@@ -1910,17 +2315,21 @@ const username = session?.username || 'admin';
               const payload = {
                 proof_section: {
                   ...(s.proof_section || {}),
-                  section_title: val('proof-title') || 'Proof & Context',
-                  orgs_title: val('proof-orgs-title') || "WHO I'VE WORKED WITH",
+                  section_title: val('proof-title') || 'Testimonials',
+                  orgs_title: val('proof-orgs-title') || "Who I've worked with",
                   orgs_subtitle: val('proof-orgs-sub'),
                   testimonials_title: val('proof-rv-title') || 'What People Say',
                   show_orgs: chk('proof-show-orgs'),
                   show_testimonials: chk('proof-show-rv'),
                 },
               };
-              await api('/settings', 'POST', payload);
-              ST.settings = { ...s, ...payload };
-              toast('Proof config saved!');
+              const res = await api('/settings', 'POST', payload);
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('proof_section')) {
+                ST.settings = { ...s, ...payload };
+                toast('Proof config saved!');
+              } else {
+                toast(res.error || 'Server did not confirm save', true);
+              }
             } catch (e) {
               toast(e.message, true);
             }
@@ -1933,11 +2342,11 @@ const username = session?.username || 'admin';
               <div class="fgrid" style="margin-bottom:1rem">
                 <div class="fg"><label>Name</label><input id="m-name" value="${esc(p?.name || '')}"/></div>
                 <div class="fg"><label>Subtitle / Role · Company</label><input id="m-sub" value="${esc(p?.subtitle || '')}"/></div>
-                <div class="fg full"><label>Logo / Avatar URL</label><input id="m-logo" value="${esc(p?.logo_url || '')}"/></div>
+                <div class="fg full"><label>Logo / Avatar URL (optional — leave blank for clean initials badge)</label><input id="m-logo" value="${esc(p?.logo_url || '')}"/></div>
                 ${!isTrv ? `<div class="fg full"><label>Website URL</label><input id="m-url" value="${esc(p?.url || '')}"/></div>` : ''}
                 ${
                   isTrv
-                    ? `<div class="fg full"><label>Testimonial Text</label><textarea id="m-text" style="min-height:90px">${esc(p?.testimonial_text || '')}</textarea></div>
+                    ? `<div class="fg full"><label>Testimonial Text (supports &lt;strong&gt; &lt;em&gt;)</label><textarea id="m-text" style="min-height:90px">${esc(p?.testimonial_text || '')}</textarea></div>
                   <div class="fg"><label>Rating (1–5)</label><input id="m-rating" type="number" min="1" max="5" value="${p?.testimonial_rating || 5}"/></div>`
                     : ''
                 }
@@ -2036,6 +2445,7 @@ const username = session?.username || 'admin';
               setVal('ct-email', c.email);
               setVal('ct-li', c.linkedin);
               setVal('ct-gh', c.github);
+              setVal('ct-main-site', c.main_site);
               setVal('ct-intro', c.intro_text);
               setVal('ct-avail-txt', c.availability_badge);
               setChk('ct-form', c.form_enabled !== false);
@@ -2053,6 +2463,7 @@ const username = session?.username || 'admin';
                   email: val('ct-email'),
                   linkedin: val('ct-li'),
                   github: val('ct-gh'),
+                  main_site: val('ct-main-site'),
                   intro_text: val('ct-intro'),
                   form_enabled: chk('ct-form'),
                   availability_visible: chk('ct-avail'),
@@ -2060,7 +2471,7 @@ const username = session?.username || 'admin';
                 },
               };
               const res = await api('/settings', 'POST', payload);
-              if (res.ok && res.saved) {
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('contact')) {
                 ST.settings = { ...s, ...payload };
                 toast('Contact settings saved!');
               } else {
@@ -2187,6 +2598,7 @@ const username = session?.username || 'admin';
               setVal('seo-ogd', s.og_description);
               setVal('seo-can', s.canonical);
               setChk('seo-jsonld', s.json_ld_enabled !== false);
+              setChk('seo-reviews-jsonld', Boolean(s.reviews_jsonld));
               const sel = $('seo-robots');
               if (sel) {
                 [...sel.options].forEach((o) => (o.selected = o.value === (s.robots || sel.options[0].value)));
@@ -2210,10 +2622,11 @@ const username = session?.username || 'admin';
                   canonical: val('seo-can'),
                   robots: val('seo-robots'),
                   json_ld_enabled: chk('seo-jsonld'),
+                  reviews_jsonld: chk('seo-reviews-jsonld'),
                 },
               };
               const res = await api('/settings', 'POST', payload);
-              if (res.ok && res.saved) {
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('seo')) {
                 ST.settings = { ...s, ...payload };
                 toast('SEO settings saved!');
               } else {
@@ -2232,14 +2645,12 @@ const username = session?.username || 'admin';
               const t = settings.theme || {};
               const sel = $('th-default');
               if (sel) [...sel.options].forEach((o) => (o.selected = o.value === (t.default || 'dark')));
-              const neonSel = $('th-neon');
-              if (neonSel)
-                [...neonSel.options].forEach((o) => (o.selected = o.value === (t.neon_intensity || 'balanced')));
-              setVal('th-stars-count', t.stars_count ?? 80);
+              const accSel = $('th-accent');
+              if (accSel) [...accSel.options].forEach((o) => (o.selected = o.value === (t.accent || 'emerald')));
+              const glowSel = $('th-glow');
+              const glowVal = t.glow_intensity || t.neon_intensity || 'subtle';
+              if (glowSel) [...glowSel.options].forEach((o) => (o.selected = o.value === glowVal));
               setChk('th-toggle', t.user_toggle_enabled !== false);
-              setChk('th-stars', t.stars_enabled !== false);
-              setChk('th-noise', t.noise_enabled !== false);
-              setChk('th-scan', t.scanlines_enabled !== false);
             } catch (e) {
               toast(e.message, true);
             }
@@ -2247,21 +2658,24 @@ const username = session?.username || 'admin';
           async function saveTheme() {
             try {
               const s = ST.settings || (await api('/settings')).settings || {};
+              const glow = val('th-glow') || 'subtle';
               const payload = {
                 theme: {
                   ...(s.theme || {}),
                   default: val('th-default') || 'dark',
-                  neon_intensity: val('th-neon') || 'balanced',
-                  stars_count: Math.min(Math.max(parseInt(val('th-stars-count')) || 80, 20), 200),
+                  accent: val('th-accent') || 'emerald',
+                  glow_intensity: glow,
+                  neon_intensity: glow,
                   user_toggle_enabled: chk('th-toggle'),
-                  stars_enabled: chk('th-stars'),
-                  noise_enabled: chk('th-noise'),
-                  scanlines_enabled: chk('th-scan'),
                 },
               };
-              await api('/settings', 'POST', payload);
-              ST.settings = { ...s, ...payload };
-              toast('Theme saved!');
+              const res = await api('/settings', 'POST', payload);
+              if (res.ok && Array.isArray(res.saved) && res.saved.includes('theme')) {
+                ST.settings = { ...s, ...payload };
+                toast('Theme saved!');
+              } else {
+                toast(res.error || 'Server did not confirm theme save', true);
+              }
             } catch (e) {
               toast(e.message, true);
             }
@@ -2373,7 +2787,7 @@ const username = session?.username || 'admin';
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
               a.href = url;
-              a.download = 'gk-portfolio-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+              a.download = 'portfolio-backup-' + new Date().toISOString().slice(0, 10) + '.json';
               a.click();
               URL.revokeObjectURL(url);
               toast('Backup downloaded!');

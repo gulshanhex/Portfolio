@@ -1,55 +1,102 @@
 ---
 import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
+
+interface FooterLinkItem {
+  label: string;
+  url: string;
+}
 
 interface Props {
   globalCfg?: Record<string, any>;
   contact?: Record<string, any>;
+  settings?: Record<string, any>;
 }
 
-const { globalCfg = {}, contact = {} } = Astro.props;
-const name = globalCfg.name || 'Gulshan Kumar';
+const { globalCfg = {}, contact = {}, settings = {} } = Astro.props;
+const name = globalCfg.name || 'Your Name';
 const tagline = globalCfg.tagline || 'Automation & AI Systems Engineer';
 const footerHtml = sanitizeBasicHtml(
-  globalCfg.footer_text || `Built by <strong>${name}</strong> · Delhi, India`
+  globalCfg.footer_text || `Built by <strong>${name}</strong>`
 );
+
+const mainSiteUrl = contact.main_site || globalCfg.domain || '';
+const portfolioHost = (contact.portfolio || globalCfg.portfolio || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+const customFooterLinks: FooterLinkItem[] = Array.isArray(globalCfg.footer_links) && globalCfg.footer_links.length > 0
+  ? globalCfg.footer_links
+  : [
+      { label: 'Work Archive', url: '/work' },
+      { label: 'LLMs.txt', url: '/llms.txt' },
+      { label: 'Sitemap', url: '/sitemap.xml' },
+    ];
+
+const brandMark = t(settings, 'a11y.brand_mark');
+const brandHomeAria = `${name} ${t(settings, 'a11y.brand_home_aria')}`;
+const footerLinksAria = t(settings, 'footer.links_aria');
+const mainSiteLabel = t(settings, 'footer.main_site_label');
+const githubLabel = t(settings, 'footer.github_label');
+const linkedinLabel = t(settings, 'footer.linkedin_label');
+const subcopyText = t(settings, 'footer.subcopy');
+const installAppLabel = t(settings, 'nav.install_app_label');
+const installAria = t(settings, 'nav.install_aria');
 ---
 
 <footer id="gk-footer" class="site-footer" role="contentinfo">
   <div class="footer-container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="#hero" class="footer-logo" aria-label={`${name} Home`}>
-          <span>GK</span><span class="footer-dot">.</span>
+        <a href="#hero" class="footer-logo" aria-label={brandHomeAria}>
+          <span>{brandMark}</span><span class="footer-dot">.</span>
         </a>
         <p class="footer-tagline">{tagline}</p>
       </div>
 
-      <nav class="footer-nav" aria-label="Footer links">
-        {globalCfg.domain && (
-          <a href={globalCfg.domain} target="_blank" rel="noopener noreferrer" class="footer-link">
-            Main Site ↗
+      <nav class="footer-nav" aria-label={footerLinksAria}>
+        {mainSiteUrl && (
+          <a href={mainSiteUrl} target="_blank" rel="noopener noreferrer" class="footer-link">
+            {mainSiteLabel} ↗
           </a>
         )}
         {contact.github && (
           <a href={contact.github} target="_blank" rel="noopener noreferrer" class="footer-link">
-            GitHub ↗
+            {githubLabel} ↗
           </a>
         )}
         {contact.linkedin && (
           <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" class="footer-link">
-            LinkedIn ↗
+            {linkedinLabel} ↗
           </a>
         )}
-        <a href="/work" class="footer-link">Work Archive</a>
-        <a href="/llms.txt" class="footer-link">LLMs.txt</a>
-        <a href="/sitemap.xml" class="footer-link">Sitemap</a>
+        {customFooterLinks.map((lnk) => {
+          const isExternal = lnk.url.startsWith('http://') || lnk.url.startsWith('https://');
+          return (
+            <a
+              href={lnk.url}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              class="footer-link"
+            >
+              {lnk.label}{isExternal ? ' ↗' : ''}
+            </a>
+          );
+        })}
+        <button
+          type="button"
+          id="pwa-footer-install"
+          class="footer-link footer-install-btn"
+          aria-label={installAria}
+          style="display:none;"
+        >
+          <span>{installAppLabel} ↓</span>
+        </button>
       </nav>
     </div>
 
     <div class="footer-bottom">
       <div class="footer-copy" set:html={footerHtml} />
       <div class="footer-subcopy">
-        portfolio.gulshan-kumar.me · All rights reserved
+        {portfolioHost ? `${portfolioHost} · ${subcopyText}` : subcopyText}
       </div>
     </div>
   </div>
@@ -106,6 +153,7 @@ const footerHtml = sanitizeBasicHtml(
   .footer-nav {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 16px 24px;
   }
 
@@ -114,12 +162,21 @@ const footerHtml = sanitizeBasicHtml(
     font-size: var(--fs-xs);
     font-weight: 500;
     color: var(--muted);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     text-decoration: none;
     transition: color var(--transition-fast);
   }
 
   .footer-link:hover {
     color: var(--accent);
+  }
+
+  .footer-install-btn {
+    color: var(--accent);
+    font-weight: 600;
   }
 
   .footer-bottom {
@@ -160,6 +217,12 @@ const footerHtml = sanitizeBasicHtml(
   @media (min-width: 1024px) {
     .site-footer {
       padding: 56px 32px;
+    }
+  }
+
+  @media (display-mode: standalone) {
+    .footer-install-btn {
+      display: none !important;
     }
   }
 </style>

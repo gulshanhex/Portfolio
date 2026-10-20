@@ -1,7 +1,8 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import Card from './ui/Card.astro';
-import Icon from './ui/Icon.astro';
+import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 interface ProofItem {
   id: number;
@@ -19,9 +20,10 @@ interface Props {
   proof?: ProofItem[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { proofCfg = {}, proof = [], copy = {} } = Astro.props;
+const { proofCfg = {}, proof = [], copy = {}, settings = {} } = Astro.props;
 
 const showOrgs = proofCfg.show_orgs !== false;
 const showTestimonials = proofCfg.show_testimonials !== false;
@@ -29,9 +31,48 @@ const showTestimonials = proofCfg.show_testimonials !== false;
 const orgs = showOrgs ? proof.filter((p) => p.type === 'org') : [];
 const testimonials = showTestimonials ? proof.filter((p) => p.type === 'testimonial' && p.testimonial_text) : [];
 
-const eyebrow = copy.proof_eyebrow || '// PROOF & CONTEXT';
-const title = proofCfg.orgs_title || "Organizations and validation.";
-const subtitle = proofCfg.orgs_subtitle || 'Real production environments, industrial facilities, and engineering collaborators.';
+function toSentenceCase(str: string): string {
+  if (!str) return '';
+  const trimmed = str.trim();
+  if (trimmed.length > 2 && trimmed === trimmed.toUpperCase() && trimmed !== trimmed.toLowerCase()) {
+    const lower = trimmed.toLowerCase();
+    return (lower.charAt(0).toUpperCase() + lower.slice(1)).replace(/\bi've\b/gi, "I've").replace(/\bi\b/g, 'I');
+  }
+  return trimmed;
+}
+
+function getOrgInitials(org: ProofItem): string {
+  if (org.logo_url && org.logo_url.includes('ui-avatars.com')) {
+    try {
+      const u = new URL(org.logo_url);
+      const nameParam = u.searchParams.get('name');
+      if (nameParam && !nameParam.includes(' ') && nameParam.length <= 4) {
+        return nameParam.toUpperCase();
+      }
+    } catch {}
+  }
+  const words = (org.name || '')
+    .replace(/[^A-Za-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w && !['pvt', 'ltd', 'private', 'limited', 'inc', 'llc', 'the', 'of', 'and'].includes(w.toLowerCase()));
+  if (words.length === 0) return 'ORG';
+  if (words[0].length >= 2 && words[0].length <= 4 && words[0] === words[0].toUpperCase()) {
+    return words[0];
+  }
+  return words
+    .slice(0, 3)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+}
+
+const eyebrow = copy.proof_eyebrow || t(settings, 'proof.eyebrow_default');
+const rawSectionTitle = proofCfg.section_title || proofCfg.orgs_title || t(settings, 'proof.title_default');
+const title = toSentenceCase(rawSectionTitle);
+const orgsHeading = toSentenceCase(proofCfg.orgs_title || t(settings, 'proof.orgs_heading_default'));
+const showOrgsSubheading = orgs.length > 0 && orgsHeading.toLowerCase() !== title.toLowerCase();
+const subtitle = proofCfg.orgs_subtitle || t(settings, 'proof.subtitle_default');
+const testimonialsHeading = toSentenceCase(proofCfg.testimonials_title || t(settings, 'proof.testimonials_heading_default'));
+const ratingAriaPrefix = t(settings, 'proof.rating_aria_prefix');
 ---
 
 {
@@ -41,51 +82,56 @@ const subtitle = proofCfg.orgs_subtitle || 'Real production environments, indust
         <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
 
         {orgs.length > 0 && (
-          <div class="orgs-grid">
-            {orgs.map((o) => {
-              const isLink = Boolean(o.url && o.url !== '#');
-              return (
-                <div class="rv">
-                  <Card as={isLink ? 'a' : 'div'} href={isLink ? o.url! : undefined} class="org-card" interactive={isLink}>
-                    <div class="org-card-inner">
-                      <div class="org-icon-badge" aria-hidden="true">
-                        {o.logo_url ? (
-                          <img src={o.logo_url} alt={o.name} class="org-logo" loading="lazy" width="40" height="40" />
-                        ) : (
-                          <Icon name="work" size={20} />
-                        )}
+          <div class="orgs-block">
+            {showOrgsSubheading && <h3 class="orgs-heading">{orgsHeading}</h3>}
+            <div class="orgs-grid">
+              {orgs.map((o) => {
+                const isLink = Boolean(o.url && o.url !== '#');
+                const initials = getOrgInitials(o);
+                const hasCustomLogo = Boolean(o.logo_url && !o.logo_url.includes('ui-avatars.com'));
+                return (
+                  <div class="rv">
+                    <Card as={isLink ? 'a' : 'div'} href={isLink ? o.url! : undefined} class="org-card" interactive={isLink}>
+                      <div class="org-card-inner">
+                        <div class="org-icon-badge" aria-hidden="true">
+                          {hasCustomLogo ? (
+                            <img src={o.logo_url!} alt={o.name} class="org-logo" loading="lazy" width="40" height="40" />
+                          ) : (
+                            <span class="org-initials">{initials}</span>
+                          )}
+                        </div>
+                        <div class="org-info">
+                          <h3 class="org-name">{o.name}</h3>
+                          <p class="org-sub">{o.subtitle}</p>
+                        </div>
+                        {isLink && <span class="org-ext-arrow" aria-hidden="true">↗</span>}
                       </div>
-                      <div class="org-info">
-                        <h3 class="org-name">{o.name}</h3>
-                        <p class="org-sub">{o.subtitle}</p>
-                      </div>
-                      {isLink && <span class="org-ext-arrow" aria-hidden="true">↗</span>}
-                    </div>
-                  </Card>
-                </div>
-              );
-            })}
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
         {testimonials.length > 0 && (
           <div class="testimonials-block">
-            <h3 class="testimonials-heading">Direct Feedback</h3>
+            <h3 class="testimonials-heading">{testimonialsHeading}</h3>
             <div class="testimonials-grid">
-              {testimonials.map((t) => (
+              {testimonials.map((tItem) => (
                 <div class="rv">
                   <Card class="testimonial-card">
                     <div class="testimonial-quote-icon" aria-hidden="true">“</div>
-                    <p class="testimonial-body">{t.testimonial_text}</p>
+                    <p class="testimonial-body" set:html={sanitizeBasicHtml(tItem.testimonial_text)} />
                     <div class="testimonial-author">
                       <div class="author-info">
-                        <span class="author-name">{t.name}</span>
-                        <span class="author-role">{t.subtitle}</span>
+                        <span class="author-name">{tItem.name}</span>
+                        <span class="author-role">{tItem.subtitle}</span>
                       </div>
-                      {t.testimonial_rating && t.testimonial_rating > 0 && t.testimonial_rating !== 5 && (
-                        <div class="rating-stars" aria-label={`Rating: ${t.testimonial_rating} out of 5 stars`}>
-                          {Array.from({ length: t.testimonial_rating }).map(() => (
-                            <span class="star-icon">★</span>
+                      {tItem.testimonial_rating && tItem.testimonial_rating > 0 && (
+                        <div class="rating-stars" aria-label={`${ratingAriaPrefix} ${tItem.testimonial_rating}`}>
+                          {Array.from({ length: tItem.testimonial_rating }).map(() => (
+                            <span class="star-icon" aria-hidden="true">★</span>
                           ))}
                         </div>
                       )}
@@ -112,6 +158,15 @@ const subtitle = proofCfg.orgs_subtitle || 'Real production environments, indust
     margin: 0 auto;
   }
 
+  .orgs-heading {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: var(--sp-4);
+    text-transform: none;
+  }
+
   .orgs-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -135,17 +190,27 @@ const subtitle = proofCfg.orgs_subtitle || 'Real production environments, indust
   }
 
   .org-icon-badge {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-btn);
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
     color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     overflow: hidden;
+  }
+
+  .org-initials {
+    font-family: var(--ff-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    user-select: none;
   }
 
   .org-logo {
@@ -203,6 +268,7 @@ const subtitle = proofCfg.orgs_subtitle || 'Real production environments, indust
     font-weight: 700;
     color: var(--heading);
     margin-bottom: var(--sp-4);
+    text-transform: none;
   }
 
   .testimonials-grid {
@@ -236,6 +302,11 @@ const subtitle = proofCfg.orgs_subtitle || 'Real production environments, indust
     color: var(--text);
     margin-bottom: var(--sp-4);
     flex-grow: 1;
+  }
+
+  .testimonial-body :global(strong) {
+    color: var(--heading);
+    font-weight: 600;
   }
 
   .testimonial-author {

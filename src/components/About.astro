@@ -4,6 +4,7 @@ import Card from './ui/Card.astro';
 import Pill from './ui/Pill.astro';
 import Icon from './ui/Icon.astro';
 import { sanitizeBasicHtml } from '../lib/db';
+import { t } from '../lib/ui-strings';
 
 interface Props {
   about?: Record<string, any>;
@@ -12,6 +13,7 @@ interface Props {
   hero?: Record<string, any>;
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
 const {
@@ -20,17 +22,29 @@ const {
   contact = {},
   hero = {},
   copy = {},
+  settings = {},
 } = Astro.props;
 
 const paragraphs = Array.isArray(about.paragraphs) ? about.paragraphs : [];
-const eyebrow = copy.about_eyebrow || '// ABOUT ME';
-const title = copy.about_title || 'Who am I?';
-const subtitle = copy.about_subtitle || 'Engineering intelligent software that interfaces with the physical and digital world.';
+const eyebrow = copy.about_eyebrow || t(settings, 'about.eyebrow_default');
+const title = copy.about_title || t(settings, 'about.title_default');
+const subtitle = copy.about_subtitle || t(settings, 'about.subtitle_default');
 
-const name = globalCfg.name || 'Gulshan Kumar';
+const name = globalCfg.name || 'Your Name';
 const role = globalCfg.tagline || 'Automation & AI Systems Engineer';
-const location = globalCfg.location || 'Delhi, India';
-const status = hero.status_label || 'Available for projects';
+const location = globalCfg.location || 'Remote';
+const showAvailability = contact.availability_visible !== false;
+const status = contact.availability_badge || hero.status_label || t(settings, 'hero.status_default');
+const mainSiteUrl = contact.main_site || globalCfg.domain || '';
+
+const brandMark = t(settings, 'a11y.brand_mark');
+const factLocationLabel = t(settings, 'about.fact_location_label');
+const factEmailLabel = t(settings, 'about.fact_email_label');
+const factGithubLabel = t(settings, 'about.fact_github_label');
+const factLinkedinLabel = t(settings, 'about.fact_linkedin_label');
+const factWebsiteLabel = t(settings, 'about.fact_website_label');
+const factCredentialsLabel = t(settings, 'about.fact_credentials_label');
+const factCvLabel = t(settings, 'about.fact_cv_label');
 ---
 
 <section id="about" class="about-section" aria-labelledby="about-title">
@@ -46,7 +60,7 @@ const status = hero.status_label || 'Available for projects';
         {
           about.quote && (
             <blockquote class="about-quote">
-              <p>{about.quote}</p>
+              <p set:html={sanitizeBasicHtml(about.quote)} />
             </blockquote>
           )
         }
@@ -57,22 +71,24 @@ const status = hero.status_label || 'Available for projects';
         <Card class="profile-card">
           <div class="profile-header">
             <div class="profile-avatar" aria-hidden="true">
-              <span>GK</span>
+              <span>{brandMark}</span>
             </div>
             <div class="profile-title-block">
               <h3 class="profile-name">{name}</h3>
               <p class="profile-role">{role}</p>
             </div>
-            <Pill variant="status" pulse={true} size="sm">
-              {status}
-            </Pill>
+            {showAvailability && (
+              <Pill variant="status" pulse={true} size="sm">
+                {status}
+              </Pill>
+            )}
           </div>
 
           <div class="profile-facts-list">
             <div class="profile-fact-row">
               <span class="fact-label">
                 <Icon name="location_on" size={16} />
-                <span>Base Location</span>
+                <span>{factLocationLabel}</span>
               </span>
               <span class="fact-value">{location}</span>
             </div>
@@ -81,7 +97,7 @@ const status = hero.status_label || 'Available for projects';
               <div class="profile-fact-row">
                 <span class="fact-label">
                   <Icon name="mail" size={16} />
-                  <span>Direct Email</span>
+                  <span>{factEmailLabel}</span>
                 </span>
                 <span class="fact-value">
                   <a href={`mailto:${contact.email}`} class="fact-link">{contact.email}</a>
@@ -93,7 +109,7 @@ const status = hero.status_label || 'Available for projects';
               <div class="profile-fact-row">
                 <span class="fact-label">
                   <Icon name="code" size={16} />
-                  <span>GitHub</span>
+                  <span>{factGithubLabel}</span>
                 </span>
                 <span class="fact-value">
                   <a href={contact.github} target="_blank" rel="noopener noreferrer" class="fact-link">
@@ -107,7 +123,7 @@ const status = hero.status_label || 'Available for projects';
               <div class="profile-fact-row">
                 <span class="fact-label">
                   <Icon name="work" size={16} />
-                  <span>LinkedIn</span>
+                  <span>{factLinkedinLabel}</span>
                 </span>
                 <span class="fact-value">
                   <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" class="fact-link">
@@ -117,15 +133,29 @@ const status = hero.status_label || 'Available for projects';
               </div>
             )}
 
+            {mainSiteUrl && (
+              <div class="profile-fact-row">
+                <span class="fact-label">
+                  <Icon name="hub" size={16} />
+                  <span>{factWebsiteLabel}</span>
+                </span>
+                <span class="fact-value">
+                  <a href={mainSiteUrl} target="_blank" rel="noopener noreferrer" class="fact-link">
+                    {mainSiteUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')} ↗
+                  </a>
+                </span>
+              </div>
+            )}
+
             {contact.resume_url && (
               <div class="profile-fact-row">
                 <span class="fact-label">
                   <Icon name="school" size={16} />
-                  <span>Credentials</span>
+                  <span>{factCredentialsLabel}</span>
                 </span>
                 <span class="fact-value">
                   <a href={contact.resume_url} target="_blank" rel="noopener noreferrer" class="fact-link highlight">
-                    Curriculum Vitae (PDF) ↗
+                    {factCvLabel} ↗
                   </a>
                 </span>
               </div>

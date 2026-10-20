@@ -3,7 +3,7 @@ import { getSiteData, stripHtml } from '../lib/db';
 
 /**
  * Comprehensive GEO /llms-full.txt endpoint containing complete structured
- * details on Gulshan Kumar's background, services, skills, internships,
+ * details on the portfolio owner's background, services, skills, internships,
  * education, projects, testimonials, and FAQs.
  */
 export const GET: APIRoute = async ({ locals }) => {
@@ -13,38 +13,42 @@ export const GET: APIRoute = async ({ locals }) => {
   const hero = data.settings.hero || {};
   const about = data.settings.about || {};
   const contact = data.settings.contact || {};
-  const base = (data.settings.seo?.canonical || g.portfolio || 'https://portfolio.gulshan-kumar.me').replace(/\/$/, '');
+  const name = g.name || 'Your Name';
+  const tagline = g.tagline || 'Automation & AI Systems Engineer';
+  const location = g.location || 'Remote';
+  const base = (data.settings.seo?.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
 
   const sections: string[] = [];
 
-  sections.push(`# ${g.name || 'Gulshan Kumar'} — Complete Engineering & Portfolio Profile`);
-  sections.push(`- **Role**: ${g.tagline || 'Automation & AI Systems Engineer'}`);
-  sections.push(`- **Location**: ${g.location || 'Delhi, India'}`);
-  sections.push(`- **Status**: ${hero.status_label || 'Available for projects'} (${hero.status_chip || 'OPEN TO WORK'})`);
+  sections.push(`# ${name} — Complete Engineering & Portfolio Profile`);
+  sections.push(`- **Role**: ${tagline}`);
+  sections.push(`- **Location**: ${location}`);
+  sections.push(`- **Status**: ${contact.availability_badge || hero.status_label || 'Available for projects'} (${hero.status_chip || 'OPEN TO WORK'})`);
   sections.push(`- **Canonical URL**: ${base}`);
   sections.push(`- **Work Archive**: ${base}/work`);
-  sections.push(`- **Email**: ${contact.email || 'gulshan@gulshan-kumar.me'}`);
-  sections.push(`- **GitHub**: ${contact.github || 'https://github.com/gulshanhex'}`);
-  sections.push(`- **LinkedIn**: ${contact.linkedin || 'https://linkedin.com/in/gulshankumar-tech'}`);
+  if (contact.email) sections.push(`- **Email**: ${contact.email}`);
+  if (contact.github) sections.push(`- **GitHub**: ${contact.github}`);
+  if (contact.linkedin) sections.push(`- **LinkedIn**: ${contact.linkedin}`);
+  if (contact.main_site || g.domain) sections.push(`- **Main Website**: ${contact.main_site || g.domain}`);
 
   sections.push(`\n## Biography & Engineering Philosophy`);
   for (const p of about.paragraphs || []) {
     sections.push(stripHtml(p));
   }
   if (about.quote) {
-    sections.push(`> "${about.quote}"`);
+    sections.push(`> "${stripHtml(about.quote)}"`);
   }
 
-  sections.push(`\n## What I Do (Engineering Services)`);
+  sections.push(`\n## Engineering Services`);
   for (const s of data.services || []) {
     const sSlug = s.slug || '';
     const link = sSlug ? ` (${base}/services/${sSlug})` : '';
-    let svcText = `### ${s.title}${link}\n${s.description}`;
+    let svcText = `### ${s.title}${link}\n${stripHtml(s.description)}`;
     if (s.long_description) {
-      svcText += `\n\n${s.long_description}`;
+      svcText += `\n\n${stripHtml(s.long_description)}`;
     }
     if (s.features && s.features.length > 0) {
-      svcText += `\n\n**Key Features & Capabilities:**\n` + s.features.map((f: string) => `- ${f}`).join('\n');
+      svcText += `\n\n**Key Features & Capabilities:**\n` + s.features.map((f: string) => `- ${stripHtml(f)}`).join('\n');
     }
     sections.push(svcText);
   }
@@ -71,7 +75,7 @@ export const GET: APIRoute = async ({ locals }) => {
     sections.push(`### ${ed.degree} (${ed.stream}) — ${ed.school}`);
     sections.push(`- **Period**: ${ed.period} | **Status/Grade**: ${ed.grade}`);
     for (const it of ed.items || []) {
-      sections.push(`  - ${it}`);
+      sections.push(`  - ${stripHtml(it)}`);
     }
   }
 
@@ -79,21 +83,21 @@ export const GET: APIRoute = async ({ locals }) => {
   for (const pr of data.projects || []) {
     const pSlug = pr.slug || '';
     const link = pSlug ? ` (${base}/work/${pSlug})` : '';
-    let projText = `### ${pr.title} (${pr.category})${link}\n${pr.summary}`;
-    if (pr.problem) projText += `\n\n- **Challenge**: ${pr.problem}`;
-    if (pr.solution) projText += `\n- **Implementation**: ${pr.solution}`;
-    if (pr.result) projText += `\n- **Outcome**: ${pr.result}`;
+    let projText = `### ${pr.title} (${pr.category})${link}\n${stripHtml(pr.summary)}`;
+    if (pr.problem) projText += `\n\n- **Challenge**: ${stripHtml(pr.problem)}`;
+    if (pr.solution) projText += `\n- **Implementation**: ${stripHtml(pr.solution)}`;
+    if (pr.result) projText += `\n- **Outcome**: ${stripHtml(pr.result)}`;
     projText += `\n- **Tech Stack**: ${(pr.stack || []).join(', ')}`;
     if (pr.github_url) projText += `\n- **GitHub**: ${pr.github_url}`;
     if (pr.demo_url) projText += `\n- **Live Demo**: ${pr.demo_url}`;
     sections.push(projText);
   }
 
-  const testimonials = (data.proof || []).filter((p: any) => p.type === 'testimonial');
+  const testimonials = (data.proof || []).filter((p: any) => p.type === 'testimonial' && p.testimonial_text);
   if (testimonials.length > 0) {
-    sections.push(`\n## Engineer & Mentor Testimonials`);
+    sections.push(`\n## Testimonials`);
     for (const t of testimonials) {
-      sections.push(`> "${t.testimonial_text}"\n> — **${t.name}**, ${t.subtitle}`);
+      sections.push(`> "${stripHtml(t.testimonial_text)}"\n> — **${t.name}**, ${t.subtitle}`);
     }
   }
 

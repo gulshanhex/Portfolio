@@ -1,15 +1,18 @@
 import type { APIRoute } from 'astro';
-import { getSetting, getServices, getProjects, escHtml } from '../lib/db';
+import { getAllSettings, getServices, getProjects, escHtml } from '../lib/db';
 import { getSiteUrl } from '../lib/env';
 
 export const GET: APIRoute = async ({ request, locals }) => {
   const env = locals.runtime?.env;
   const db = env?.DB;
-  const seo = (await getSetting(db, 'seo')) || {};
+  const settings = await getAllSettings(db);
+  const seo = settings.seo || {};
+  const g = settings.global || {};
   const url = new URL(request.url);
-  const base = (seo.canonical || getSiteUrl(env, url.origin)).replace(/\/$/, '');
+  const base = (seo.canonical || g.portfolio || getSiteUrl(env, url.origin)).replace(/\/$/, '');
   const today = new Date().toISOString().slice(0, 10);
   const ogImg = seo.og_image || `${base}/og-image.png`;
+  const imgTitle = seo.og_title || `${g.name || 'Your Name'} — ${g.tagline || 'Automation & AI Systems Engineer'}`;
 
   const [services, projects] = await Promise.all([
     getServices(db, true),
@@ -50,7 +53,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     <priority>1.0</priority>
     <image:image>
       <image:loc>${escHtml(ogImg)}</image:loc>
-      <image:title>Gulshan Kumar — Automation &amp; AI Systems Engineer</image:title>
+      <image:title>${escHtml(imgTitle)}</image:title>
     </image:image>
   </url>
 

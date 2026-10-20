@@ -1,6 +1,7 @@
 ---
 import SectionHeader from './ui/SectionHeader.astro';
 import SkillGroup from './ui/SkillGroup.astro';
+import { t } from '../lib/ui-strings';
 
 interface SkillPill {
   id?: number | string;
@@ -19,13 +20,14 @@ interface Props {
   skills: SkillItem[];
   copy?: Record<string, any>;
   sectionNum?: string;
+  settings?: Record<string, any>;
 }
 
-const { skills = [], copy = {} } = Astro.props;
+const { skills = [], copy = {}, settings = {} } = Astro.props;
 
-const eyebrow = copy.skills_eyebrow || '// TECH ARSENAL';
-const title = copy.skills_title || 'What I work with.';
-const subtitle = copy.skills_subtitle || 'A curated set of tools, languages, and systems built through production environments and hands-on engineering.';
+const eyebrow = copy.skills_eyebrow || t(settings, 'skills.eyebrow_default');
+const title = copy.skills_title || t(settings, 'skills.title_default');
+const subtitle = copy.skills_subtitle || t(settings, 'skills.subtitle_default');
 ---
 
 {

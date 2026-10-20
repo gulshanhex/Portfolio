@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "redesign/**"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-build:
+    name: Verify Guards & Build Worker Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run prebuild verification guards
+        run: npm run check
+
+      - name: Run production build (includes prebuild scripts)
+        run: npm run build

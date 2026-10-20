@@ -3,24 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Offline · Gulshan Kumar</title>
+    <title>Offline · Portfolio</title>
     <meta name="theme-color" content="#0A0C0B" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <style>
       :root {
         --bg: #0A0C0B;
-        --surface: #111412;
-        --card: #151A17;
-        --border: #222B25;
+        --surface: #111614;
+        --card: #1E2622;
+        --border: #34423C;
         --text: #F4F1E8;
-        --muted: #8E9992;
+        --muted: #A6B0AB;
         --accent: #2FBF71;
         --accent-hover: #3CD07F;
-        --accent-subtle: rgba(47, 191, 113, 0.12);
+        --accent-subtle: rgba(47, 191, 113, 0.14);
         --radius: 12px;
         --btn-radius: 8px;
         --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      }
+      [data-theme="light"] {
+        --bg: #F6F7F4;
+        --surface: #ECEEE9;
+        --card: #FFFFFF;
+        --border: #D5DAD2;
+        --text: #0B0F0D;
+        --muted: #525B56;
+        --accent: #17804A;
+        --accent-hover: #136C3E;
+        --accent-subtle: rgba(23, 128, 74, 0.09);
       }
       * {
         box-sizing: border-box;
@@ -47,7 +58,7 @@
         padding: 40px 32px;
         max-width: 480px;
         width: 100%;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
       }
       .icon-wrap {
         width: 64px;
@@ -72,7 +83,7 @@
       h1 {
         font-size: 1.75rem;
         font-weight: 700;
-        color: #FFFFFF;
+        color: var(--text);
         margin-bottom: 12px;
         letter-spacing: -0.02em;
       }
@@ -104,8 +115,11 @@
       }
       .btn-primary {
         background: var(--accent);
-        color: #04130B;
+        color: #FFFFFF;
         border: none;
+      }
+      [data-theme="dark"] .btn-primary {
+        color: #04130B;
       }
       .btn-primary:hover {
         background: var(--accent-hover);
@@ -124,7 +138,7 @@
   </head>
   <body>
     <div class="offline-card">
-      <div class="icon-wrap">
+      <div class="icon-wrap" aria-hidden="true">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="1" y1="1" x2="23" y2="23"></line>
           <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
@@ -135,13 +149,33 @@
           <line x1="12" y1="20" x2="12.01" y2="20"></line>
         </svg>
       </div>
-      <div class="eyebrow">// Offline Mode</div>
-      <h1>Connection Lost</h1>
-      <p>It looks like your internet connection is currently unavailable. Cached pages and resources remain accessible.</p>
+      <div id="offline-eyebrow" class="eyebrow">// Offline Mode</div>
+      <h1 id="offline-title">Connection Lost</h1>
+      <p id="offline-desc">It looks like your internet connection is currently unavailable. Cached pages and resources remain accessible.</p>
       <div class="actions">
-        <button class="btn-primary" onclick="window.location.reload()">Retry Connection</button>
-        <a href="/" class="btn-secondary">Return Home</a>
+        <button id="offline-retry" class="btn-primary" onclick="window.location.reload()">Retry Connection</button>
+        <a id="offline-home" href="/" class="btn-secondary">Return Home</a>
       </div>
     </div>
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem('gk-theme');
+          if (theme) document.documentElement.setAttribute('data-theme', theme);
+          var raw = localStorage.getItem('gk-offline-copy');
+          if (raw) {
+            var copy = JSON.parse(raw);
+            if (copy.eyebrow) document.getElementById('offline-eyebrow').textContent = copy.eyebrow;
+            if (copy.title) {
+              document.getElementById('offline-title').textContent = copy.title;
+              document.title = copy.title;
+            }
+            if (copy.description) document.getElementById('offline-desc').textContent = copy.description;
+            if (copy.retryBtn) document.getElementById('offline-retry').textContent = copy.retryBtn;
+            if (copy.homeBtn) document.getElementById('offline-home').textContent = copy.homeBtn;
+          }
+        } catch (e) {}
+      })();
+    </script>
   </body>
 </html>

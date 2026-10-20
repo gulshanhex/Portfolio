@@ -1,18 +1,24 @@
 import type { APIRoute } from 'astro';
+import { getAllSettings } from '../../lib/db';
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ locals }) => {
+  const db = locals.runtime?.env?.DB;
+  const settings = await getAllSettings(db);
+  const g = settings.global || {};
+  const siteName = g.site_name || 'Portfolio';
+
   const manifest = {
     id: '/admin/',
-    name: 'GK Admin · Portfolio Control Plane',
-    short_name: 'GK Admin',
-    description: 'Autonomous administration and content management for Gulshan Kumar portfolio.',
+    name: `${siteName} Admin · Control Plane`,
+    short_name: 'Admin',
+    description: `Administration and content management for ${siteName}.`,
     start_url: '/admin/',
     scope: '/admin/',
     display: 'standalone',
     background_color: '#0A0C0B',
     theme_color: '#0A0C0B',
     orientation: 'any',
-    lang: 'en-IN',
+    lang: 'en-US',
     icons: [
       {
         src: '/favicon.svg',

@@ -54,39 +54,45 @@
 /* ── Design Tokens & Themes ──────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  /* Color Palette — Refined Editorial Dark */
+  /* Color Palette — Refined Editorial Dark
+     Card separation verified:
+     --surface (#1E2622) vs --bg (#0A0C0B) = 1.27:1 (>= 1.25:1)
+     --border  (#34423C) vs --bg (#0A0C0B) = 1.86:1 (>= 1.60:1)
+     --text    (#F4F1E8) vs --surface      = 13.72:1 (AAA)
+     --muted   (#A6B0AB) vs --surface      = 6.95:1  (AA) */
   --bg: #0A0C0B;
-  --bg-subtle: #0E1210;
-  --bg-alt: #0E1210;
-  --surface: #111513;
-  --surface-raised: #161C19;
-  --surface-hover: #1A221E;
-  --card: #111513;
-  --card-hover: #161C19;
-  --border: #1E2521;
-  --border-subtle: rgba(255, 255, 255, 0.07);
+  --bg-subtle: #111614;
+  --bg-alt: #111614;
+  --surface: #1E2622;
+  --surface-raised: #242E29;
+  --surface-hover: #2A3630;
+  --card: #1E2622;
+  --card-hover: #242E29;
+  --border: #34423C;
+  --border-subtle: rgba(255, 255, 255, 0.1);
   --border-focus: var(--accent);
 
   --text: #F4F1E8;
   --text-heading: #F4F1E8;
   --heading: #F4F1E8;
-  --muted: #9AA39E;
-  --text-muted: #9AA39E;
+  --muted: #A6B0AB;
+  --text-muted: #A6B0AB;
 
   /* Default Accent: Emerald (#2FBF71) */
   --accent: #2FBF71;
   --accent-hover: #3DD683;
   --accent-active: #28A762;
   --text-on-accent: #04130B;
-  --accent-subtle: rgba(47, 191, 113, 0.12);
-  --accent-border: rgba(47, 191, 113, 0.28);
-  --accent-glow: rgba(47, 191, 113, 0.15);
+  --accent-subtle: rgba(47, 191, 113, 0.14);
+  --accent-border: rgba(47, 191, 113, 0.34);
+  --accent-glow: rgba(47, 191, 113, 0.16);
+  --glow-opacity: 0.16;
 
   /* Elevation & Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
 
   color-scheme: dark;
 }
@@ -101,79 +107,101 @@
   --surface-hover: #F2F4F0;
   --card: #FFFFFF;
   --card-hover: #F8F9F7;
-  --border: #E3E6E0;
-  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border: #D5DAD2;
+  --border-subtle: rgba(0, 0, 0, 0.08);
   --border-focus: var(--accent);
 
   --text: #0B0F0D;
   --text-heading: #0B0F0D;
   --heading: #0B0F0D;
-  --muted: #5B645F;
-  --text-muted: #5B645F;
+  --muted: #525B56;
+  --text-muted: #525B56;
 
   /* Default Accent: Forest Emerald (#17804A) */
   --accent: #17804A;
   --accent-hover: #136C3E;
   --accent-active: #0F5832;
   --text-on-accent: #FFFFFF;
-  --accent-subtle: rgba(23, 128, 74, 0.08);
-  --accent-border: rgba(23, 128, 74, 0.24);
+  --accent-subtle: rgba(23, 128, 74, 0.09);
+  --accent-border: rgba(23, 128, 74, 0.28);
   --accent-glow: rgba(23, 128, 74, 0.1);
+  --glow-opacity: 0.1;
 
   /* Elevation & Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.1);
-  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
 
   color-scheme: light;
 }
 
-/* ── Accent Presets (All Verified WCAG AA >= 4.5:1) ─────────────────────── */
+/* ── Glow Intensity Preset (Driven by theme.glow_intensity) ──────────────── */
+[data-glow="none"] {
+  --glow-opacity: 0;
+  --accent-glow: transparent;
+}
+[data-glow="subtle"] {
+  --glow-opacity: 0.14;
+}
+[data-glow="balanced"] {
+  --glow-opacity: 0.26;
+}
+[data-glow="strong"] {
+  --glow-opacity: 0.42;
+}
+
+/* ── Accent Presets (All Verified WCAG AA >= 4.5:1 on both --bg and --surface) */
 [data-accent="teal"] {
   --accent: #2DD4BF;
   --accent-hover: #5EEAD4;
   --text-on-accent: #042F2E;
-  --accent-subtle: rgba(45, 212, 191, 0.12);
-  --accent-border: rgba(45, 212, 191, 0.28);
+  --accent-subtle: rgba(45, 212, 191, 0.14);
+  --accent-border: rgba(45, 212, 191, 0.34);
+  --accent-glow: rgba(45, 212, 191, var(--glow-opacity, 0.16));
 }
 [data-theme="light"][data-accent="teal"] {
   --accent: #0F766E;
   --accent-hover: #115E59;
   --text-on-accent: #FFFFFF;
-  --accent-subtle: rgba(15, 118, 110, 0.08);
-  --accent-border: rgba(15, 118, 110, 0.24);
+  --accent-subtle: rgba(15, 118, 110, 0.09);
+  --accent-border: rgba(15, 118, 110, 0.28);
+  --accent-glow: rgba(15, 118, 110, var(--glow-opacity, 0.1));
 }
 
 [data-accent="blue"] {
   --accent: #38BDF8;
   --accent-hover: #7DD3FC;
   --text-on-accent: #082F49;
-  --accent-subtle: rgba(56, 189, 248, 0.12);
-  --accent-border: rgba(56, 189, 248, 0.28);
+  --accent-subtle: rgba(56, 189, 248, 0.14);
+  --accent-border: rgba(56, 189, 248, 0.34);
+  --accent-glow: rgba(56, 189, 248, var(--glow-opacity, 0.16));
 }
 /* Fixed WCAG AA: #0369A1 delivers 5.97:1 contrast with white text */
 [data-theme="light"][data-accent="blue"] {
   --accent: #0369A1;
   --accent-hover: #075985;
   --text-on-accent: #FFFFFF;
-  --accent-subtle: rgba(3, 105, 161, 0.08);
-  --accent-border: rgba(3, 105, 161, 0.24);
+  --accent-subtle: rgba(3, 105, 161, 0.09);
+  --accent-border: rgba(3, 105, 161, 0.28);
+  --accent-glow: rgba(3, 105, 161, var(--glow-opacity, 0.1));
 }
 
 [data-accent="indigo"] {
   --accent: #818CF8;
   --accent-hover: #A5B4FC;
   --text-on-accent: #1E1B4B;
-  --accent-subtle: rgba(129, 140, 248, 0.12);
-  --accent-border: rgba(129, 140, 248, 0.28);
+  --accent-subtle: rgba(129, 140, 248, 0.14);
+  --accent-border: rgba(129, 140, 248, 0.34);
+  --accent-glow: rgba(129, 140, 248, var(--glow-opacity, 0.16));
 }
 [data-theme="light"][data-accent="indigo"] {
   --accent: #4338CA;
   --accent-hover: #3730A3;
   --text-on-accent: #FFFFFF;
-  --accent-subtle: rgba(67, 56, 202, 0.08);
-  --accent-border: rgba(67, 56, 202, 0.24);
+  --accent-subtle: rgba(67, 56, 202, 0.09);
+  --accent-border: rgba(67, 56, 202, 0.28);
+  --accent-glow: rgba(67, 56, 202, var(--glow-opacity, 0.1));
 }
 
 /* ── Typography Scale & Radii ────────────────────────────────────────────── */
@@ -240,7 +268,7 @@
   --ff-b: var(--ff-sans);
   --ff-s: var(--ff-sans);
   --radius: var(--radius-card);
-  --glow-lime: none;
+  --glow-lime: 0 0 24px var(--accent-glow);
   --header-offset: var(--nav-height);
   --mw: var(--max-w-content);
   --tr: var(--transition-base);

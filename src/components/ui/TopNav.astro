@@ -1,5 +1,6 @@
 ---
 import Button from './Button.astro';
+import { t } from '../../lib/ui-strings';
 
 interface SectionItem {
   id: string;
@@ -15,15 +16,17 @@ interface Props {
   nav?: Record<string, any>;
   theme?: Record<string, any>;
   hasProjects?: boolean;
+  settings?: Record<string, any>;
 }
 
 const {
-  name = 'Gulshan Kumar',
+  name = 'Your Name',
   sections = [],
   contact = {},
   nav = {},
   theme = {},
   hasProjects = true,
+  settings = {},
 } = Astro.props;
 
 // Filter visible sections excluding hero and excluding projects if hasProjects is false
@@ -36,19 +39,30 @@ const primaryLinks = visibleSections.slice(0, 4);
 const overflowLinks = visibleSections.slice(4);
 
 const showResume = Boolean(contact.resume_url && nav.show_resume !== false);
-const resumeLabel = nav.resume_label || 'Resume';
+const resumeLabel = nav.resume_label || t(settings, 'nav.resume_label');
 const showThemeToggle = theme.user_toggle_enabled !== false;
+
+const brandMark = t(settings, 'a11y.brand_mark');
+const brandHomeAria = `${name} ${t(settings, 'a11y.brand_home_aria')}`;
+const mainNavAria = t(settings, 'nav.main_aria');
+const moreLabel = t(settings, 'nav.more_label');
+const ctaLabel = t(settings, 'nav.cta_label');
+const installLabel = t(settings, 'nav.install_label');
+const installTitle = t(settings, 'nav.install_title');
+const installAria = t(settings, 'nav.install_aria');
+const themeToggleAria = t(settings, 'nav.theme_toggle_aria');
+const themeToggleTitle = t(settings, 'nav.theme_toggle_title');
 ---
 
 <header id="site-header" class="site-top-nav">
   <div class="nav-inner">
     <!-- Brand Wordmark -->
-    <a href="#hero" class="brand-logo" aria-label={`${name} Home`}>
-      <span class="logo-text">GK</span><span class="logo-dot">.</span>
+    <a href="#hero" class="brand-logo" aria-label={brandHomeAria}>
+      <span class="logo-text">{brandMark}</span><span class="logo-dot">.</span>
     </a>
 
     <!-- Desktop & Tablet Navigation Links (>= 768px) -->
-    <nav class="desktop-nav" aria-label="Main navigation">
+    <nav class="desktop-nav" aria-label={mainNavAria}>
       <ul class="nav-link-list" role="list">
         {primaryLinks.map((sec) => (
           <li>
@@ -68,7 +82,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
               aria-haspopup="true"
               aria-controls="top-more-menu"
             >
-              <span>More</span>
+              <span>{moreLabel}</span>
               <span class="more-caret" aria-hidden="true">▾</span>
             </button>
             <div id="top-more-menu" class="nav-dropdown" role="menu" hidden>
@@ -90,17 +104,17 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
 
     <!-- Nav Actions (Theme Toggle & CTA) -->
     <div class="nav-actions">
-      <!-- Desktop PWA Install Button (revealed on beforeinstallprompt) -->
+      <!-- Desktop/Tablet PWA Install Button (hidden on phone header per Part A.5) -->
       <button
         id="pwa-desktop-install"
         class="pwa-nav-btn"
         type="button"
         style="display:none;"
-        title="Install Portfolio Application"
-        aria-label="Install App"
+        title={installTitle}
+        aria-label={installAria}
       >
         <span class="material-icons-round" aria-hidden="true" style="font-size:16px">download</span>
-        <span class="pwa-nav-label">Install</span>
+        <span class="pwa-nav-label">{installLabel}</span>
       </button>
 
       {showThemeToggle && (
@@ -108,8 +122,8 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
           class="theme-toggle-btn"
           id="theme-btn"
           type="button"
-          aria-label="Toggle dark or light theme"
-          title="Toggle theme"
+          aria-label={themeToggleAria}
+          title={themeToggleTitle}
         >
           <span class="material-icons-round" id="theme-icon" aria-hidden="true">
             light_mode
@@ -120,7 +134,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
       <!-- Primary CTA Button -->
       <div class="nav-cta-wrap">
         <Button variant="primary" size="sm" href="#contact">
-          Let's talk
+          {ctaLabel}
         </Button>
       </div>
     </div>
@@ -134,7 +148,7 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     left: 0;
     right: 0;
     height: var(--nav-height);
-    background: rgba(10, 12, 11, 0.86);
+    background: rgba(10, 12, 11, 0.88);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
@@ -142,8 +156,8 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     transition: background var(--transition-base), border-color var(--transition-base);
   }
 
-  [data-theme="light"] .site-top-nav {
-    background: rgba(246, 247, 244, 0.9);
+  :global([data-theme="light"]) .site-top-nav {
+    background: rgba(246, 247, 244, 0.94);
   }
 
   .nav-inner {
@@ -324,9 +338,10 @@ const showThemeToggle = theme.user_toggle_enabled !== false;
     color: var(--accent);
   }
 
+  /* Part A.5: No icon-only Install button in phone header; phones use labelled item in More sheet & footer */
   @media (max-width: 767px) {
-    .pwa-nav-label {
-      display: none;
+    .pwa-nav-btn {
+      display: none !important;
     }
     .nav-cta-wrap {
       display: none;

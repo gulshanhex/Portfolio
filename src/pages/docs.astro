@@ -2,25 +2,31 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
 import '../styles/docs.css';
-import { getSetting } from '../lib/db';
+import { getAllSettings } from '../lib/db';
 
 const db = Astro.locals.runtime?.env?.DB;
-const theme = (await getSetting(db, 'theme')) || {};
+const settings = await getAllSettings(db);
+const g = settings.global || {};
+const theme = settings.theme || {};
 const defaultTheme = theme.default || 'dark';
 const accent = theme.accent || 'emerald';
+const glowIntensity = theme.glow_intensity || theme.neon_intensity || 'subtle';
+const canonicalBase = (settings.seo?.canonical || g.portfolio || 'https://portfolio.example.com').replace(/\/$/, '');
 ---
 
 <BaseLayout
-  title="Docs & GitHub Auto-Deploy Guide · GK Portfolio (Astro + Cloudflare Workers)"
-  description="Complete guide to connecting a public GitHub repo to an existing Cloudflare Worker without deleting it, configuring Dashboard Secrets, and managing D1."
-  canonical="https://portfolio.gulshan-kumar.me/docs"
+  title="Documentation & Deployment Guide · Portfolio CMS"
+  description="Complete guide to deploying on Cloudflare Workers + D1, configuring secrets, and managing every text string from /admin."
+  canonical={`${canonicalBase}/docs`}
   robots="noindex, nofollow"
   defaultTheme={defaultTheme}
   accent={accent}
+  glowIntensity={glowIntensity}
+  settings={settings}
 >
   <header class="docs-header">
     <div class="docs-header-inner">
-      <a href="/" class="brand-logo" aria-label="GK Portfolio Home">
+      <a href="/" class="brand-logo" aria-label="Portfolio Home">
         <span>GK</span><span class="logo-dot">.</span>
       </a>
       <div class="docs-header-actions">
@@ -40,16 +46,16 @@ const accent = theme.accent || 'emerald';
 
     <div class="docs-eyebrow">// DOCUMENTATION</div>
     <h1 class="docs-title">
-      GitHub Deploy &amp; <span style="color:var(--accent)">Architecture Docs</span>
+      Cloudflare Deploy &amp; <span style="color:var(--accent)">Architecture Docs</span>
     </h1>
     <p class="docs-sub">
-      Modular Astro 5 SSR architecture on Cloudflare Workers + D1 edge database — configured for Public GitHub
-      repositories with zero secrets in <code>wrangler.toml</code> / <code>wrangler.jsonc</code>.
+      Modular Astro 5 SSR architecture on Cloudflare Workers + D1 edge database — configured for public GitHub
+      repositories with zero secrets stored in <code>wrangler.toml</code> or <code>wrangler.jsonc</code>.
     </p>
 
     <nav class="docs-nav" aria-label="Documentation sections">
-      <a href="#existing-worker">Existing Worker + GitHub</a>
-      <a href="#secrets-setup">Secrets Setup (Secret Mode)</a>
+      <a href="#existing-worker">Cloudflare + GitHub</a>
+      <a href="#secrets-setup">Secrets Setup</a>
       <a href="#architecture">Architecture</a>
       <a href="#d1-setup">D1 Database</a>
       <a href="#seo-geo-aeo">SEO / GEO / AEO</a>
@@ -59,82 +65,64 @@ const accent = theme.accent || 'emerald';
 
     <section class="doc-sec" id="existing-worker">
       <div class="section-num">// 01</div>
-      <h2>Connect Public GitHub Repo to Existing Worker (No Delete)</h2>
+      <h2>Connect Public GitHub Repository to Cloudflare Workers</h2>
       <p>
-        Aapko apna purana Worker (<code>gk-portfolio</code>) delete karne ki bilkul zaroorat nahi hai! Aapka Custom
-        Domain, D1 Database binding (<code>DB</code>), aur Secrets sab waise hi rahenge:
+        You can connect a public GitHub repository directly to an existing Cloudflare Worker without deleting the Worker,
+        preserving your custom domain, D1 database binding (<code>DB</code>), and encrypted secrets:
       </p>
       <div class="step">
         <div class="step-num">Step 1</div>
         <div class="step-title">Push Code to Your Public GitHub Repository</div>
         <div class="step-body">
-          Is ZIP ke andar ke saare files apne GitHub repo ke root me push kar dein. Iske <code>wrangler.toml</code> aur{' '}
-          <code>wrangler.jsonc</code> me <code>keep_vars = true</code> laga hai aur koi bhi secret/var hardcoded nahi
-          hai.
+          Push the project files to the root of your GitHub repository. Both <code>wrangler.toml</code> and{' '}
+          <code>wrangler.jsonc</code> set <code>keep_vars = true</code> and contain zero hardcoded secrets.
         </div>
       </div>
       <div class="step">
         <div class="step-num">Step 2</div>
         <div class="step-title">Confirm Worker Name Matches</div>
         <div class="step-body">
-          Check karein ki <code>wrangler.jsonc</code> aur <code>wrangler.toml</code> me <code>name</code> aapke existing
-          Cloudflare Worker ke exact naam (jaise <code>"gk-portfolio"</code>) se match karta ho.
+          Verify that <code>name</code> in <code>wrangler.jsonc</code> and <code>wrangler.toml</code> matches your
+          Cloudflare Worker name.
         </div>
       </div>
       <div class="step">
         <div class="step-num">Step 3</div>
-        <div class="step-title">Link GitHub in Existing Worker → Settings → Build</div>
+        <div class="step-title">Link GitHub in Worker → Settings → Build</div>
         <div class="step-body">
-          Cloudflare Dashboard → <strong>Workers &amp; Pages</strong> → Apne existing Worker par click karein →{' '}
-          <strong>Settings</strong> tab → <strong>Build</strong> section → <strong>Connect to Git</strong> par click
-          karein → GitHub select karke apna repository choose karein.
+          Open Cloudflare Dashboard → <strong>Workers &amp; Pages</strong> → select your Worker →{' '}
+          <strong>Settings</strong> → <strong>Build</strong> → <strong>Connect to Git</strong> and select your repository.
         </div>
       </div>
       <div class="step">
         <div class="step-num">Step 4</div>
         <div class="step-title">Configure Build Settings</div>
         <div class="step-body">
-          Production branch: <code>main</code> (ya <code>master</code>)<br />
+          Production branch: <code>main</code><br />
           Build command: <code>npm run build</code><br />
           Deploy command: <code>npx wrangler deploy --keep-vars</code><br />
-          Root directory: <code>/</code> (agar files repo root me hain)
+          Root directory: <code>/</code>
         </div>
       </div>
       <div class="note">
-        <strong>Why --keep-vars / keep_vars = true matters:</strong> Jab Cloudflare GitHub se deploy karta hai,{' '}
-        <code>keep_vars = true</code> ensure karta hai ki Dashboard ke <strong>Variables and Secrets</strong> me save
-        kiye gaye aapke saare Secrets kabhi delete ya overwrite na hon!
+        <strong>Why --keep-vars / keep_vars = true matters:</strong> When Cloudflare deploys from GitHub,{' '}
+        <code>keep_vars = true</code> ensures that secrets saved under <strong>Variables and Secrets</strong> in the
+        Cloudflare Dashboard are never overwritten or deleted.
       </div>
     </section>
 
     <section class="doc-sec" id="secrets-setup">
       <div class="section-num">// 02</div>
-      <h2>Worker Variables &amp; Secrets (Secret Mode Setup)</h2>
+      <h2>Worker Variables &amp; Secrets</h2>
       <p>
-        Kyunki aapka GitHub repo <strong>Public</strong> rahega, koi bhi secret <code>wrangler.toml</code> ya{' '}
-        <code>wrangler.jsonc</code> me nahi rakha gaya hai. Saare secrets Cloudflare Dashboard me{' '}
-        <strong>Secret</strong> mode (out of <code>Text</code>, <code>JSON</code>, <code>Secret</code>) me save karein:
+        Store all sensitive tokens in the Cloudflare Dashboard under <strong>Settings → Variables and Secrets</strong>{' '}
+        using <strong>Secret</strong> mode:
       </p>
-      <ul>
-        <li>
-          Cloudflare Dashboard → <strong>Workers &amp; Pages</strong> → Apna Worker open karein →{' '}
-          <strong>Settings</strong> → <strong>Variables and Secrets</strong> → <strong>+ Add</strong> par click karein.
-        </li>
-        <li>
-          Type me <strong>Secret</strong> select karein (Text ya JSON nahi) aur neeche diye gaye secrets add karein:
-        </li>
-      </ul>
       <div class="codeblock">
-        <code>{`1. Variable name: ADMIN_SETUP_TOKEN   | Type: Secret | Value: <koi bhi 32+ char strong token>
-2. Variable name: SESSION_SECRET      | Type: Secret | Value: <koi bhi 32+ char random secret string>
-3. Variable name: SITE_URL            | Type: Secret | Value: https://portfolio.gulshan-kumar.me (optional)
-4. Variable name: ENVIRONMENT         | Type: Secret | Value: production (optional)`}</code>
-      </div>
-      <div class="note">
-        <strong>How the Astro Worker reads them:</strong> <code>src/lib/env.ts</code> aur <code>src/lib/auth.ts</code>{' '}
-        automatically runtime par <code>locals.runtime.env</code> se aapke <strong>Secret</strong> mode variables read
-        karte hain. <code>SESSION_SECRET</code> hone par aapki login cookies par WebCrypto HMAC-SHA256 signature bhi lag
-        jata hai!
+        <code>{`1. Variable name: ADMIN_SETUP_TOKEN   | Type: Secret | Value: <32+ char random setup token>
+2. Variable name: SESSION_SECRET      | Type: Secret | Value: <32+ char random session secret>
+3. Variable name: ADMIN_ACCESS_KEY    | Type: Secret | Value: <optional secondary login key>
+4. Variable name: SITE_URL            | Type: Secret | Value: https://portfolio.example.com (optional)`}</code>
       </div>
     </section>
 
@@ -143,59 +131,46 @@ const accent = theme.accent || 'emerald';
       <h2>Modular Astro Architecture</h2>
       <p>
         This portfolio runs on <strong style="color:var(--text)">Astro 5 SSR + @astrojs/cloudflare + Cloudflare D1</strong>.
-        Every UI section, layout, stylesheet, database helper, and API endpoint is cleanly separated into modular files.
+        Every UI section, layout, stylesheet, database helper, and API endpoint is cleanly separated into modular files,
+        and every public string is registered in <code>src/lib/ui-strings.ts</code> and editable in <code>/admin</code>.
       </p>
     </section>
 
     <section class="doc-sec" id="d1-setup">
       <div class="section-num">// 04</div>
-      <h2>D1 Database &amp; Existing Data Sync</h2>
+      <h2>D1 Database &amp; First-Run Setup</h2>
       <p>
-        Agar aapne pehle se D1 database bind aur initialize kar rakha hai, toh naya Astro code deploy hone ke baad ek
-        baar <code>/setup?token=YOUR_ADMIN_SETUP_TOKEN</code> open karein — yeh aapka purana data delete kiye bina naye{' '}
-        <code>faqs</code> table, service/project slugs, aur default FAQs ko automatically sync kar dega!
+        Visit <code>/setup?token=YOUR_ADMIN_SETUP_TOKEN</code> once after deployment to initialize all D1 tables and
+        create your administrator account.
       </p>
     </section>
 
     <section class="doc-sec" id="seo-geo-aeo">
       <div class="section-num">// 05</div>
-      <h2>SEO, GEO &amp; AEO Optimization</h2>
-      <ul>
-        <li>
-          <strong style="color:var(--text)">Rich Schema.org @graph JSON-LD</strong> — Linked <code>Person</code>,{' '}
-          <code>ProfilePage</code>, <code>WebSite</code>, <code>ItemList</code>, <code>Service</code>,{' '}
-          <code>FAQPage</code>, <code>BreadcrumbList</code>, and <code>SpeakableSpecification</code>.
-        </li>
-        <li>
-          <strong style="color:var(--text)">GEO Endpoints</strong> — Live <code>/llms.txt</code> and{' '}
-          <code>/llms-full.txt</code> Markdown profiles from D1.
-        </li>
-        <li>
-          <strong style="color:var(--text)">Favicon &amp; OpenGraph Suite</strong> — <code>/favicon.svg</code>,{' '}
-          <code>/favicon.ico</code>, <code>/apple-touch-icon.png</code>, <code>/site.webmanifest</code>,{' '}
-          <code>/og-image.png</code> (1200×630), and dynamic <code>/og-image.svg</code>.
-        </li>
-      </ul>
+      <h2>SEO, GEO &amp; AEO Endpoints</h2>
+      <p>
+        Dynamic endpoints include <code>/sitemap.xml</code>, <code>/robots.txt</code>, <code>/llms.txt</code>,{' '}
+        <code>/llms-full.txt</code>, and <code>/og-image.svg</code>, all powered live from Cloudflare D1.
+      </p>
     </section>
 
     <section class="doc-sec" id="content">
       <div class="section-num">// 06</div>
-      <h2>Managing Content in /admin</h2>
+      <h2>Managing Content &amp; Interface Text</h2>
       <p>
-        Sign in at <code>/admin</code> to manage Global Settings, Hero &amp; About, Skills, Services, Experience,
-        Education, Projects, Proof &amp; Context, FAQs, Contact Config, Inbox, Section Ordering, SEO, Theme, and JSON
-        Backups.
+        Sign in at <code>/admin</code> to edit Global settings, Hero &amp; About, Section Copy, Interface Text,
+        Services, Projects, Skills, Experience, Education, Proof &amp; Testimonials, FAQs, Contact, Sections &amp; Order,
+        SEO, Theme, Security/2FA, and JSON Backup &amp; Restore.
       </p>
     </section>
 
     <section class="doc-sec" id="security">
       <div class="section-num">// 07</div>
-      <h2>Security Notes</h2>
-      <ul>
-        <li>PBKDF2-SHA256 (100,000 iterations) password hashing via WebCrypto</li>
-        <li>Server-side sessions in D1 + HMAC-SHA256 cookie signing via <code>SESSION_SECRET</code></li>
-        <li>Zero secrets stored in <code>wrangler.toml</code> / <code>wrangler.jsonc</code> (safe for public GitHub repos)</li>
-      </ul>
+      <h2>Security Controls</h2>
+      <p>
+        Includes PBKDF2-SHA256 password hashing (100,000 iterations), HMAC-SHA256 signed sessions, per-session CSRF
+        tokens, RFC 6238 TOTP 2FA, login rate limiting, and honeypot + elapsed-time bot protection on the contact form.
+      </p>
     </section>
   </main>
 </BaseLayout>
