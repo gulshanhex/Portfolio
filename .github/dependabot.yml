@@ -1,13 +1,34 @@
 version: 2
 updates:
+  # ── npm dependencies ─────────────────────────────────────────────
+  # Monthly + grouped: at most ~2 PRs per month instead of one per package.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    labels: ["dependencies"]
+    groups:
+      # Astro and its official integrations are a matched set (e.g.
+      # @astrojs/cloudflare 14 requires astro ^7.4). Keep them isolated in
+      # their own PR so a major bump is reviewed on its own.
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      # Everything else bundled into a single monthly PR.
+      dependencies:
+        patterns:
+          - "*"
 
+  # ── GitHub Actions ───────────────────────────────────────────────
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    labels: ["dependencies", "github-actions"]
+    groups:
+      actions:
+        patterns:
+          - "*"
